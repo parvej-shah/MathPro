@@ -25,7 +25,9 @@ import {
   HelpCircle,
   MessageCircle,
   Plus,
-  Minus
+  Minus,
+  Video,
+  FileText
 } from "lucide-react";
 
 const slides = [
@@ -654,8 +656,8 @@ export function LandingPage() {
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-8">
-                  {group.items.map((course, idx) => (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
+                  {group.items.slice(0, 3).map((course, idx) => (
                     <motion.div
                       key={idx}
                       whileHover={{ y: -8 }}
@@ -696,11 +698,33 @@ export function LandingPage() {
                           {course.desc}
                         </p>
 
-                        {/* CTA Button */}
-                        <button className="w-full mt-auto bg-secondary hover:bg-secondary/90 shadow-lg hover:shadow-secondary/30 shadow-secondary/20 text-secondary-foreground font-bold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 group/btn">
-                          বিস্তারিত দেখি
-                          <ArrowRight className="size-[18px] group-hover/btn:translate-x-1.5 transition-transform" />
-                        </button>
+                        {/* CTA Buttons */}
+                        <div className="mt-auto flex gap-3 pt-5 border-t border-slate-100">
+                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-slate-50 hover:bg-slate-900 text-slate-600 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-slate-200 hover:border-slate-900 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-1">
+                            <div className="p-2 rounded-full bg-slate-200/50 group-hover/btn:bg-white/20 transition-colors">
+                              <PlayCircle className="size-5 text-slate-500 group-hover/btn:text-white transition-colors" />
+                            </div>
+                            রেকর্ডেড
+                          </button>
+                          
+                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-emerald-200 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 relative overflow-hidden">
+                            <div className="absolute top-3 right-3 flex size-2.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 group-hover/btn:bg-white group-hover/btn:opacity-100"></span>
+                              <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500 group-hover/btn:bg-white"></span>
+                            </div>
+                            <div className="p-2 rounded-full bg-emerald-200/50 group-hover/btn:bg-white/20 transition-colors">
+                              <Video className="size-5 text-emerald-600 group-hover/btn:text-white transition-colors" />
+                            </div>
+                            লাইভ
+                          </button>
+                          
+                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-amber-50 hover:bg-[#f59e0b] text-amber-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-amber-200 hover:border-[#f59e0b] hover:shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
+                            <div className="p-2 rounded-full bg-amber-200/50 group-hover/btn:bg-white/20 transition-colors">
+                              <FileText className="size-5 text-amber-600 group-hover/btn:text-white transition-colors" />
+                            </div>
+                            পরীক্ষা
+                          </button>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
