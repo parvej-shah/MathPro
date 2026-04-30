@@ -1,5 +1,5 @@
-import { MathProDashboard } from "@/components/mathpro-dashboard";
+import { LandingPage } from "@/components/landing-page";
 
 export default function Home() {
-  return <MathProDashboard />;
+  return <LandingPage />;
 }
