@@ -1007,9 +1007,9 @@ export function LandingPage() {
 
         <div className="container mx-auto px-6 relative z-[45] text-center">
           <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 tracking-tight font-heading">গণিত জয় করতে প্রস্তুত?</h2>
-          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">একটি ফ্রি ডেমো ক্লাস দেখুন এবং বুঝুন — কেন হাজারো শিক্ষার্থী MathPro বেছে নিয়েছে তাদের গণিতের ভয় জয় করতে।</p>
+          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">একটি ফ্রি ডেমো ক্লাস করে দেখো এবং বুঝো, কেন হাজারো শিক্ষার্থী MathPro বেছে নিয়েছে তাদের গণিতের ভয় জয় করতে।</p>
           <button className="px-16 py-6 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50">
-            ফ্রি ডেমো ক্লাস দেখুন
+            ফ্রি ডেমো ক্লাস দেখো
           </button>
         </div>
       </section>
