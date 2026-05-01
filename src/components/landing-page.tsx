@@ -40,6 +40,14 @@ const slides = [
     pattern: "bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-400/20 via-emerald-950 to-slate-950",
     visual: (
       <div className="relative w-full h-full flex items-center justify-center">
+        {/* Coordinate Axis Background */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20">
+          <div className="w-full h-px bg-emerald-400 absolute"></div>
+          <div className="h-full w-px bg-emerald-400 absolute"></div>
+          {/* Subtle math equations floating in background */}
+          <div className="absolute top-[20%] left-[10%] text-emerald-400/40 font-serif text-2xl md:text-3xl -rotate-12 select-none">f(x) = x²</div>
+          <div className="absolute bottom-[20%] right-[10%] text-emerald-400/40 font-serif text-2xl md:text-3xl rotate-12 select-none">∫ e^x dx</div>
+        </div>
         {/* Single prominent cap icon */}
         <motion.div
           animate={{ y: [0, -12, 0] }}
@@ -402,10 +410,12 @@ export function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-emerald-50/30 font-sans text-slate-900 overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900">
+    <div className="min-h-screen bg-emerald-50/30 font-sans text-slate-900 overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 relative z-0">
+      {/* Global subtle graph paper grid overlay */}
+      <div className="fixed inset-0 z-[40] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* --- STICKY NAVBAR --- */}
-      <nav className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm py-4" : "bg-transparent border-b border-white/10 py-6"
+      <nav className={`fixed top-0 left-0 w-full z-[100] flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm py-4" : "bg-transparent border-b border-white/10 py-6"
         }`}>
         <div className="flex items-center gap-2 md:gap-3 group/logo cursor-pointer">
           <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">M</div>
@@ -430,7 +440,7 @@ export function LandingPage() {
             {slides.map((slide, index) => (
               <div key={slide.id} className="flex-[0_0_100%] min-w-0 relative h-full">
                 <div className={`absolute inset-0 ${slide.bgClass} ${slide.pattern} opacity-90`}></div>
-                <div className="relative h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
+                <div className="relative z-[45] h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
 
                   {/* Text Content */}
                   <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
@@ -505,7 +515,7 @@ export function LandingPage() {
       </section>
 
       {/* --- TRUST STATS BAR --- */}
-      <section className="bg-emerald-900 border-y border-emerald-800 relative z-20 shadow-xl">
+      <section className="bg-emerald-900 border-y border-emerald-800 relative z-[45] shadow-xl overflow-hidden">
         <div className="container mx-auto px-6 lg:px-12 py-6 md:py-8">
           <div className="flex flex-wrap justify-center lg:justify-between gap-6 md:gap-10 lg:gap-12 items-center max-w-5xl mx-auto">
 
@@ -548,9 +558,13 @@ export function LandingPage() {
       </section>
 
       {/* --- CLASS CATEGORIES --- */}
-      <section className="py-24 bg-[#f4f7fe] relative border-b border-slate-100">
+      <section className="py-24 bg-[#f4f7fe] relative border-b border-slate-100 overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold rotate-12 select-none pointer-events-none">∫</div>
+        <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold -rotate-12 select-none pointer-events-none">π</div>
+        <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold rotate-45 select-none pointer-events-none">√</div>
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-2xl mx-auto mb-16">
+          <div className="text-center max-w-2xl mx-auto mb-16 relative z-[45]">
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-[#00b5cc] font-heading">
               আমাদের ক্যাটাগরিসমূহ
             </h2>
@@ -561,7 +575,7 @@ export function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {classCategories.map((category, i) => (
-              <a key={i} href={category.href} className="group outline-none">
+              <a key={i} href={category.href} className="group outline-none relative z-[45] block">
                 <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
                   <div>
                     <div className={`size-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-sm ${category.iconBgClass}`}>
@@ -583,9 +597,12 @@ export function LandingPage() {
       </section>
 
       {/* --- VALUE PROP SECTION --- */}
-      <section id="features" className="py-28 bg-white relative">
+      <section id="features" className="py-28 bg-white relative overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-50 font-serif font-black -rotate-12 select-none pointer-events-none leading-none">∑</div>
+        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-50/80 font-serif font-black rotate-12 select-none pointer-events-none leading-none">∞</div>
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="text-center max-w-3xl mx-auto mb-20 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">কেন MathPro বেছে নিবে?</h2>
             <p className="text-slate-500 text-xl font-medium leading-relaxed">আমরা শুধু গণিত পড়াই না। আমরা এমন সিস্টেম তৈরি করি যা তোমাকে গণিতে দক্ষ করে তুলবে।</p>
           </div>
@@ -595,7 +612,7 @@ export function LandingPage() {
               <motion.div
                 key={i}
                 whileHover={{ y: -8 }}
-                className="p-8 md:p-10 rounded-[2rem] bg-[#fbfdfc] border border-emerald-100 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-300 group flex flex-col items-start"
+                className="p-8 md:p-10 rounded-[2rem] bg-[#fbfdfc] border border-emerald-100 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-300 group flex flex-col items-start relative z-[45]"
               >
                 <div className="size-16 rounded-2xl bg-[#e6f7ef] text-[#059669] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="size-7 stroke-[2.5]" />
@@ -609,9 +626,12 @@ export function LandingPage() {
       </section>
 
       {/* --- FEATURED COURSES (Grouped) --- */}
-      <section id="courses" className="py-28 bg-[#f4f7fe]">
+      <section id="courses" className="py-28 bg-[#f4f7fe] relative overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[11rem] text-slate-200/40 font-serif font-bold -rotate-12 select-none pointer-events-none">θ</div>
+        <div className="absolute top-2/3 right-0 md:right-10 text-[6rem] md:text-[11rem] text-slate-200/50 font-serif font-bold rotate-12 select-none pointer-events-none">Φ</div>
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-20 lg:mb-24">
+          <div className="text-center max-w-3xl mx-auto mb-20 lg:mb-24 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">
               আমাদের জনপ্রিয় <span className="text-[#059669]">কোর্সসমূহ</span>
             </h2>
@@ -624,7 +644,7 @@ export function LandingPage() {
             {groupedCourses.map((group, i) => (
               <div key={i} className="flex flex-col">
                 {/* Category Header & Tabs */}
-                <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-10">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-10 relative z-[45]">
                   <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-[#1e293b]">
                     {group.category}
                   </h3>
@@ -649,7 +669,7 @@ export function LandingPage() {
                     <motion.div
                       key={idx}
                       whileHover={{ y: -8 }}
-                      className="group bg-white rounded-3xl overflow-hidden border border-slate-100/80 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col"
+                      className="group bg-white rounded-3xl overflow-hidden border border-slate-100/80 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col relative z-[45]"
                     >
                       {/* Fake Thumbnail Banner */}
                       <div className={`h-48 w-full bg-gradient-to-tr ${course.gradient} p-6 relative overflow-hidden flex flex-col justify-center items-center text-center`}>
@@ -694,7 +714,7 @@ export function LandingPage() {
                             </div>
                             রেকর্ডেড
                           </button>
-                          
+
                           <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-emerald-200 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 relative overflow-hidden">
                             <div className="absolute top-3 right-3 flex size-2.5">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 group-hover/btn:bg-white group-hover/btn:opacity-100"></span>
@@ -705,7 +725,7 @@ export function LandingPage() {
                             </div>
                             লাইভ
                           </button>
-                          
+
                           <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-amber-50 hover:bg-[#f59e0b] text-amber-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-amber-200 hover:border-[#f59e0b] hover:shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
                             <div className="p-2 rounded-full bg-amber-200/50 group-hover/btn:bg-white/20 transition-colors">
                               <FileText className="size-5 text-amber-600 group-hover/btn:text-white transition-colors" />
@@ -725,8 +745,10 @@ export function LandingPage() {
 
       {/* --- STUDENT REVIEWS (CAROUSEL) --- */}
       <section className="py-24 bg-white relative overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-1 -left-10 md:-left-10 text-[12rem] md:text-[25rem] text-emerald-50/80 font-serif font-black select-none pointer-events-none leading-none rotate-12">Δ</div>
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="text-center max-w-3xl mx-auto mb-16 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">
               শিক্ষার্থীদের <span className="text-[#059669]">মতামত</span>
             </h2>
@@ -742,7 +764,7 @@ export function LandingPage() {
                   <div key={i} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-6">
                     <motion.div
                       whileHover={{ y: -5 }}
-                      className="bg-[#f8fafc] p-8 md:p-10 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 h-full flex flex-col relative overflow-hidden group"
+                      className="bg-[#f8fafc] p-8 md:p-10 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 h-full flex flex-col relative z-[45] overflow-hidden group"
                     >
                       <Quote className="absolute top-6 right-6 size-16 text-slate-200/50 rotate-180 group-hover:text-emerald-100/50 transition-colors" />
                       <div className="flex gap-1.5 mb-6 relative z-10">
@@ -769,13 +791,13 @@ export function LandingPage() {
             </div>
             <button
               onClick={() => reviewApi?.scrollPrev()}
-              className="absolute top-1/2 -left-4 md:-left-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-10 hidden md:flex"
+              className="absolute top-1/2 -left-4 md:-left-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-[45] hidden md:flex"
             >
               <ChevronRight className="size-7 rotate-180" />
             </button>
             <button
               onClick={() => reviewApi?.scrollNext()}
-              className="absolute top-1/2 -right-4 md:-right-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-10 hidden md:flex"
+              className="absolute top-1/2 -right-4 md:-right-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-[45] hidden md:flex"
             >
               <ChevronRight className="size-7" />
             </button>
@@ -785,14 +807,13 @@ export function LandingPage() {
 
       {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
       <section id="branches" className="py-32 bg-[#fbfdfc] overflow-hidden relative">
-        {/* Very subtle background texture */}
-        <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(#10b981 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }}></div>
-
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+        {/* Math Motif Background */}
+        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-slate-100 font-serif font-black select-none pointer-events-none rotate-12 z-0">Ω</div>
+        <div className="container mx-auto px-6 lg:px-12 relative z-[45]">
           <div className="grid lg:grid-cols-2 gap-16 xl:gap-20 items-center max-w-[1400px] mx-auto">
 
             {/* Geometric Map Visual (Left Side) */}
-            <div className="relative h-[550px] w-full rounded-[3rem] bg-[#0f172a] border border-slate-800/80 flex items-center justify-center overflow-hidden shadow-2xl shadow-slate-900/20 group">
+            <div className="relative z-[45] h-[550px] w-full rounded-[3rem] bg-[#0f172a] border border-slate-800/80 flex items-center justify-center overflow-hidden shadow-2xl shadow-slate-900/20 group">
               {/* Animated Geometric Grid */}
               <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '48px 48px' }}></div>
 
@@ -865,7 +886,7 @@ export function LandingPage() {
             </div>
 
             {/* Content (Right Side) */}
-            <div className="flex flex-col items-start lg:pl-4">
+            <div className="flex flex-col items-start lg:pl-4 relative z-[45]">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f0fdf4] text-[#059669] border border-[#d1fae5] text-xs font-bold uppercase tracking-widest mb-6">
                 <MapPin className="size-3.5 stroke-[2.5]" />
                 আমাদের শাখাসমূহ
@@ -882,7 +903,7 @@ export function LandingPage() {
                   { name: "মিরপুর ১০ সেন্টার", address: "বাড়ি ১২, রোড ৪, ব্লক সি, মিরপুর, ঢাকা", mapUrl: "https://maps.google.com/?q=Mirpur+10+Center,+Dhaka" },
                   { name: "উত্তরা সেক্টর ৭", address: "সেক্টর ৭, সোনারগাঁও জনপথ রোড, ঢাকা", mapUrl: "https://maps.google.com/?q=Uttara+Sector+7,+Dhaka" }
                 ].map((branch, i) => (
-                  <a key={i} href={branch.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] border border-slate-200 hover:border-emerald-300 transition-all duration-300 bg-white hover:bg-[#fbfdfc] group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-emerald-900/5 hover:-translate-y-1">
+                  <a key={i} href={branch.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] border border-slate-200 hover:border-emerald-300 transition-all duration-300 bg-white hover:bg-[#fbfdfc] group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-emerald-900/5 hover:-translate-y-1 relative z-[45]">
                     <div>
                       <h4 className="font-extrabold text-[22px] text-slate-900 mb-1.5 font-heading tracking-tight group-hover:text-emerald-600 transition-colors">{branch.name}</h4>
                       <p className="text-slate-500 font-medium text-[15px] flex items-center gap-2">
@@ -903,12 +924,15 @@ export function LandingPage() {
       </section>
 
       {/* --- FAQ SECTION --- */}
-      <section className="py-28 bg-[#f4f7fe] relative">
+      <section className="py-28 bg-[#f4f7fe] relative overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-10 md:top-20 right-0 md:right-20 text-[12rem] md:text-[20rem] text-[#3b82f6]/5 font-serif font-bold rotate-12 select-none pointer-events-none">λ</div>
+        <div className="absolute -bottom-4  md:bottom-10 left-0 md:left-10 text-[9rem] md:text-[15rem] text-[#10b981]/5 font-serif font-bold -rotate-12 select-none pointer-events-none">∀</div>
         <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-start">
 
             {/* FAQ Intro & Support Box (Left Column) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-32">
+            <div className="lg:col-span-5 lg:sticky lg:top-32 relative z-[45]">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6">
                 <HelpCircle className="size-4" />
                 সচরাচর জিজ্ঞাসা
@@ -938,7 +962,7 @@ export function LandingPage() {
               {faqs.map((faq, idx) => (
                 <div
                   key={idx}
-                  className={`bg-white rounded-[1.5rem] border transition-all duration-300 overflow-hidden ${openFaq === idx ? 'border-emerald-500 shadow-xl shadow-emerald-900/5' : 'border-slate-200 hover:border-emerald-300'}`}
+                  className={`bg-white rounded-[1.5rem] border transition-all duration-300 overflow-hidden relative z-[45] ${openFaq === idx ? 'border-emerald-500 shadow-xl shadow-emerald-900/5' : 'border-slate-200 hover:border-emerald-300'}`}
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
@@ -975,11 +999,13 @@ export function LandingPage() {
 
       {/* --- FOOTER CTA --- */}
       <section className="bg-emerald-950 py-24 relative overflow-hidden">
+        {/* Math Motif Background - Prominent */}
+        <div className="absolute -bottom-55 md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] text-[25rem] md:text-[50rem] text-emerald-900/80 font-serif font-black select-none pointer-events-none leading-none">∞</div>
         {/* Background blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
 
-        <div className="container mx-auto px-6 relative z-10 text-center">
+        <div className="container mx-auto px-6 relative z-[45] text-center">
           <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 tracking-tight font-heading">গণিত জয় করতে প্রস্তুত?</h2>
           <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">MathPro-এর সাহায্যে নিজেদের রেজাল্ট এবং আত্মবিশ্বাস বদলে ফেলা হাজারো শিক্ষার্থীর সাথে যুক্ত হও।</p>
           <button className="px-12 py-5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50">
