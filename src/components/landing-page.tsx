@@ -682,11 +682,6 @@ export function LandingPage() {
                         <h4 className="text-white font-extrabold text-xl lg:text-2xl z-10 leading-tight font-heading drop-shadow-md">
                           {course.title.split('|')[0].trim()}
                         </h4>
-                        {course.price && (
-                          <div className="mt-4 bg-[#e11d48] text-white text-[13px] font-bold px-4 py-1.5 rounded-full z-10 animate-pulse border border-[#f43f5e] shadow-lg shadow-rose-900/20">
-                            {course.price}
-                          </div>
-                        )}
 
                         <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md size-8 flex items-center justify-center rounded-xl z-20 font-bold text-white text-xs">
                           MathPro
@@ -695,12 +690,19 @@ export function LandingPage() {
 
                       {/* Content */}
                       <div className="p-7 flex flex-col flex-1 bg-white">
-                        <div className="flex flex-wrap gap-2 mb-5">
-                          {course.tags.map((tag, tIdx) => (
-                            <span key={tIdx} className="px-3 py-1.5 bg-[#f1f5f9] text-[#475569] rounded-lg text-[10px] font-extrabold uppercase tracking-widest border border-slate-200/50">
-                              {tag}
-                            </span>
-                          ))}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
+                          <div className="flex flex-wrap gap-2">
+                            {course.tags.map((tag, tIdx) => (
+                              <span key={tIdx} className="px-3 py-1.5 bg-[#f1f5f9] text-[#475569] rounded-lg text-[10px] font-extrabold uppercase tracking-widest border border-slate-200/50">
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          {course.price && (
+                            <div className="shrink-0 inline-flex items-center rounded-full bg-rose-50 text-rose-700 text-[12px] font-extrabold px-3.5 py-1.5 border border-rose-200 shadow-sm">
+                              {course.price}
+                            </div>
+                          )}
                         </div>
 
                         <h4 className="font-extrabold text-[1.1rem] text-slate-900 leading-snug mb-3 font-heading group-hover:text-[#059669] transition-colors">
@@ -719,13 +721,14 @@ export function LandingPage() {
                             রেকর্ডেড
                           </button>
 
-                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-emerald-50 hover:bg-emerald-500 text-emerald-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-emerald-200 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-1 relative overflow-hidden">
-                            <div className="absolute top-3 right-3 flex size-2.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75 group-hover/btn:bg-white group-hover/btn:opacity-100"></span>
-                              <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500 group-hover/btn:bg-white"></span>
+                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-rose-200 hover:border-rose-600 hover:shadow-lg hover:shadow-rose-600/30 hover:-translate-y-1 relative overflow-hidden">
+                            <div className="absolute top-3 right-3 flex size-2.5 items-center justify-center">
+                              <span className="absolute inline-flex size-5 rounded-full bg-rose-500/25 animate-pulse"></span>
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75 group-hover/btn:bg-white group-hover/btn:opacity-100"></span>
+                              <span className="relative inline-flex rounded-full size-2.5 bg-rose-600 group-hover/btn:bg-white"></span>
                             </div>
-                            <div className="p-2 rounded-full bg-emerald-200/50 group-hover/btn:bg-white/20 transition-colors">
-                              <Video className="size-5 text-emerald-600 group-hover/btn:text-white transition-colors" />
+                            <div className="p-2 rounded-full bg-rose-200/50 group-hover/btn:bg-white/20 transition-colors">
+                              <Video className="size-5 text-rose-600 group-hover/btn:text-white transition-colors" />
                             </div>
                             লাইভ
                           </button>
