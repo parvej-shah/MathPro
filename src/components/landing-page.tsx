@@ -1000,16 +1000,16 @@ export function LandingPage() {
       {/* --- FOOTER CTA --- */}
       <section className="bg-emerald-950 py-24 relative overflow-hidden">
         {/* Math Motif Background - Prominent */}
-        <div className="absolute -bottom-55 md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-[45%] text-[25rem] md:text-[50rem] text-emerald-900/80 font-serif font-black select-none pointer-events-none leading-none">∞</div>
+        <div className="absolute -bottom-55 md:top-1/4 left-1/2 -translate-x-1/2 -translate-y-[45%] text-[25rem] md:text-[50rem] text-emerald-900/80 font-serif font-black select-none pointer-events-none leading-none">∞</div>
         {/* Background blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
 
         <div className="container mx-auto px-6 relative z-[45] text-center">
           <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 tracking-tight font-heading">গণিত জয় করতে প্রস্তুত?</h2>
-          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">MathPro-এর সাহায্যে নিজেদের রেজাল্ট এবং আত্মবিশ্বাস বদলে ফেলা হাজারো শিক্ষার্থীর সাথে যুক্ত হও।</p>
-          <button className="px-12 py-5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50">
-            ফ্রি অ্যাকাউন্ট তৈরি করো
+          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">একটি ফ্রি ডেমো ক্লাস দেখুন এবং বুঝুন — কেন হাজারো শিক্ষার্থী MathPro বেছে নিয়েছে তাদের গণিতের ভয় জয় করতে।</p>
+          <button className="px-16 py-6 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50">
+            ফ্রি ডেমো ক্লাস দেখুন
           </button>
         </div>
       </section>
