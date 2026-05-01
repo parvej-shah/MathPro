@@ -47,13 +47,13 @@ const slides = [
           className="relative flex items-center justify-center"
         >
           {/* Glow rings */}
-          <div className="absolute size-[340px] md:size-[440px] rounded-full border border-emerald-500/10 animate-pulse"></div>
-          <div className="absolute size-[260px] md:size-[340px] rounded-full border border-emerald-500/15"></div>
-          <div className="absolute size-[180px] md:size-[240px] rounded-full bg-emerald-500/5 border border-emerald-400/20 shadow-[0_0_60px_rgba(16,185,129,0.2)]"></div>
+          <div className="absolute size-[280px] sm:size-[340px] md:size-[400px] lg:size-[440px] rounded-full border border-emerald-500/10 animate-pulse"></div>
+          <div className="absolute size-[220px] sm:size-[280px] md:size-[320px] lg:size-[340px] rounded-full border border-emerald-500/15"></div>
+          <div className="absolute size-[160px] sm:size-[220px] md:size-[240px] lg:size-[240px] rounded-full bg-emerald-500/5 border border-emerald-400/20 shadow-[0_0_60px_rgba(16,185,129,0.2)]"></div>
 
           {/* Main icon */}
-          <div className="relative size-40 md:size-52 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/10 flex items-center justify-center backdrop-blur-xl border border-emerald-400/30 shadow-[0_0_80px_rgba(16,185,129,0.25)]">
-            <span className="text-[7rem] md:text-[9rem] drop-shadow-[0_0_30px_rgba(16,185,129,0.6)] select-none leading-none">🎓</span>
+          <div className="relative size-32 md:size-52 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/10 flex items-center justify-center backdrop-blur-xl border border-emerald-400/30 shadow-[0_0_80px_rgba(16,185,129,0.25)]">
+            <span className="text-[5rem] md:text-[9rem] drop-shadow-[0_0_30px_rgba(16,185,129,0.6)] select-none leading-none">🎓</span>
           </div>
         </motion.div>
 
@@ -61,26 +61,26 @@ const slides = [
         <motion.div
           animate={{ y: [0, -15, 0] }}
           transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-          className="absolute top-10 right-10 md:top-16 md:right-16 bg-white/5 backdrop-blur-xl px-6 py-4 rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-4"
+          className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-xl px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
         >
-          <div className="size-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <TrendingUp className="text-emerald-400 size-5" />
+          <div className="size-8 md:size-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <TrendingUp className="text-emerald-400 size-4 md:size-5" />
           </div>
           <div>
-            <div className="text-white font-extrabold text-xl">১০০%</div>
-            <div className="text-emerald-200/60 text-[11px] font-bold tracking-widest uppercase">সিলেবাস কভার</div>
+            <div className="text-white font-extrabold text-lg md:text-xl">১০০%</div>
+            <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সিলেবাস কভার</div>
           </div>
         </motion.div>
 
         <motion.div
           animate={{ y: [0, 20, 0] }}
           transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-          className="absolute bottom-10 left-10 md:bottom-20 md:left-16 bg-white/5 backdrop-blur-xl px-6 py-4 rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-4"
+          className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-xl px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
         >
-          <div className="text-emerald-400 font-bold text-4xl font-serif leading-none mt-1">∑</div>
+          <div className="text-emerald-400 font-bold text-3xl md:text-4xl font-serif leading-none mt-1">∑</div>
           <div>
-            <div className="text-white font-extrabold text-lg">গণিতভীতি দূর</div>
-            <div className="text-emerald-200/60 text-[11px] font-bold tracking-widest uppercase">সহজ সমাধান</div>
+            <div className="text-white font-extrabold text-base md:text-lg">গণিতভীতি দূর</div>
+            <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সহজ সমাধান</div>
           </div>
         </motion.div>
       </div>
@@ -114,19 +114,19 @@ const slides = [
 
           {/* Video Area */}
           <div className="flex-1 bg-slate-900/50 flex items-center justify-center relative backdrop-blur-sm">
-            <div className="size-20 md:size-24 rounded-full bg-emerald-500/20 flex items-center justify-center backdrop-blur-md border border-emerald-500/30 group-hover:scale-110 transition-transform duration-500 cursor-pointer shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-              <PlayCircle className="w-10 h-10 md:w-12 md:h-12 text-emerald-400 drop-shadow-lg ml-1" />
+            <div className="size-16 md:size-24 rounded-full bg-emerald-500/20 flex items-center justify-center backdrop-blur-md border border-emerald-500/30 group-hover:scale-110 transition-transform duration-500 cursor-pointer shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+              <PlayCircle className="w-8 h-8 md:w-12 md:h-12 text-emerald-400 drop-shadow-lg ml-1" />
             </div>
 
             {/* Progress bar */}
-            <div className="absolute bottom-6 left-6 right-6 flex items-center gap-4">
-              <span className="text-xs text-slate-400 font-mono">12:45</span>
-              <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden cursor-pointer group/progress">
+            <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 flex items-center gap-3 md:gap-4">
+              <span className="text-[10px] md:text-xs text-slate-400 font-mono">12:45</span>
+              <div className="flex-1 h-1 md:h-1.5 bg-slate-800 rounded-full overflow-hidden cursor-pointer group/progress">
                 <div className="w-1/3 h-full bg-emerald-500 relative group-hover/progress:bg-emerald-400 transition-colors">
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 size-2.5 bg-white rounded-full shadow-[0_0_10px_rgba(16,185,129,1)] scale-0 group-hover/progress:scale-100 transition-transform"></div>
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 size-2 md:size-2.5 bg-white rounded-full shadow-[0_0_10px_rgba(16,185,129,1)] scale-0 group-hover/progress:scale-100 transition-transform"></div>
                 </div>
               </div>
-              <span className="text-xs text-slate-400 font-mono">45:00</span>
+              <span className="text-[10px] md:text-xs text-slate-400 font-mono">45:00</span>
             </div>
           </div>
         </div>
@@ -141,14 +141,14 @@ const slides = [
     bgClass: "bg-teal-950",
     pattern: "bg-[conic-gradient(at_center_right,_var(--tw-gradient-stops))] from-emerald-950 via-teal-950 to-slate-900",
     visual: (
-      <div className="relative w-full h-full flex items-center justify-center gap-6 flex-col md:flex-row">
+      <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 flex-col md:flex-row scale-90 md:scale-100 lg:scale-110">
         {[1, 2, 3].map((i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.2 }}
-            className={`bg-white/5 backdrop-blur-xl p-7 rounded-[2rem] border w-64 md:w-72 shadow-2xl relative ${i === 2 ? 'md:-translate-y-10 border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10' : 'border-white/10 opacity-70 scale-95'}`}
+            className={`bg-white/5 backdrop-blur-xl p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border w-[260px] md:w-64 lg:w-72 shadow-2xl relative ${i === 2 ? 'border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10 md:-translate-y-8 lg:-translate-y-10' : 'border-white/10 opacity-70 scale-95 hidden sm:block'}`}
           >
             {i === 2 && (
               <div className="absolute -top-4 -right-4 size-10 rounded-full bg-emerald-500 flex items-center justify-center border-[3px] border-teal-950 text-white shadow-xl rotate-12">
@@ -405,16 +405,16 @@ export function LandingPage() {
       {/* --- STICKY NAVBAR --- */}
       <nav className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm py-4" : "bg-transparent border-b border-white/10 py-6"
         }`}>
-        <div className="flex items-center gap-3 group/logo cursor-pointer">
-          <div className="size-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">M</div>
-          <span className={`text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400`}>MATHPRO</span>
+        <div className="flex items-center gap-2 md:gap-3 group/logo cursor-pointer">
+          <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">M</div>
+          <span className={`text-2xl md:text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400`}>MATHPRO</span>
         </div>
         <div className={`hidden md:flex gap-10 text-lg font-bold transition-colors ${isScrolled ? "text-slate-600" : "text-white/90"}`}>
           <a href="#courses" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>কোর্সসমূহ</a>
           <a href="#features" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>বৈশিষ্ট্য</a>
           <a href="#branches" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>শাখাসমূহ</a>
         </div>
-        <button className={`px-6 py-3 rounded-full font-bold text-lg transition-all shadow-lg hover:shadow-xl ${isScrolled ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-white text-slate-900 hover:bg-emerald-50"
+        <button className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${isScrolled ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-white text-slate-900 hover:bg-emerald-50"
           }`}>
           লগইন
         </button>
@@ -428,10 +428,10 @@ export function LandingPage() {
             {slides.map((slide, index) => (
               <div key={slide.id} className="flex-[0_0_100%] min-w-0 relative h-full">
                 <div className={`absolute inset-0 ${slide.bgClass} ${slide.pattern} opacity-90`}></div>
-                <div className="relative h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-24 md:pt-0 pb-16">
+                <div className="relative h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
 
                   {/* Text Content */}
-                  <div className="w-full md:w-1/2 z-10 flex flex-col items-start pt-10 md:pt-20">
+                  <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
@@ -446,7 +446,7 @@ export function LandingPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
                       transition={{ duration: 0.6, delay: 0.3 }}
-                      className="font-heading text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6 drop-shadow-sm"
+                      className="font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm"
                     >
                       {slide.title}
                     </motion.h1>
@@ -455,7 +455,7 @@ export function LandingPage() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
                       transition={{ duration: 0.6, delay: 0.4 }}
-                      className="text-xl md:text-2xl text-emerald-50/90 mb-10 max-w-lg leading-relaxed font-medium"
+                      className="text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium"
                     >
                       {slide.subtitle}
                     </motion.p>
@@ -472,12 +472,12 @@ export function LandingPage() {
                   </div>
 
                   {/* Visual Content */}
-                  <div className="w-full md:w-1/2 h-[45vh] md:h-[60vh] relative mt-12 md:mt-16">
+                  <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: selectedIndex === index ? 1 : 0, scale: selectedIndex === index ? 1 : 0.9 }}
                       transition={{ duration: 0.8, delay: 0.3 }}
-                      className="absolute inset-0"
+                      className="absolute inset-0 flex items-center justify-center"
                     >
                       {slide.visual}
                     </motion.div>
@@ -490,7 +490,7 @@ export function LandingPage() {
         </div>
 
         {/* Custom Pips */}
-        <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-3 z-20">
+        <div className="absolute bottom-6 md:bottom-12 left-0 right-0 flex justify-center gap-2 md:gap-3 z-20">
           {slides.map((_, i) => (
             <button
               key={i}
@@ -505,39 +505,39 @@ export function LandingPage() {
       {/* --- TRUST STATS BAR --- */}
       <section className="bg-emerald-900 border-y border-emerald-800 relative z-20 shadow-xl">
         <div className="container mx-auto px-6 lg:px-12 py-6 md:py-8">
-          <div className="flex flex-wrap justify-center md:justify-between gap-8 md:gap-12 items-center max-w-5xl mx-auto">
+          <div className="flex flex-wrap justify-center lg:justify-between gap-6 md:gap-10 lg:gap-12 items-center max-w-5xl mx-auto">
 
-            <div className="flex items-center gap-5">
-              <div className="size-12 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner">
-                <Users className="size-6 md:size-7" />
+            <div className="flex items-center gap-3 md:gap-5">
+              <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
+                <Users className="size-5 md:size-7" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-2xl md:text-3xl font-heading tracking-tight">৫০,০০০+</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[10px] md:text-xs uppercase mt-0.5">শিক্ষার্থী যুক্ত আছে</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৫০,০০০+</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">শিক্ষার্থী যুক্ত আছে</div>
               </div>
             </div>
 
-            <div className="hidden md:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
+            <div className="hidden lg:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
 
-            <div className="flex items-center gap-5">
-              <div className="size-12 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner">
-                <CheckCircle2 className="size-6 md:size-7" />
+            <div className="flex items-center gap-3 md:gap-5">
+              <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
+                <CheckCircle2 className="size-5 md:size-7" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-2xl md:text-3xl font-heading tracking-tight">১,০০০+</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[10px] md:text-xs uppercase mt-0.5">লাইভ ও রেকর্ডেড ক্লাস</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">১,০০০+</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">লাইভ ও রেকর্ডেড ক্লাস</div>
               </div>
             </div>
 
-            <div className="hidden md:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
+            <div className="hidden lg:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
 
-            <div className="flex items-center gap-5">
-              <div className="size-12 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner">
-                <Star className="size-6 md:size-7 fill-emerald-400" />
+            <div className="flex items-center gap-3 md:gap-5">
+              <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
+                <Star className="size-5 md:size-7 fill-emerald-400" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-2xl md:text-3xl font-heading tracking-tight">৪.৮/৫</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[10px] md:text-xs uppercase mt-0.5">গড় রেটিং</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৪.৮/৫</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">গড় রেটিং</div>
               </div>
             </div>
 
