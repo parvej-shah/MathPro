@@ -50,8 +50,9 @@ const slides = [
         </div>
         {/* Single prominent cap icon */}
         <motion.div
-          animate={{ y: [0, -12, 0] }}
-          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+          animate={{ y: -10 }}
+          transition={{ repeat: Infinity, repeatType: "mirror", duration: 3, ease: "easeInOut", type: "tween" }}
+          style={{ willChange: "transform" }}
           className="relative flex items-center justify-center"
         >
           {/* Glow rings */}
@@ -67,9 +68,10 @@ const slides = [
 
         {/* Floating elements */}
         <motion.div
-          animate={{ y: [0, -15, 0] }}
-          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-          className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-xl px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
+          animate={{ y: -12 }}
+          transition={{ repeat: Infinity, repeatType: "mirror", duration: 2.5, ease: "easeInOut", type: "tween" }}
+          style={{ willChange: "transform" }}
+          className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
         >
           <div className="size-8 md:size-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
             <TrendingUp className="text-emerald-400 size-4 md:size-5" />
@@ -81,9 +83,10 @@ const slides = [
         </motion.div>
 
         <motion.div
-          animate={{ y: [0, 20, 0] }}
-          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-          className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-xl px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
+          animate={{ y: 14 }}
+          transition={{ repeat: Infinity, repeatType: "mirror", duration: 3.2, ease: "easeInOut", type: "tween" }}
+          style={{ willChange: "transform" }}
+          className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
         >
           <div className="text-emerald-400 font-bold text-3xl md:text-4xl font-serif leading-none mt-1">∑</div>
           <div>
@@ -155,8 +158,8 @@ const slides = [
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.2 }}
-            className={`bg-white/5 backdrop-blur-xl p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border w-[260px] md:w-64 lg:w-72 shadow-2xl relative ${i === 2 ? 'border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10 md:-translate-y-8 lg:-translate-y-10' : 'border-white/10 opacity-70 scale-95 hidden sm:block'}`}
+            transition={{ delay: i * 0.15, duration: 0.5, ease: "easeOut", type: "tween" }}
+            className={`bg-white/5 backdrop-blur-sm p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border w-[260px] md:w-64 lg:w-72 shadow-2xl relative ${i === 2 ? 'border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10 md:-translate-y-8 lg:-translate-y-10' : 'border-white/10 opacity-70 scale-95 hidden sm:block'}`}
           >
             {i === 2 && (
               <div className="absolute -top-4 -right-4 size-10 rounded-full bg-emerald-500 flex items-center justify-center border-[3px] border-teal-950 text-white shadow-xl rotate-12">
@@ -445,38 +448,38 @@ export function LandingPage() {
                   {/* Text Content */}
                   <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
                     <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6"
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
+                      transition={{ duration: 0.5, delay: 0.15, ease: "easeOut", type: "tween" }}
+                      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6"
                     >
                       <Sparkles className="size-3.5" />
                       প্ল্যাটফর্ম ২.০ লাইভ
                     </motion.div>
 
                     <motion.h1
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
-                      transition={{ duration: 0.6, delay: 0.3 }}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
+                      transition={{ duration: 0.5, delay: 0.25, ease: "easeOut", type: "tween" }}
                       className="font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm"
                     >
                       {slide.title}
                     </motion.h1>
 
                     <motion.p
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
-                      transition={{ duration: 0.6, delay: 0.4 }}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
+                      transition={{ duration: 0.5, delay: 0.35, ease: "easeOut", type: "tween" }}
                       className="text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium"
                     >
                       {slide.subtitle}
                     </motion.p>
 
                     <motion.button
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 20 }}
-                      transition={{ duration: 0.6, delay: 0.5 }}
-                      className="group flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
+                      transition={{ duration: 0.5, delay: 0.45, ease: "easeOut", type: "tween" }}
+                      className="group flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
                     >
                       {slide.cta}
                       <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
@@ -486,9 +489,10 @@ export function LandingPage() {
                   {/* Visual Content */}
                   <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
                     <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, scale: selectedIndex === index ? 1 : 0.9 }}
-                      transition={{ duration: 0.8, delay: 0.3 }}
+                      initial={{ opacity: 0, scale: 0.92 }}
+                      animate={{ opacity: selectedIndex === index ? 1 : 0, scale: selectedIndex === index ? 1 : 0.92 }}
+                      transition={{ duration: 0.6, delay: 0.2, ease: "easeOut", type: "tween" }}
+                      style={{ willChange: "opacity, transform" }}
                       className="absolute inset-0 flex items-center justify-center"
                     >
                       {slide.visual}
