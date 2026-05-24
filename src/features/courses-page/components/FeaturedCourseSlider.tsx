@@ -1,10 +1,9 @@
-import React, { useMemo } from "react";
+"use client";
+
+import React, { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
+import { BsChevronRight, BsChevronLeft, BsPlayCircle } from "react-icons/bs";
 import { Course, Bundle } from "../_lib/types";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 
@@ -19,7 +18,6 @@ const truncateText = (text: string, maxLength: number): string => {
   return text.substring(0, maxLength - 3) + "...";
 };
 
-// Simple placeholder when no thumbnail (gradient with initials)
 const getPlaceholderSrc = (title: string): string => {
   const words = title.replace(/[^\w\s]/g, "").split(/\s+/).filter(Boolean);
   const initials =
@@ -50,228 +48,223 @@ function getBundleThumbnail(bundle: Bundle): string {
   );
 }
 
-// Custom arrow components for world-class navigation
-function PrevArrow(props: { onClick?: () => void }) {
-  const { onClick } = props;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Previous slide"
-      className="featured-slider-prev absolute left-4 md:left-6 z-20 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl hover:bg-white/20 hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple focus:ring-offset-2 focus:ring-offset-transparent"
-    >
-      <BsChevronLeft className="w-6 h-6 md:w-7 md:h-7" />
-    </button>
-  );
-}
-
-function NextArrow(props: { onClick?: () => void }) {
-  const { onClick } = props;
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label="Next slide"
-      className="featured-slider-next absolute right-4 md:right-6 z-20 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl hover:bg-white/20 hover:scale-110 active:scale-95 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple focus:ring-offset-2 focus:ring-offset-transparent"
-    >
-      <BsChevronRight className="w-6 h-6 md:w-7 md:h-7" />
-    </button>
-  );
-}
+type Slide =
+  | { type: "bundle"; data: Bundle }
+  | { type: "course"; data: Course };
 
 export default function FeaturedCourseSlider({
   featuredBundle,
   recentCourse,
 }: FeaturedCourseSliderProps) {
-  const slides = useMemo(() => {
-    const items: Array<{ type: "bundle"; data: Bundle } | { type: "course"; data: Course }> = [];
+  const slides = useMemo<Slide[]>(() => {
+    const items: Slide[] = [];
     if (featuredBundle) items.push({ type: "bundle", data: featuredBundle });
     if (recentCourse) items.push({ type: "course", data: recentCourse });
     return items;
   }, [featuredBundle, recentCourse]);
 
-  const settings = {
-    dots: true,
-    infinite: slides.length > 1,
-    speed: 800,
-    cssEase: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 6000,
-    arrows: true,
-    fade: false,
-    pauseOnHover: true,
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    appendDots: (dots: React.ReactNode) => (
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center z-10">
-        <ul className="flex items-center gap-2 m-0 p-0 list-none">{dots}</ul>
-      </div>
-    ),
-    customPaging: () => (
-      <span className="block w-2 h-2 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 cursor-pointer" />
-    ),
-  };
+  const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState<"next" | "prev">("next");
+  const [animating, setAnimating] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const DURATION = 6000;
+
+  const goTo = useCallback(
+    (index: number, dir: "next" | "prev") => {
+      if (animating || slides.length <= 1) return;
+      setDirection(dir);
+      setAnimating(true);
+      setTimeout(() => {
+        setActive(index);
+        setAnimating(false);
+      }, 550);
+    },
+    [animating, slides.length]
+  );
+
+  const next = useCallback(() => {
+    goTo((active + 1) % slides.length, "next");
+  }, [active, slides.length, goTo]);
+
+  const prev = useCallback(() => {
+    goTo((active - 1 + slides.length) % slides.length, "prev");
+  }, [active, slides.length, goTo]);
+
+  useEffect(() => {
+    if (slides.length <= 1 || paused) return;
+    timerRef.current = setTimeout(next, DURATION);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [active, paused, slides.length, next]);
 
   if (slides.length === 0) return null;
 
+  const slide = slides[active];
+  const isBundle = slide.type === "bundle";
+  const data = slide.data;
+  const thumb = isBundle
+    ? getBundleThumbnail(data as Bundle)
+    : getCourseThumbnail(data as Course);
+  const href = isBundle
+    ? (data as Bundle).url || `/bundle/${data.id}`
+    : `/course-details/${data.id}`;
+  const desc = truncateText((data as Course | Bundle).short_description || "", 150);
+  const label = isBundle ? "বান্ডেল" : "কোর্স";
+  const isVideo = isBundle && !!(data as Bundle).intro_video;
+
+  // Progress bar key forces remount on slide change
+  const progressKey = `${active}-${paused}`;
+
   return (
     <>
-      <style jsx global>{`
-        .featured-hero-slider {
-          position: relative;
+      <style>{`
+        @keyframes fcs-in-next {
+          from { opacity: 0; transform: translateX(48px) scale(0.98); }
+          to   { opacity: 1; transform: translateX(0)   scale(1); }
         }
-        .featured-hero-slider .slick-slider {
-          height: 100% !important;
-          position: relative;
+        @keyframes fcs-in-prev {
+          from { opacity: 0; transform: translateX(-48px) scale(0.98); }
+          to   { opacity: 1; transform: translateX(0)    scale(1); }
         }
-        .featured-hero-slider .slick-list {
-          height: 100% !important;
-          min-height: 340px;
+        @keyframes fcs-out-next {
+          from { opacity: 1; transform: translateX(0)    scale(1); }
+          to   { opacity: 0; transform: translateX(-48px) scale(0.98); }
         }
-        .featured-hero-slider .slick-track {
-          height: 100% !important;
-          display: flex !important;
+        @keyframes fcs-out-prev {
+          from { opacity: 1; transform: translateX(0)   scale(1); }
+          to   { opacity: 0; transform: translateX(48px) scale(0.98); }
         }
-        .featured-hero-slider .slick-slide {
-          height: 100%;
-          float: none !important;
-          width: 100% !important;
+        @keyframes fcs-progress {
+          from { width: 0%; }
+          to   { width: 100%; }
         }
-        .featured-hero-slider .slick-slide > div {
-          height: 100%;
-        }
-        .featured-hero-slider .slick-dots {
-          position: absolute !important;
-          bottom: 1.5rem;
-          left: 0;
-          right: 0;
-        }
-        .featured-hero-slider .slick-dots li {
-          width: auto;
-          height: auto;
-          margin: 0 4px;
-        }
-        .featured-hero-slider .slick-dots li.slick-active span {
-          width: 24px;
-          border-radius: 4px;
-          background: rgba(255, 255, 255, 0.95);
-        }
-        .featured-hero-slider .slick-dots li span {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.4);
-          transition: width 0.3s ease, background 0.3s ease;
-        }
-        .featured-hero-slider .slick-prev,
-        .featured-hero-slider .slick-next {
-          position: absolute !important;
-          top: 50% !important;
-          transform: translateY(-50%) !important;
-          z-index: 20;
-        }
-        .featured-hero-slider .slick-prev {
-          left: 1rem;
-        }
-        .featured-hero-slider .slick-next {
-          right: 1rem;
-        }
+        .fcs-slide-in-next  { animation: fcs-in-next  0.55s cubic-bezier(0.33,1,0.68,1) forwards; }
+        .fcs-slide-in-prev  { animation: fcs-in-prev  0.55s cubic-bezier(0.33,1,0.68,1) forwards; }
+        .fcs-slide-out-next { animation: fcs-out-next 0.55s cubic-bezier(0.33,1,0.68,1) forwards; }
+        .fcs-slide-out-prev { animation: fcs-out-prev 0.55s cubic-bezier(0.33,1,0.68,1) forwards; }
+        .fcs-progress-bar { animation: fcs-progress ${DURATION}ms linear forwards; }
       `}</style>
-      <div className="my-10 rounded-2xl overflow-hidden shadow-2xl border border-gray-200/50 dark:border-gray-700/50 featured-hero-slider group flex flex-col h-[58vh] min-h-[340px] sm:h-[62vh] sm:min-h-[400px] md:h-[68vh] md:min-h-[460px] lg:h-[72vh] lg:min-h-[520px] xl:h-[75vh] xl:min-h-[560px]">
-        <div className="flex-1 min-h-0 w-full relative">
-          <Slider {...settings} className="h-full w-full">
-          {slides.map((slide) => {
-            if (slide.type === "bundle") {
-              const bundle = slide.data;
-              const href = bundle.url || `/bundle/${bundle.id}`;
-              const thumb = getBundleThumbnail(bundle);
-              const desc = truncateText(bundle.short_description || "", 160);
-              return (
-                <div key={`bundle-${bundle.id}`} className="relative outline-none h-full min-h-[340px]">
-                  <Link
-                    href={href}
-                    className="block relative w-full h-full min-h-[340px]"
-                  >
-                    <div className="absolute inset-0 w-full h-full">
-                      <Image
-                        src={thumb}
-                        alt={bundle.title}
-                        fill
-                        className="object-cover object-center transition-transform duration-[800ms] ease-out group-hover:scale-[1.02]"
-                        sizes="(max-width: 1024px) 100vw, 1440px"
-                        unoptimized={thumb.startsWith("data:")}
-                        priority
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-10 lg:p-12 text-white">
-                      <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold bg-purple/90 rounded-full border border-white/10">
-                        বান্ডেল
-                      </span>
-                      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-md tracking-tight">
-                        {bundle.title}
-                      </h2>
-                      {desc && (
-                        <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-2xl mb-5 line-clamp-2 leading-relaxed">
-                          {desc}
-                        </p>
-                      )}
-                      <span className="inline-flex items-center gap-2 text-sm md:text-base font-semibold text-purple-200 hover:text-white transition-all duration-300 group/cta">
-                        বিস্তারিত দেখুন
-                        <BsChevronRight className="w-5 h-5 transition-transform duration-300 group-hover/cta:translate-x-1" />
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              );
-            }
-            const course = slide.data;
-            const href = `/course-details/${course.id}`;
-            const thumb = getCourseThumbnail(course);
-            const desc = truncateText(course.short_description || "", 160);
-            return (
-              <div key={`course-${course.id}`} className="relative outline-none h-full min-h-[340px]">
-                <Link
-                  href={href}
-                  className="block relative w-full h-full min-h-[340px]"
-                >
-                  <div className="absolute inset-0 w-full h-full">
-                    <Image
-                      src={thumb}
-                      alt={course.title}
-                      fill
-                      className="object-cover object-center transition-transform duration-[800ms] ease-out group-hover:scale-[1.02]"
-                      sizes="(max-width: 1024px) 100vw, 1440px"
-                      unoptimized={thumb.startsWith("data:")}
-                      priority
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-10 lg:p-12 text-white">
-                    <span className="inline-block px-3 py-1 mb-3 text-xs font-semibold bg-purple/90 rounded-full border border-white/10">
-                      কোর্স
-                    </span>
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-md tracking-tight">
-                      {course.title}
-                    </h2>
-                    {desc && (
-                      <p className="text-white/90 text-sm sm:text-base md:text-lg max-w-2xl mb-5 line-clamp-2 leading-relaxed">
-                        {desc}
-                      </p>
-                    )}
-                    <span className="inline-flex items-center gap-2 text-sm md:text-base font-semibold text-purple-200 hover:text-white transition-all duration-300 group/cta">
-                      বিস্তারিত দেখুন
-                      <BsChevronRight className="w-5 h-5 transition-transform duration-300 group-hover/cta:translate-x-1" />
-                    </span>
-                  </div>
-                </Link>
-              </div>
-            );
-          })}
-          </Slider>
+
+      <div
+        className="relative rounded-3xl overflow-hidden shadow-[0_20px_60px_-10px_rgba(139,92,246,0.25)] border border-white/10 dark:border-white/5 select-none"
+        style={{ aspectRatio: "16/7", minHeight: 300, maxHeight: 620 }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        {/* Slide content */}
+        <div
+          key={active}
+          className={`absolute inset-0 ${animating ? (direction === "next" ? "fcs-slide-out-next" : "fcs-slide-out-prev") : (direction === "next" ? "fcs-slide-in-next" : "fcs-slide-in-prev")}`}
+        >
+          <Image
+            src={thumb}
+            alt={data.title}
+            fill
+            className="object-cover object-center"
+            sizes="(max-width: 1024px) 100vw, 1440px"
+            unoptimized={thumb.startsWith("data:")}
+            priority
+          />
+
+          {/* Multi-layer gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+
+          {/* Content */}
+          <Link
+            href={href}
+            className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 md:p-12 lg:p-14 group/link focus:outline-none"
+            tabIndex={0}
+          >
+            {/* Badge row */}
+            <div className="flex items-center gap-3 mb-3 sm:mb-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-purple/80 text-white backdrop-blur-sm border border-purple/30 shadow-lg">
+                {isVideo && <BsPlayCircle className="w-3 h-3" />}
+                {label}
+              </span>
+              {isBundle && (data as Bundle).course_count > 0 && (
+                <span className="text-[11px] sm:text-xs text-white/60 font-medium">
+                  {(data as Bundle).course_count}টি কোর্স
+                </span>
+              )}
+            </div>
+
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white mb-2 sm:mb-3 leading-tight drop-shadow-lg max-w-[65%] tracking-tight">
+              {data.title}
+            </h2>
+
+            {desc && (
+              <p className="text-white/75 text-xs sm:text-sm md:text-base max-w-xl mb-4 sm:mb-5 line-clamp-2 leading-relaxed">
+                {desc}
+              </p>
+            )}
+
+            <span className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-purple-200 group-hover/link:text-white group-hover/link:gap-3 transition-all duration-300">
+              বিস্তারিত দেখুন
+              <BsChevronRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover/link:translate-x-1" />
+            </span>
+          </Link>
         </div>
+
+        {/* Nav arrows — only when multiple slides */}
+        {slides.length > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); prev(); }}
+              aria-label="Previous slide"
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple"
+            >
+              <BsChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); next(); }}
+              aria-label="Next slide"
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple"
+            >
+              <BsChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            </button>
+          </>
+        )}
+
+        {/* Bottom controls bar */}
+        {slides.length > 1 && (
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goTo(i, i > active ? "next" : "prev")}
+                aria-label={`Go to slide ${i + 1}`}
+                className={`relative h-1.5 rounded-full overflow-hidden transition-all duration-400 focus:outline-none ${
+                  i === active
+                    ? "w-7 bg-white/30"
+                    : "w-1.5 bg-white/30 hover:bg-white/50"
+                }`}
+              >
+                {i === active && !paused && (
+                  <span
+                    key={progressKey}
+                    className="fcs-progress-bar absolute inset-y-0 left-0 bg-white rounded-full"
+                  />
+                )}
+                {i === active && paused && (
+                  <span className="absolute inset-y-0 left-0 w-full bg-white/70 rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Slide counter top-right */}
+        {slides.length > 1 && (
+          <div className="absolute top-4 right-4 z-20 text-[11px] font-semibold text-white/50 tabular-nums tracking-wide select-none">
+            {active + 1} / {slides.length}
+          </div>
+        )}
       </div>
     </>
   );

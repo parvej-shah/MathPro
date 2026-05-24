@@ -2,6 +2,8 @@ export { default as FeaturedCourseSlider } from "./FeaturedCourseSlider";
 export { default as HeroStatsStrip } from "./HeroStatsStrip";
 export { default as CourseSearchBar } from "./CourseSearchBar";
 export { default as StickyFilters } from "./StickyFilters";
+export { default as CourseCard } from "./CourseCard";
+export { default as LandingStyleCourseCard } from "./LandingStyleCourseCard";
 export { default as PremiumCourseCard } from "./PremiumCourseCard";
 export { default as PremiumBundleCard } from "./PremiumBundleCard";
 export { default as TeacherSlider } from "./TeacherSlider";

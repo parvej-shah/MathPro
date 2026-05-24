@@ -9,8 +9,6 @@ import { UserContext } from "@/Contexts/UserContext";
 import { isLoggedIn } from "@/helpers";
 import { CourseDetailsSkeleton } from "@/components/Skeletons";
 import Link from "next/link";
-import Footer from "@/components/footer";
-import FloatingCompiler from "@/components/FloatingCompiler";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import AuthTest from "@/components/AuthTest";
 import toast, { Toaster } from "react-hot-toast";
@@ -21,7 +19,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import Image from "next/image";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 
-// Components
+// Componentsz
 import {
   PrebookCourseDialog,
   PrebookSuccessDialog,
@@ -39,13 +37,14 @@ import {
 import CheckoutModal from "@/components/CheckoutModal";
 import CouponInput from "@/components/CouponInput";
 import type { CouponApplyResponse } from "@/services/couponService";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 
 // Types
 import { TabState, PrebookingData } from "@/features/course-details/_lib/types";
 import { englishToBanglaNumbers } from "@/helpers";
 import { useLmsPreference } from "@/hooks/useLmsPreference";
 import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
+import Footer from "@/components/footer";
 
 export default function CourseDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -334,8 +333,6 @@ export default function CourseDetailsPage() {
       {/* Main Content */}
       {!loading && courseId && courseData && !error && (
         <>
-          <FloatingCompiler />
-
           {/* Dialogs */}
           {courseData && (
             <CheckoutModal

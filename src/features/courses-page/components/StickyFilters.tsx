@@ -13,35 +13,36 @@ export default function StickyFilters({
   onCategoryChange,
 }: StickyFiltersProps) {
   return (
-    <div className="sticky top-20 z-30 py-4 -mx-4 px-4 bg-background/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-border/20">
-      <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-1">
-        {categories.map((category) => (
-          <button
-            key={category.id}
-            onClick={() => onCategoryChange(category.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-              selectedCategory === category.id
-                ? "bg-purple text-white shadow-lg shadow-purple/25"
-                : "bg-muted/50 text-paragraph dark:text-darkParagraph hover:bg-muted"
-            }`}
-          >
-            {category.label}
-            {category.count !== undefined && (
-              <span
-                className={`px-2 py-0.5 rounded-full text-xs ${
-                  selectedCategory === category.id
-                    ? "bg-white/20 text-white"
-                    : "bg-gray-200/80 dark:bg-muted/50 text-paragraph dark:text-darkParagraph"
-                }`}
-              >
-                {category.count}
-              </span>
-            )}
-          </button>
-        ))}
+    <div className="sticky top-20 z-30 py-3 mb-6 -mx-4 px-4 bg-section-a/90 backdrop-blur-xl border-b border-border">
+      <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide">
+        {categories.map((category) => {
+          const isActive = selectedCategory === category.id;
+          return (
+            <button
+              key={category.id}
+              onClick={() => onCategoryChange(category.id)}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                  : "bg-card text-paragraph border border-border hover:border-primary/40 hover:text-primary"
+              }`}
+            >
+              <span>{category.label}</span>
+              {category.count !== undefined && (
+                <span
+                  className={`min-w-5 h-5 px-1.5 flex items-center justify-center rounded-full text-xs font-bold leading-none ${
+                    isActive
+                      ? "bg-white/25 text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  {category.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
 }
-
-

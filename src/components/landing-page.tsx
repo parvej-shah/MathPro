@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import LandingStyleCourseCard from "@/features/courses-page/components/LandingStyleCourseCard";
+import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
 import Footer from "@/components/footer";
 import Nav from "@/components/Nav";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,7 +23,6 @@ import {
   FlaskConical,
   Laptop,
   Users,
-  Quote,
   ArrowUpRight,
   HelpCircle,
   MessageCircle,
@@ -268,10 +269,10 @@ const groupedCourses = [
     items: [
       {
         title: "অষ্টম শ্রেণি | গণিত মাস্টারব্যাচ ২০২৬",
-        desc: "অষ্টম শ্রেণির গণিত সিলেবাসের প্রতিটি অধ্যায় বেসিক থেকে অ্যাডভান্স লেভেলে শেখানো হবে। জয় করো গণিতভীতি।",
+        desc: "অষ্টম শ্রেণির গণিত সিলেবাসের প্রতিটি অধ্যায় বেসিক থেকে অ্যাডভান্স লেভেলে শেখানো হবে। জয় করো গণিতভীতি।",
         tags: ["Class 8", "Math", "Foundation"],
-        price: "১৫০০/-",
-        gradient: "from-[#0f172a] via-[#1e3a8a] to-[#312e81]",
+        price: 1500,
+        href: "/courses",
       }
     ]
   },
@@ -281,24 +282,24 @@ const groupedCourses = [
     items: [
       {
         title: "(উচ্চতর গণিত ১ম পত্র) | প্রিলিমিনারি টু প্রো ব্যাচ",
-        desc: "এইচএসসি উচ্চতর গণিত ১ম পত্রের প্রতিটি বিষয় এবং টাইপওয়াইজ ম্যাথ সলভিং এর জন্য সেরা কোর্স।",
+        desc: "এইচএসসি উচ্চতর গণিত ১ম পত্রের প্রতিটি বিষয় এবং টাইপওয়াইজ ম্যাথ সলভিং এর জন্য সেরা কোর্স।",
         tags: ["HSC Math", "1st Paper"],
-        price: "৩০০০/-",
-        gradient: "from-[#4c1d95] via-[#581c87] to-[#701a75]",
+        price: 3000,
+        href: "/courses",
       },
       {
-        title: "(উচ্চতর গণিত ২য় পত্র) | মাস্টার ক্লাস এইচএসসি",
-        desc: "এইচএসসি ২য় পত্রের জটিল বিষয়গুলোকে সহজ টেকনিক এবং ভিজ্যুয়ালাইজেশনের মাধ্যমে শেখানো হবে।",
+        title: "(উচ্চতর গণিত ২য় পত্র) | মাস্টার ক্লাস এইচএসসি",
+        desc: "এইচএসসি ২য় পত্রের জটিল বিষয়গুলোকে সহজ টেকনিক এবং ভিজ্যুয়ালাইজেশনের মাধ্যমে শেখানো হবে।",
         tags: ["HSC Math", "2nd Paper"],
-        price: "৩০০০/-",
-        gradient: "from-[#7f1d1d] via-[#991b1b] to-[#450a0a]",
+        price: 3000,
+        href: "/courses",
       },
       {
-        title: "(গণিত ১ম ও ২য় পত্র) কম্বো | বোর্ড স্ট্যান্ডার্ড কোর্স",
+        title: "(গণিত ১ম ও ২য় পত্র) কম্বো | বোর্ড স্ট্যান্ডার্ড কোর্স",
         desc: "এইচএসসি গণিতের পূর্ণাঙ্গ সিলেবাস একসাথে শেষ করতে আমাদের এই স্পেশাল কম্বো প্যাক।",
         tags: ["Combo", "HSC Special"],
-        price: "৫০০০/-",
-        gradient: "from-[#db2777] via-[#be185d] to-[#831843]",
+        price: 5000,
+        href: "/courses",
       }
     ]
   },
@@ -310,22 +311,22 @@ const groupedCourses = [
         title: "সাধারণ গণিত | এসএসসি ২০২৫ স্পেশাল ব্যাচ",
         desc: "এসএসসি ২০২৫ পরীক্ষার্থীদের জন্য সাধারণ গণিতের ফুল সিলেবাস রিভিশন এবং টেস্ট পেপার সলভিং কোর্স।",
         tags: ["General Math", "SSC 2025"],
-        price: "২০০০/-",
-        gradient: "from-[#1d4ed8] via-[#2563eb] to-[#3b82f6]",
+        price: 2000,
+        href: "/courses",
       },
       {
         title: "উচ্চতর গণিত | এসএসসি ২০২৫ টার্গেট এ+",
-        desc: "উচ্চতর গণিতের কঠিন কনসেপ্টগুলোকে সহজ করে আয়ত্ত করতে এবং এ+ নিশ্চিত করতে এই কোর্সটি অনন্য।",
+        desc: "উচ্চতর গণিতের কঠিন কনসেপ্টগুলোকে সহজ করে আয়ত্ত করতে এবং এ+ নিশ্চিত করতে এই কোর্সটি অনন্য।",
         tags: ["Higher Math", "SSC 2025"],
-        price: "২০০০/-",
-        gradient: "from-[#047857] via-[#059669] to-[#10b981]",
+        price: 2000,
+        href: "/courses",
       },
       {
-        title: "গণিত অলিম্পিয়াড প্রিপারেশন | স্কুল লেভেল",
-        desc: "যেকোনো গণিত প্রতিযোগিতায় ভালো করতে এবং গাণিতিক মেধা বিকাশে এই কোর্সটি ডিজাইন করা হয়েছে।",
+        title: "গণিত অলিম্পিয়াড প্রিপারেশন | স্কুল লেভেল",
+        desc: "যেকোনো গণিত প্রতিযোগিতায় ভালো করতে এবং গাণিতিক মেধা বিকাশে এই কোর্সটি ডিজাইন করা হয়েছে।",
         tags: ["Olympisd", "Academic"],
-        price: "১৫০০/-",
-        gradient: "from-[#4338ca] via-[#4f46e5] to-[#6366f1]",
+        price: 1500,
+        href: "/courses",
       }
     ]
   }
@@ -389,7 +390,6 @@ const faqs = [
 
 export function LandingPage() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
-  const [reviewRef, reviewApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }, [Autoplay({ delay: 4000, stopOnInteraction: true })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
@@ -541,9 +541,9 @@ export function LandingPage() {
       {/* --- CLASS CATEGORIES --- */}
       <section className="py-24 bg-[#f4f7fe] relative border-b border-slate-100 overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold rotate-12 select-none pointer-events-none">∫</div>
-        <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold -rotate-12 select-none pointer-events-none">π</div>
-        <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold rotate-45 select-none pointer-events-none">√</div>
+        <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}>∫</div>
+        <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-9px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDelay: "-5s", animationDuration: "16s" }}>π</div>
+        <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "45deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-9s", animationDuration: "13s" }}>√</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-2xl mx-auto mb-16 relative z-[45]">
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-[#00b5cc] font-heading">
@@ -580,8 +580,8 @@ export function LandingPage() {
       {/* --- VALUE PROP SECTION --- */}
       <section id="features" className="py-28 bg-white relative overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-50 font-serif font-black -rotate-12 select-none pointer-events-none leading-none">∑</div>
-        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-50/80 font-serif font-black rotate-12 select-none pointer-events-none leading-none">∞</div>
+        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-50 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
+        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-50/80 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">কেন MathPro বেছে নিবে?</h2>
@@ -647,78 +647,18 @@ export function LandingPage() {
                 {/* Cards Grid */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
                   {group.items.slice(0, 3).map((course, idx) => (
-                    <motion.div
+                    <LandingStyleCourseCard
                       key={idx}
-                      whileHover={{ y: -8 }}
-                      className="group bg-white rounded-3xl overflow-hidden border border-slate-100/80 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col relative z-[45]"
-                    >
-                      {/* Fake Thumbnail Banner */}
-                      <div className={`h-48 w-full bg-gradient-to-tr ${course.gradient} p-6 relative overflow-hidden flex flex-col justify-center items-center text-center`}>
-                        <div className="absolute inset-0 bg-black/10 mix-blend-overlay"></div>
-                        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
-                        <h4 className="text-white font-extrabold text-xl lg:text-2xl z-10 leading-tight font-heading drop-shadow-md">
-                          {course.title.split('|')[0].trim()}
-                        </h4>
-
-                        <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md size-8 flex items-center justify-center rounded-xl z-20 font-bold text-white text-xs">
-                          MathPro
-                        </div>
-                      </div>
-
-                      {/* Content */}
-                      <div className="p-7 flex flex-col flex-1 bg-white">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
-                          <div className="flex flex-wrap gap-2">
-                            {course.tags.map((tag, tIdx) => (
-                              <span key={tIdx} className="px-3 py-1.5 bg-[#f1f5f9] text-[#475569] rounded-lg text-[10px] font-extrabold uppercase tracking-widest border border-slate-200/50">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                          {course.price && (
-                            <div className="shrink-0 inline-flex items-center rounded-full bg-rose-50 text-rose-700 text-[12px] font-extrabold px-3.5 py-1.5 border border-rose-200 shadow-sm">
-                              {course.price}
-                            </div>
-                          )}
-                        </div>
-
-                        <h4 className="font-extrabold text-[1.1rem] text-slate-900 leading-snug mb-3 font-heading group-hover:text-[#059669] transition-colors">
-                          {course.title}
-                        </h4>
-                        <p className="text-[14px] font-medium text-slate-500 mb-8 leading-relaxed line-clamp-3 flex-1">
-                          {course.desc}
-                        </p>
-
-                        {/* CTA Buttons */}
-                        <div className="mt-auto flex gap-3 pt-5 border-t border-slate-100">
-                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-slate-50 hover:bg-slate-900 text-slate-600 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-slate-200 hover:border-slate-900 hover:shadow-lg hover:shadow-slate-900/20 hover:-translate-y-1">
-                            <div className="p-2 rounded-full bg-slate-200/50 group-hover/btn:bg-white/20 transition-colors">
-                              <PlayCircle className="size-5 text-slate-500 group-hover/btn:text-white transition-colors" />
-                            </div>
-                            রেকর্ডেড
-                          </button>
-
-                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-rose-200 hover:border-rose-600 hover:shadow-lg hover:shadow-rose-600/30 hover:-translate-y-1 relative overflow-hidden">
-                            <div className="absolute top-3 right-3 flex size-2.5 items-center justify-center">
-                              <span className="absolute inline-flex size-5 rounded-full bg-rose-500/25 animate-pulse"></span>
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75 group-hover/btn:bg-white group-hover/btn:opacity-100"></span>
-                              <span className="relative inline-flex rounded-full size-2.5 bg-rose-600 group-hover/btn:bg-white"></span>
-                            </div>
-                            <div className="p-2 rounded-full bg-rose-200/50 group-hover/btn:bg-white/20 transition-colors">
-                              <Video className="size-5 text-rose-600 group-hover/btn:text-white transition-colors" />
-                            </div>
-                            লাইভ
-                          </button>
-
-                          <button className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-[1.25rem] bg-amber-50 hover:bg-[#f59e0b] text-amber-700 hover:text-white text-[13px] font-extrabold transition-all duration-300 group/btn border border-amber-200 hover:border-[#f59e0b] hover:shadow-lg hover:shadow-amber-500/30 hover:-translate-y-1">
-                            <div className="p-2 rounded-full bg-amber-200/50 group-hover/btn:bg-white/20 transition-colors">
-                              <FileText className="size-5 text-amber-600 group-hover/btn:text-white transition-colors" />
-                            </div>
-                            পরীক্ষা
-                          </button>
-                        </div>
-                      </div>
-                    </motion.div>
+                      id={idx}
+                      title={course.title}
+                      description={course.desc}
+                      href={course.href}
+                      price={course.price}
+                      tags={course.tags}
+                      isLive={false}
+                      hasRecorded={true}
+                      hasExam={true}
+                    />
                   ))}
                 </div>
               </div>
@@ -727,72 +667,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* --- STUDENT REVIEWS (CAROUSEL) --- */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        {/* Math Motif Background */}
-        <div className="absolute top-1 -left-10 md:-left-10 text-[12rem] md:text-[25rem] text-emerald-50/80 font-serif font-black select-none pointer-events-none leading-none rotate-12">Δ</div>
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-16 relative z-[45]">
-            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">
-              শিক্ষার্থীদের <span className="text-[#059669]">মতামত</span>
-            </h2>
-            <p className="text-slate-500 text-xl font-medium leading-relaxed">
-              যারা MathPro-এর সাথে যুক্ত হয়েছে, তাদের অভিজ্ঞতা কেমন?
-            </p>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto">
-            <div className="overflow-hidden" ref={reviewRef}>
-              <div className="flex -ml-6 py-4">
-                {reviews.map((review, i) => (
-                  <div key={i} className="flex-[0_0_100%] md:flex-[0_0_50%] lg:flex-[0_0_33.333%] min-w-0 pl-6">
-                    <motion.div
-                      whileHover={{ y: -5 }}
-                      className="bg-[#f8fafc] p-8 md:p-10 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 h-full flex flex-col relative z-[45] overflow-hidden group"
-                    >
-                      <Quote className="absolute top-6 right-6 size-16 text-slate-200/50 rotate-180 group-hover:text-emerald-100/50 transition-colors" />
-                      <div className="flex gap-1.5 mb-6 relative z-10">
-                        {[...Array(review.rating)].map((_, j) => (
-                          <Star key={j} className="size-5 text-amber-400 fill-amber-400" />
-                        ))}
-                      </div>
-                      <p className="text-slate-600 text-lg leading-relaxed font-medium mb-8 flex-1 relative z-10">
-                        &quot;{review.text}&quot;
-                      </p>
-                      <div className="flex items-center gap-4 mt-auto relative z-10 pt-6 border-t border-slate-200/50">
-                        <div className="size-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xl shadow-inner">
-                          {review.name.charAt(0)}
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-slate-900 font-heading text-[17px]">{review.name}</h4>
-                          <p className="text-sm font-medium text-slate-500">{review.school}</p>
-                        </div>
-                      </div>
-                    </motion.div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button
-              onClick={() => reviewApi?.scrollPrev()}
-              className="absolute top-1/2 -left-4 md:-left-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-[45] hidden md:flex"
-            >
-              <ChevronRight className="size-7 rotate-180" />
-            </button>
-            <button
-              onClick={() => reviewApi?.scrollNext()}
-              className="absolute top-1/2 -right-4 md:-right-6 -translate-y-1/2 size-14 bg-white border border-slate-100 rounded-full flex items-center justify-center text-slate-600 hover:text-emerald-600 hover:border-emerald-300 hover:bg-emerald-50 shadow-xl shadow-slate-200/50 transition-all z-[45] hidden md:flex"
-            >
-              <ChevronRight className="size-7" />
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* --- STUDENT REVIEWS (MARQUEE) --- */}
+      <TestimonialMarquee
+        feedbacks={reviews.map((r) => ({
+          name: r.name,
+          bio: r.school,
+          description: r.text,
+          imageUploadedLink: "",
+        }))}
+      />
 
       {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
       <section id="branches" className="py-32 bg-[#fbfdfc] overflow-hidden relative">
         {/* Math Motif Background */}
-        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-slate-100 font-serif font-black select-none pointer-events-none rotate-12 z-0">Ω</div>
+        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-slate-100 font-serif font-black select-none pointer-events-none z-0 animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "16s" }}>Ω</div>
         <div className="container mx-auto px-6 lg:px-12 relative z-[45]">
           <div className="grid lg:grid-cols-2 gap-16 xl:gap-20 items-center max-w-[1400px] mx-auto">
 

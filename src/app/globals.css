@@ -20,6 +20,14 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  /* Semantic content tokens */
+  --color-teal: var(--teal);
+  --color-yellow: var(--yellow);
+  --color-heading: var(--heading);
+  --color-paragraph: var(--paragraph);
+  --color-page-bg: var(--page-bg);
+  --color-section-a: var(--section-a);
+  --color-section-b: var(--section-b);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -59,6 +67,16 @@
 }
 
 :root {
+  /* Semantic content tokens */
+  --teal: oklch(0.65 0.15 185);
+  --yellow: oklch(0.78 0.17 80);
+  --heading: oklch(0.17 0.02 238);
+  --paragraph: oklch(0.40 0.018 238);
+  --page-bg: oklch(0.97 0.006 280);
+  /* Zebra-striped section backgrounds (light/dark adapt). */
+  --section-a: oklch(1 0 0);                 /* near-white */
+  --section-b: oklch(0.965 0.014 250);       /* soft cool tint */
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.17 0.02 238);
   --card: oklch(1 0 0);
@@ -104,6 +122,16 @@
 }
 
 .dark {
+  /* Semantic content tokens — dark */
+  --teal: oklch(0.70 0.14 185);
+  --yellow: oklch(0.82 0.16 80);
+  --heading: oklch(0.97 0 0);
+  --paragraph: oklch(0.72 0 0);
+  --page-bg: oklch(0.145 0 0);
+  /* Dark mode zebra stripes */
+  --section-a: oklch(0.165 0.006 250);
+  --section-b: oklch(0.195 0.008 250);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -123,7 +151,6 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  /* ring uses brand emerald, not grey */
   --ring: oklch(0.62 0.13 160);
   /* semantic tokens — slightly brighter for dark backgrounds */
   --success: oklch(0.72 0.16 155);
@@ -140,7 +167,6 @@
   --chart-5: oklch(0.70 0.18 20);
   --sidebar: oklch(0.185 0.008 160);
   --sidebar-foreground: oklch(0.985 0 0);
-  /* sidebar primary stays emerald, not purple */
   --sidebar-primary: oklch(0.718 0.147 159.2);
   --sidebar-primary-foreground: oklch(0.12 0.02 160);
   --sidebar-accent: oklch(0.24 0.012 160);
@@ -170,5 +196,41 @@
   ::selection {
     background-color: oklch(0.718 0.147 159.2 / 25%);
     color: inherit;
+  }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+.animate-marquee-reverse {
+  animation: marquee-reverse 40s linear infinite;
+}
+
+/* Subtle floating motion for decorative math motifs */
+@keyframes motif-float {
+  0%, 100% {
+    transform: translate(0, 0) rotate(var(--motif-rot, 0deg));
+  }
+  50% {
+    transform: translate(var(--motif-tx, 8px), var(--motif-ty, -12px)) rotate(calc(var(--motif-rot, 0deg) + var(--motif-dr, 2deg)));
+  }
+}
+
+.animate-motif-float {
+  animation: motif-float 12s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-motif-float {
+    animation: none;
   }
 }
