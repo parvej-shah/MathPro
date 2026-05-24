@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -12,6 +14,12 @@
   --font-heading: var(--font-anek-bangla);
   --font-bengali: var(--font-anek-bangla);
   --font-manrope: var(--font-manrope);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -59,21 +67,31 @@
   --popover-foreground: oklch(0.17 0.02 238);
   --primary: oklch(0.718 0.147 159.2);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.7 0.19 45);
-  --secondary-foreground: oklch(1 0 0);
+  /* secondary: warm amber — distinguishable from orange accent */
+  --secondary: oklch(0.92 0.06 95);
+  --secondary-foreground: oklch(0.35 0.06 60);
   --muted: oklch(0.94 0.014 238);
   --muted-foreground: oklch(0.46 0.025 238);
+  /* accent: vivid orange — call-to-action highlights */
   --accent: oklch(0.7 0.19 45);
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.88 0.018 238);
   --input: oklch(0.88 0.018 238);
   --ring: oklch(0.62 0.13 160);
+  /* semantic tokens for LMS (progress, alerts, badges) */
+  --success: oklch(0.68 0.15 155);
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.78 0.17 75);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --info: oklch(0.62 0.14 230);
+  --info-foreground: oklch(1 0 0);
+  /* brand chart palette: emerald → amber → sky → violet → rose */
   --chart-1: oklch(0.62 0.16 160);
-  --chart-2: oklch(0.78 0.16 82);
-  --chart-3: oklch(0.65 0.12 230);
-  --chart-4: oklch(0.58 0.12 25);
-  --chart-5: oklch(0.47 0.07 238);
+  --chart-2: oklch(0.75 0.17 75);
+  --chart-3: oklch(0.62 0.14 230);
+  --chart-4: oklch(0.60 0.16 295);
+  --chart-5: oklch(0.62 0.18 20);
   --radius: 0.5rem;
   --sidebar: oklch(0.985 0.012 95);
   --sidebar-foreground: oklch(0.17 0.02 238);
@@ -93,30 +111,42 @@
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.718 0.147 159.2);
-  --primary-foreground: oklch(0.2 0.02 240); /* Keep it dark since emerald is bright */
-  --secondary: oklch(0.7 0.19 45);
-  --secondary-foreground: oklch(0.2 0.02 240);
+  --primary-foreground: oklch(0.12 0.02 160);
+  /* secondary: muted amber tint on dark */
+  --secondary: oklch(0.28 0.05 80);
+  --secondary-foreground: oklch(0.88 0.06 85);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
+  /* accent: vivid orange unchanged */
   --accent: oklch(0.7 0.19 45);
-  --accent-foreground: oklch(0.2 0.02 240);
+  --accent-foreground: oklch(0.12 0.02 45);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
+  /* ring uses brand emerald, not grey */
+  --ring: oklch(0.62 0.13 160);
+  /* semantic tokens — slightly brighter for dark backgrounds */
+  --success: oklch(0.72 0.16 155);
+  --success-foreground: oklch(0.12 0.02 155);
+  --warning: oklch(0.82 0.16 75);
+  --warning-foreground: oklch(0.15 0.03 60);
+  --info: oklch(0.66 0.14 230);
+  --info-foreground: oklch(0.12 0.02 230);
+  /* brand chart palette (same hues, brighter for dark bg) */
+  --chart-1: oklch(0.72 0.18 160);
+  --chart-2: oklch(0.78 0.17 75);
+  --chart-3: oklch(0.68 0.15 230);
+  --chart-4: oklch(0.66 0.17 295);
+  --chart-5: oklch(0.70 0.18 20);
+  --sidebar: oklch(0.185 0.008 160);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  /* sidebar primary stays emerald, not purple */
+  --sidebar-primary: oklch(0.718 0.147 159.2);
+  --sidebar-primary-foreground: oklch(0.12 0.02 160);
+  --sidebar-accent: oklch(0.24 0.012 160);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.62 0.13 160);
 }
 
 @layer base {
@@ -131,5 +161,14 @@
   }
   html {
     @apply font-sans;
+  }
+  /* brand-coloured keyboard focus ring */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring rounded-sm;
+  }
+  /* brand-tinted text selection */
+  ::selection {
+    background-color: oklch(0.718 0.147 159.2 / 25%);
+    color: inherit;
   }
 }

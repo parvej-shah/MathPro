@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Footer } from "@/components/footer";
+import Footer from "@/components/footer";
+import Nav from "@/components/Nav";
 import { motion, AnimatePresence } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -390,7 +391,6 @@ export function LandingPage() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
   const [reviewRef, reviewApi] = useEmblaCarousel({ loop: true, align: "start", slidesToScroll: 1 }, [Autoplay({ delay: 4000, stopOnInteraction: true })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const onSelect = useCallback(() => {
@@ -404,36 +404,13 @@ export function LandingPage() {
     emblaApi.on("reInit", onSelect);
   }, [emblaApi, onSelect]);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <div className="min-h-screen bg-emerald-50/30 font-sans text-slate-900 overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 relative z-0">
       {/* Global subtle graph paper grid overlay */}
       <div className="fixed inset-0 z-[40] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* --- STICKY NAVBAR --- */}
-      <nav className={`fixed top-0 left-0 w-full z-[100] flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm py-4" : "bg-transparent border-b border-white/10 py-6"
-        }`}>
-        <div className="flex items-center gap-2 md:gap-3 group/logo cursor-pointer">
-          <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">M</div>
-          <span className={`text-2xl md:text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400`}>MATHPRO</span>
-        </div>
-        <div className={`hidden md:flex gap-10 text-lg font-bold transition-colors ${isScrolled ? "text-slate-600" : "text-white/90"}`}>
-          <a href="#courses" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>কোর্সসমূহ</a>
-          <a href="#features" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>বৈশিষ্ট্য</a>
-          <a href="#branches" className={`transition-colors ${isScrolled ? "hover:text-emerald-600" : "hover:text-emerald-400"}`}>শাখাসমূহ</a>
-        </div>
-        <button className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${isScrolled ? "bg-emerald-500 text-white hover:bg-emerald-600" : "bg-white text-slate-900 hover:bg-emerald-50"
-          }`}>
-          লগইন
-        </button>
-      </nav>
+      <Nav mode="landing" />
 
       {/* --- HERO CAROUSEL --- */}
       <section className="relative h-[100dvh] min-h-[700px] w-full bg-slate-950 overflow-hidden">

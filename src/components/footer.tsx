@@ -32,7 +32,7 @@ const footerLinks = [
   },
 ];
 
-export function Footer() {
+export default function Footer() {
   return (
     <footer className="bg-slate-950 text-slate-200 selection:bg-emerald-500 selection:text-white border-t border-slate-900">
       {/* Top Grid Section */}
