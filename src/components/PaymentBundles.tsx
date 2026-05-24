@@ -11,8 +11,8 @@ const PaymentBundles: React.FC<PaymentBundlesProps> = ({ bundles }) => {
   const [expandedBundles, setExpandedBundles] = useState<Set<number>>(new Set());
   const { lmsPreference } = useLmsPreference();
   const getCourseUrl = (courseId: number) =>
-    lmsPreference === 'locked' && isLmsPreferenceCourse(courseId)
-      ? getCpLmsUrlForCourse(courseId)
+    lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
+      ? getCpLmsUrlForCourse(String(courseId))
       : `/course/${courseId}`;
 
   const formatCurrency = (amount: number) => {

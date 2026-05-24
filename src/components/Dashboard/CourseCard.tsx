@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { BsPlayFill, BsArrowRight, BsCollectionPlay } from 'react-icons/bs';
-import { EnrolledCourse } from '@/data/dashboardMockData';
+import { EnrolledCourse } from './DashboardPage/types';
 
 interface CourseCardProps {
     course: EnrolledCourse;

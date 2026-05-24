@@ -28,7 +28,7 @@ export default function LmsPreferenceModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}} dismissible={false}>
+    <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent
         showCloseButton={false}
         overlayClassName="bg-black/60 backdrop-blur-sm"

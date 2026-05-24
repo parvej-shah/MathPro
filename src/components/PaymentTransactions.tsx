@@ -11,8 +11,8 @@ const PaymentTransactions: React.FC<PaymentTransactionsProps> = ({ transactions 
   const { lmsPreference } = useLmsPreference();
   const getCourseHref = (itemType: string, courseId?: number, bundleId?: number) => {
     if (itemType === 'course' && courseId != null)
-      return lmsPreference === 'locked' && isLmsPreferenceCourse(courseId)
-        ? getCpLmsUrlForCourse(courseId)
+      return lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
+        ? getCpLmsUrlForCourse(String(courseId))
         : `/course/${courseId}`;
     if (itemType === 'bundle' && bundleId != null) return `/bundle/${bundleId}`;
     return '#';

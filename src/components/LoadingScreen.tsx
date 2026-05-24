@@ -8,7 +8,7 @@ export default function LoadingScreen({}: Props) {
   const [user] = useContext<any>(UserContext);
 
   return (
-    <Dialog.Root open={user.loading} dismissible={false}>
+    <Dialog.Root open={user.loading}>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-100 bg-foreground/75 transition-opacity duration-300 data-starting-style:opacity-0 data-ending-style:opacity-0" />
         <Dialog.Popup className="fixed inset-0 z-101 flex items-center justify-center bg-[#0B060D]/50 backdrop-blur-lg transition-all duration-300 data-starting-style:opacity-0 data-ending-style:opacity-0">

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '@/api.config';
 import { isLoggedIn } from '@/helpers';
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const isDev = process.env.NODE_ENV === 'development';
 

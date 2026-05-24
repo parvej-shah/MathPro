@@ -1,23 +1,24 @@
 import Lottie from "react-lottie";
-import celebrationLottieData from "../pages/Animation - 1711894031153.json";
 
 interface LottieAnimationProps {
   height?: string | number;
   width?: string | number;
+  animationData: object;
 }
-
-const lottieOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: celebrationLottieData,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice",
-  },
-};
 
 export default function LottieAnimation({
   height,
   width,
+  animationData,
 }: LottieAnimationProps) {
+  const lottieOptions = {
+    loop: true,
+    autoplay: true,
+    animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
+
   return <Lottie options={lottieOptions} height={height} width={width} />;
 }

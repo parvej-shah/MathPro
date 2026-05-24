@@ -10,8 +10,8 @@ interface PaymentCoursesProps {
 const PaymentCourses: React.FC<PaymentCoursesProps> = ({ courses }) => {
   const { lmsPreference } = useLmsPreference();
   const getCourseUrl = (courseId: number) =>
-    lmsPreference === 'locked' && isLmsPreferenceCourse(courseId)
-      ? getCpLmsUrlForCourse(courseId)
+    lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
+      ? getCpLmsUrlForCourse(String(courseId))
       : `/course/${courseId}`;
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-BD', {
