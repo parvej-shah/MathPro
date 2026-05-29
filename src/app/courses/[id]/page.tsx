@@ -267,7 +267,7 @@ export default function CourseDetailsPage() {
       return (
         <a
           href={getCpLmsUrlForCourse(courseId)}
-          className="flex justify-center text-darkHeading items-center bg-[#1CAB55] py-3 w-full mt-8 rounded-xl hover:bg-opacity-50 ease-in-out duration-150 font-semibold"
+          className="flex justify-center text-primary-foreground items-center bg-primary py-3 w-full mt-8 rounded-xl hover:bg-primary/80 ease-in-out duration-150 font-semibold"
         >
           কোর্সে যান
         </a>
@@ -276,7 +276,7 @@ export default function CourseDetailsPage() {
     return (
       <Link
         href={`/dashboard/${courseData.id}`}
-        className="flex justify-center text-darkHeading items-center bg-[#1CAB55] py-3 w-full mt-8 rounded-xl hover:bg-opacity-50 ease-in-out duration-150 font-semibold"
+        className="flex justify-center text-primary-foreground items-center bg-primary py-3 w-full mt-8 rounded-xl hover:bg-primary/80 ease-in-out duration-150 font-semibold"
       >
         কোর্সে যান
       </Link>
@@ -312,14 +312,14 @@ export default function CourseDetailsPage() {
 
       {/* Error State */}
       {!loading && error && (
-        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#0B060D]">
+        <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="text-center">
-            <p className="text-heading dark:text-darkHeading text-xl">
+            <p className="text-foreground text-xl">
               {error}
             </p>
             <button
               onClick={fetchCourse}
-              className="mt-4 px-6 py-2 bg-purple text-white rounded-lg hover:bg-opacity-80 transition-all"
+              className="mt-4 px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-all"
             >
               Try Again
             </button>
@@ -369,7 +369,7 @@ export default function CourseDetailsPage() {
           <button
             style={{ zIndex: 999 }}
             onClick={() => setUser({ ...user, openCompiler: true })}
-            className="fixed top-80 -left-2 bg-[#0B060D] bg-opacity-30 backdrop-blur-lg border border-gray-200/20 p-3 hover:bg-gray-300/20"
+            className="fixed top-80 -left-2 bg-background/30 backdrop-blur-lg border border-border/20 p-3 hover:bg-muted/20"
           >
             <svg
               width={40}
@@ -406,7 +406,7 @@ export default function CourseDetailsPage() {
           </button>
 
           {/* Main Content Section */}
-          <div className="pt-20 bg-white dark:bg-[#0B060D] overflow-x-hidden">
+          <div className="pt-20 bg-background overflow-x-hidden">
             <div className="w-[90%] lg:w-[90%] max-w-[1440px] mx-auto py-12 z-20">
               <div className="flex flex-col-reverse lg:flex-row gap-24 relative">
                 {/* Background Gradient */}
@@ -423,7 +423,7 @@ export default function CourseDetailsPage() {
                       rx="167.107"
                       ry="94.0796"
                       transform="rotate(-10.6934 314.306 293.812)"
-                      fill="#B153E0"
+                      fill="oklch(0.718 0.147 159.2)"
                     />
                   </g>
                   <defs>
@@ -454,7 +454,7 @@ export default function CourseDetailsPage() {
                 {/* Left Column - Main Content */}
                 <div
                   style={{ flex: 2 }}
-                  className="text-heading dark:text-darkHeading z-10"
+                  className="text-foreground z-10"
                 >
                   <CourseHeader
                     title={courseData.title}
@@ -463,7 +463,7 @@ export default function CourseDetailsPage() {
 
                   <div className="flex gap-8 items-center pb-6 border-b border-gray-300/80 dark:border-gray-300/10 relative"></div>
 
-                  <p className="mt-6 text-black/70 dark:text-[#A3A3A3] text-lg">
+                  <p className="mt-6 text-muted-foreground text-lg">
                     {courseData.short_description}
                   </p>
 
@@ -497,7 +497,7 @@ export default function CourseDetailsPage() {
 
                 {/* Right Column - Sidebar */}
                 <div className="w-full lg:w-[400px] flex-shrink-0">
-                  <div className="text-heading dark:text-darkHeading bg-gray-400/30 dark:bg-gray-100/5 backdrop-blur-xl rounded-xl rounded-b-none">
+                  <div className="text-foreground bg-muted/20 dark:bg-muted/5 backdrop-blur-xl rounded-xl rounded-b-none">
                     {/* Course Thumbnail/Video */}
                     <div className="rounded-t-xl w-full min-h-[200px] lg:min-h-[260px] relative">
                       {courseData.intro_video ? (
@@ -549,7 +549,7 @@ export default function CourseDetailsPage() {
                       {/* Pricing */}
                       <div className="flex flex-col lgXxl:flex-row items-center gap-4 md:gap-2 justify-between pt-2 pb-4 border-b border-gray-300/20">
                         <div>
-                          <p className="font-bold text-base text-paragraph dark:text-darkParagraph text-center lgXxl:text-left">
+                          <p className="font-bold text-base text-muted-foreground text-center lgXxl:text-left">
                             কোর্স প্রাইস
                           </p>
                           <div className="flex items-center gap-4">
@@ -559,7 +559,7 @@ export default function CourseDetailsPage() {
                               </p>
                             </div>
                             <div>
-                              <p className="text-[#BE2853] line-through font-semibold text-lg">
+                              <p className="text-destructive line-through font-semibold text-lg">
                                 {courseData?.x_price}/-
                               </p>
                             </div>
@@ -568,7 +568,7 @@ export default function CourseDetailsPage() {
                         <div className="flex gap-3">
                           <div className="flex items-center gap-4">
                             <div className="text-center lgXxl:text-left">
-                              <p className="font-bold text-base text-paragraph dark:text-darkParagraph">
+                              <p className="font-bold text-base text-muted-foreground">
                                 {isPrebookingMode
                                   ? "প্রিবুক করেছে"
                                   : "কোর্সটিতে ভর্তি হয়েছে"}
@@ -614,7 +614,7 @@ export default function CourseDetailsPage() {
                                 <g opacity="0.7">
                                   <path
                                     d="M8.00065 14.6663C4.31865 14.6663 1.33398 11.6817 1.33398 7.99967C1.33398 4.31767 4.31865 1.33301 8.00065 1.33301C11.6827 1.33301 14.6673 4.31767 14.6673 7.99967C14.6673 11.6817 11.6827 14.6663 8.00065 14.6663ZM8.00065 13.333C9.41512 13.333 10.7717 12.7711 11.7719 11.7709C12.7721 10.7707 13.334 9.41414 13.334 7.99967C13.334 6.58519 12.7721 5.22863 11.7719 4.22844C10.7717 3.22824 9.41512 2.66634 8.00065 2.66634C6.58616 2.66634 5.22961 3.22824 4.22942 4.22844C3.22922 5.22863 2.66732 6.58519 2.66732 7.99967C2.66732 9.41414 3.22922 10.7707 4.22942 11.7709C5.22961 12.7711 6.58616 13.333 8.00065 13.333ZM7.33598 10.6663L4.50732 7.83767L5.44998 6.89501L7.33598 8.78101L11.1067 5.00967L12.05 5.95234L7.33598 10.6663Z"
-                                    fill="#B153E0"
+                                    fill="oklch(0.718 0.147 159.2)"
                                   />
                                 </g>
                               </svg>
@@ -629,19 +629,19 @@ export default function CourseDetailsPage() {
                           href={courseData.chips.course_outline}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-3 text-heading dark:text-darkHeading border border-purple/30 hover:border-purple/60 dark:border-purple/30 dark:hover:border-purple/60 transition-all duration-300 rounded-lg font-medium relative group overflow-hidden"
+                          className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-3 text-foreground border border-primary/30 hover:border-primary/60 transition-all duration-300 rounded-lg font-medium relative group overflow-hidden"
                           style={{
                             boxShadow: "0 0 10px rgba(177, 83, 224, 0.1)",
                           }}
                         >
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-purple via-[#B153E0] to-purple transition-opacity duration-300"></div>
+                          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-primary via-primary/70 to-primary transition-opacity duration-300"></div>
                           <svg
                             width="24"
                             height="24"
                             viewBox="0 0 24 24"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className="text-purple"
+                            className="text-primary"
                           >
                             <path
                               d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
@@ -713,7 +713,7 @@ export default function CourseDetailsPage() {
                           renderGotoCourseButton()
                         ) : isPrebookingMode ? (
                           courseData.isWishList || hasPrebooked ? (
-                            <div className="bg-[#B2F100]/20 border border-[#B2F100]/60 text-darkHeading py-3 px-4 w-full mt-8 rounded-xl text-center">
+                            <div className="bg-success/20 border border-success/60 text-foreground py-3 px-4 w-full mt-8 rounded-xl text-center">
                               <div className="flex items-center justify-center gap-2">
                                 <svg
                                   className="w-5 h-5"
@@ -738,7 +738,7 @@ export default function CourseDetailsPage() {
                           ) : (
                             <button
                               onClick={() => setOpenPrebookCourse(true)}
-                              className="group relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 px-6 w-full mt-8 rounded-lg hover:shadow-lg hover:shadow-blue-500/30 ease-in-out duration-200 font-semibold flex items-center justify-center gap-3 active:scale-95 transition-transform"
+                              className="group relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 px-6 w-full mt-8 rounded-lg hover:shadow-lg hover:shadow-primary/30 ease-in-out duration-200 font-semibold flex items-center justify-center gap-3 active:scale-95 transition-transform"
                             >
                               <svg
                                 className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
@@ -759,7 +759,7 @@ export default function CourseDetailsPage() {
                         ) : (
                           <button
                             onClick={handleBuyCourse}
-                            className="bg-[#1CAB55] text-darkHeading py-3 w-full mt-8 rounded-xl hover:bg-opacity-50 ease-in-out duration-150 font-semibold"
+                            className="bg-primary text-primary-foreground py-3 w-full mt-8 rounded-xl hover:bg-primary/80 ease-in-out duration-150 font-semibold"
                           >
                             কোর্সটি কিনুন
                           </button>

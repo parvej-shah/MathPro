@@ -27,10 +27,10 @@ export default function CommunitySupportSection({
   return (
     <div className="pt-12 border-t border-border/20 mt-12">
       <div className="text-center mb-8">
-        <h2 className="text-2xl lg:text-3xl font-bold text-heading dark:text-darkHeading mb-2">
-          এখনো <span className="text-[#EE4878]">প্রশ্ন</span> রয়েছে?
+        <h2 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+          এখনো <span className="text-primary">প্রশ্ন</span> রয়েছে?
         </h2>
-        <p className="text-base text-paragraph dark:text-darkParagraph">
+        <p className="text-base text-muted-foreground">
           চিন্তা নেই! আমরা ২৪/৭ তোমার পাশে আছি!
         </p>
       </div>
@@ -61,12 +61,12 @@ export default function CommunitySupportSection({
             </div>
 
             {/* Community Name */}
-            <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-2 text-center">
+            <h3 className="text-xl font-bold text-foreground mb-2 text-center">
               CODER VAI Community
             </h3>
 
             {/* Why Join */}
-            <p className="text-sm text-paragraph dark:text-darkParagraph text-center mb-4 leading-relaxed">
+            <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
               তুমি হতে পারো কোডার, গবেষক, কিংবা একজন লিডার - দিনশেষে আমরা সবাই
               প্রবলেম সলভার! কানেক্ট করো যারা গতানুগতিকতার বাইরে ভাবে, শেয়ার করো
               তোমার ভিশন, প্রজেক্ট বা রিসার্চ। চলো একসাথে ইমপ্যাক্টফুল কিছু তৈরি
@@ -93,11 +93,11 @@ export default function CommunitySupportSection({
 
         {/* RIGHT COLUMN - Support */}
         <div className="bg-background/70 backdrop-blur-lg rounded-xl shadow-md border border-border/50 p-5 lg:p-6">
-          <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-2 text-center">
+          <h3 className="text-xl font-bold text-foreground mb-2 text-center">
             সাপোর্ট দরকার?
           </h3>
 
-          <p className="text-sm text-paragraph dark:text-darkParagraph text-center mb-4">
+          <p className="text-sm text-muted-foreground text-center mb-4">
             কোন কনফিউশন বা প্রশ্ন থাকলে আমাদেরকে কল করো অথবা মেসেজ দাও!
           </p>
 
@@ -116,10 +116,10 @@ export default function CommunitySupportSection({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-heading dark:text-darkHeading">
+                  <p className="font-semibold text-foreground">
                     WhatsApp
                   </p>
-                  <p className="text-sm text-paragraph dark:text-darkParagraph">
+                  <p className="text-sm text-muted-foreground">
                     {socials.whatsapp.replace("https://wa.me/", "+")}
                   </p>
                 </div>
@@ -142,10 +142,10 @@ export default function CommunitySupportSection({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-heading dark:text-darkHeading">
+                  <p className="font-semibold text-foreground">
                     Facebook Messenger
                   </p>
-                  <p className="text-sm text-paragraph dark:text-darkParagraph">
+                  <p className="text-sm text-muted-foreground">
                     সরাসরি মেসেজ দাও
                   </p>
                 </div>
@@ -157,8 +157,8 @@ export default function CommunitySupportSection({
           {/* Facebook Page */}
           {socials.facebook_page && (
             <Link href={socials.facebook_page} target="_blank">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-info/10 border border-info/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
+                <div className="w-10 h-10 rounded-full bg-info flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="currentColor"
@@ -168,14 +168,14 @@ export default function CommunitySupportSection({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-heading dark:text-darkHeading">
+                  <p className="font-semibold text-foreground">
                     Facebook Page
                   </p>
-                  <p className="text-sm text-paragraph dark:text-darkParagraph">
+                  <p className="text-sm text-muted-foreground">
                     আমাদের পেজ ভিজিট করতে পারো
                   </p>
                 </div>
-                <BsBoxArrowUpRight className="text-indigo-600 dark:text-indigo-400" />
+                <BsBoxArrowUpRight className="text-info" />
               </div>
             </Link>
           )}
@@ -183,8 +183,8 @@ export default function CommunitySupportSection({
           {/* Phone */}
           {socials.phone && (
             <Link href={socials.phone}>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50 dark:bg-purple-900/20 border border-[#e9d5ff] dark:border-[#7e22ce] hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-purple flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 border border-primary/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -200,14 +200,14 @@ export default function CommunitySupportSection({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-heading dark:text-darkHeading">
+                  <p className="font-semibold text-foreground">
                     Phone
                   </p>
-                  <p className="text-sm text-paragraph dark:text-darkParagraph">
+                  <p className="text-sm text-muted-foreground">
                     {socials.phone.replace("tel:", "")}
                   </p>
                 </div>
-                <BsBoxArrowUpRight className="text-purple" />
+                <BsBoxArrowUpRight className="text-primary" />
               </div>
             </Link>
           )}
@@ -221,7 +221,7 @@ export default function CommunitySupportSection({
                   : `mailto:${socials.email}`
               }
             >
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-teal-50 dark:bg-teal-900/20 border border-[#99f6e4] dark:border-[#0f766e] hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-teal/10 border border-teal/30 hover:shadow-md transition-shadow cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center flex-shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
@@ -238,10 +238,10 @@ export default function CommunitySupportSection({
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-heading dark:text-darkHeading">
+                  <p className="font-semibold text-foreground">
                     Email
                   </p>
-                  <p className="text-sm text-paragraph dark:text-darkParagraph">
+                  <p className="text-sm text-muted-foreground">
                     {socials.email.replace("mailto:", "")}
                   </p>
                 </div>

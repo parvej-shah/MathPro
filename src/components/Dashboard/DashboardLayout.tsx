@@ -10,11 +10,7 @@ export default function DashboardLayout({ children }: Props) {
         <div className={`${HindSiliguri.variable} overflow-x-hidden font-hind min-h-screen flex flex-col`}>
             <Toaster />
 
-            <div className="flex-grow bg-background">
-                <div className="max-w-[1400px] mx-auto">
-                    {children}
-                </div>
-            </div>
+            <div className="flex-grow bg-page-bg">{children}</div>
 
             <Footer />
         </div>

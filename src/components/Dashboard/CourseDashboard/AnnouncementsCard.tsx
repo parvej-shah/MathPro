@@ -57,9 +57,9 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (loading) {
     return (
-      <div className="bg-background p-6 rounded-3xl shadow-lg border border-border h-fit">
+      <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-xl text-heading dark:text-darkHeading">
+          <h3 className="font-bold text-xl text-foreground">
             Instructor Updates
           </h3>
         </div>
@@ -85,13 +85,13 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (announcements.length === 0) {
     return (
-      <div className="bg-background p-6 rounded-3xl shadow-lg border border-border h-fit">
+      <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-xl text-heading dark:text-darkHeading">
+          <h3 className="font-bold text-xl text-foreground">
             Instructor Updates
           </h3>
         </div>
-        <div className="text-center py-8">
+        <div className="h-[220px] text-center py-6 flex flex-col items-center justify-center">
           <div className="bg-muted w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
             <BsBell size={24} className="text-muted-foreground" />
           </div>
@@ -119,7 +119,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
   return (
     <div className="space-y-4">
       {/* Featured Latest Announcement */}
-      <div className="bg-background p-6 rounded-3xl shadow-lg border-l-4 border-yellow-500">
+      <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-warning">
         <div className="flex items-start gap-4">
           <div className="bg-warning/15 text-warning p-3 rounded-2xl shrink-0">
             <BsBell className="text-xl" />
@@ -128,7 +128,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
             <h4 className="text-warning font-bold uppercase text-xs tracking-wider mb-1">
               Latest Update
             </h4>
-            <h3 className="text-base font-bold text-heading dark:text-darkHeading mb-2 line-clamp-2">
+            <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
               {featuredAnnouncement.title}
             </h3>
             <div
@@ -157,9 +157,9 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
       {/* Other Announcements - Only show if there are more than 1 announcement */}
       {remainingAnnouncements.length > 0 && (
-        <div className="bg-background p-6 rounded-3xl shadow-lg">
+        <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-heading dark:text-darkHeading">
+            <h3 className="text-lg font-bold text-foreground">
               Previous Updates
             </h3>
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
@@ -182,7 +182,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
                       <BsBell className="text-sm" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-heading dark:text-darkHeading text-sm mb-1 line-clamp-1">
+                      <h4 className="font-semibold text-foreground text-sm mb-1 line-clamp-1">
                         {announcement.title}
                       </h4>
                       <div
@@ -215,7 +215,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
           {remainingAnnouncements.length > 2 && (
             <button
               onClick={() => setShowAll(!showAll)}
-              className="w-full mt-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-muted text-heading dark:text-darkHeading hover:bg-muted-foreground/20 flex items-center justify-center gap-2"
+              className="w-full mt-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-muted text-foreground hover:bg-muted-foreground/20 flex items-center justify-center gap-2"
             >
               {showAll ? (
                 <>

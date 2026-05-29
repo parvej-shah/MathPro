@@ -24,14 +24,15 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
     const longestStreak = streakData?.longestStreak ?? 0;
     if (loading) {
         return (
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 p-6 rounded-3xl shadow-lg border border-orange-200 dark:border-orange-800 animate-pulse">
+            <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 p-6 rounded-3xl shadow-sm border border-orange-500/30 animate-pulse relative overflow-hidden">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/90 to-transparent" />
                 <div className="flex items-center justify-between">
                     <div className="flex-1 space-y-3">
-                        <div className="h-4 bg-orange-200 dark:bg-orange-700 rounded w-32" />
-                        <div className="h-12 bg-orange-200 dark:bg-orange-700 rounded w-24" />
-                        <div className="h-3 bg-orange-200 dark:bg-orange-700 rounded w-40" />
+                        <div className="h-4 bg-orange-400/25 rounded w-32" />
+                        <div className="h-12 bg-orange-400/25 rounded w-24" />
+                        <div className="h-3 bg-orange-400/25 rounded w-40" />
                     </div>
-                    <div className="w-20 h-20 bg-orange-200 dark:bg-orange-700 rounded-full" />
+                    <div className="w-20 h-20 bg-orange-400/25 rounded-full" />
                 </div>
             </div>
         );

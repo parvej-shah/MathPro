@@ -152,7 +152,7 @@ export default function CouponInput({
 
   return (
     <div className="coupon-input space-y-2">
-      <p className="text-lg font-semibold mb-1 text-heading dark:text-darkHeading">
+      <p className="text-lg font-semibold mb-1 text-foreground">
         Enter Coupon
       </p>
 
@@ -181,14 +181,14 @@ export default function CouponInput({
             onKeyPress={handleKeyPress}
             placeholder="Enter coupon code"
             disabled={loading || disabled}
-            className={`flex-1 px-3 py-3 rounded bg-muted outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading ${
+            className={`flex-1 px-3 py-3 rounded bg-muted outline-none focus:ring-2 focus:ring-primary/50 text-foreground ${
               error ? "border-2 border-destructive" : ""
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           />
           <button
             onClick={handleApplyCoupon}
             disabled={loading || disabled || !couponCode.trim()}
-            className="py-2 flex gap-2 items-center px-6 bg-[#B153E0] cursor-pointer hover:opacity-75 ease-in-out duration-150 focus:ring-2 focus:ring-purple/50 rounded font-semibold text-white text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="py-2 flex gap-2 items-center px-6 bg-secondary text-secondary-foreground cursor-pointer hover:opacity-75 ease-in-out duration-150 focus:ring-2 focus:ring-primary/50 rounded font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>

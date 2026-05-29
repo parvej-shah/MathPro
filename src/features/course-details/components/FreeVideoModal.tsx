@@ -131,7 +131,7 @@ export default function FreeVideoModal({
 
             {/* Modal Card - Purple themed */}
             <div
-                className="w-full max-w-md lg:max-w-lg text-darkHeading transform overflow-hidden rounded-2xl bg-purple/5 dark:bg-purple/5 backdrop-blur-lg border border-purple/60 text-left align-middle shadow-xl transition-all relative"
+                className="w-full max-w-md lg:max-w-lg text-foreground transform overflow-hidden rounded-2xl bg-primary/5 dark:bg-primary/5 backdrop-blur-lg border border-primary/60 text-left align-middle shadow-xl transition-all relative"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
@@ -141,7 +141,7 @@ export default function FreeVideoModal({
                     aria-label="Close modal"
                 >
                     <svg
-                        className="w-5 h-5 text-heading dark:text-darkHeading"
+                        className="w-5 h-5 text-foreground"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -159,11 +159,11 @@ export default function FreeVideoModal({
                 <div className="text-lg font-medium leading-6 p-6">
                     <div className="flex items-center flex-col lg:flex-row">
                         <div>
-                            <p className="text-heading dark:text-darkHeading text-xl text-center lg:text-left">
+                            <p className="text-foreground text-xl text-center lg:text-left">
                                 Unlock Free Preview
                             </p>
-                            <p className="text-paragraph dark:text-darkParagraph mt-2 text-base text-center lg:text-left">
-                                Enter your details to watch <span className="text-purple font-medium">{videoTitle}</span> and access all free previews in this course.
+                            <p className="text-muted-foreground mt-2 text-base text-center lg:text-left">
+                                Enter your details to watch <span className="text-primary font-medium">{videoTitle}</span> and access all free previews in this course.
                             </p>
                         </div>
                     </div>
@@ -179,7 +179,7 @@ export default function FreeVideoModal({
                         )}
                         
                         <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
-                            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+                            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
                                 First Name
                             </p>
                             <input
@@ -192,12 +192,12 @@ export default function FreeVideoModal({
                                         setError('');
                                     }
                                 }}
-                                className="w-full bg-white/0 border lg:flex-[2] border-border dark:border-border/20 outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+                                className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
                             />
                         </div>
 
                         <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
-                            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+                            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
                                 Phone Number
                             </p>
                             <input
@@ -210,12 +210,12 @@ export default function FreeVideoModal({
                                         setError('');
                                     }
                                 }}
-                                className="w-full bg-white/0 border lg:flex-[2] border-border dark:border-border/20 outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+                                className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
                             />
                         </div>
 
                         <div className="flex flex-col lg:flex-row lg:items-center gap-2">
-                            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+                            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
                                 Email
                             </p>
                             <input
@@ -234,7 +234,7 @@ export default function FreeVideoModal({
                                         setError('Please enter a valid email address');
                                     }
                                 }}
-                                className="w-full bg-white/0 border lg:flex-[2] border-border dark:border-border/20 outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+                                className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
                             />
                         </div>
                     </div>
@@ -243,14 +243,14 @@ export default function FreeVideoModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="bg-[#fcfcfc0c] hover:bg-opacity-50 ease-in-out duration-150 border border-white/30 backdrop-blur-lg text-darkHeading py-3 w-full rounded-xl font-bold"
+                            className="bg-muted/10 hover:bg-muted/20 ease-in-out duration-150 border border-border/30 backdrop-blur-lg text-foreground py-3 w-full rounded-xl font-bold"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || !name || !phone || !email}
-                            className="bg-gradient-to-r from-purple to-[#9333EA] text-white py-3 w-full rounded-xl font-bold hover:shadow-lg hover:shadow-purple/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-3 w-full rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSubmitting ? 'Submitting...' : 'Watch Free Video'}
                         </button>

@@ -32,10 +32,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
             />
           </svg>
           <div>
-            <p className="text-paragraph dark:text-darkParagraph text-xl">
+            <p className="text-muted-foreground text-xl">
               {sections.chapter?.label}
             </p>
-            <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+            <p className="text-foreground font-bold text-2xl mt-1">
               {sections.chapter?.value}
             </p>
           </div>
@@ -57,10 +57,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
             />
           </svg>
           <div>
-            <p className="text-paragraph dark:text-darkParagraph text-xl">
+            <p className="text-muted-foreground text-xl">
               {sections.video?.label}
             </p>
-            <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+            <p className="text-foreground font-bold text-2xl mt-1">
               {sections.video?.value}
             </p>
           </div>
@@ -83,10 +83,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
           </svg>
           <div>
             <div>
-              <p className="text-paragraph dark:text-darkParagraph text-xl">
+              <p className="text-muted-foreground text-xl">
                 {sections.contest?.label}
               </p>
-              <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+              <p className="text-foreground font-bold text-2xl mt-1">
                 {sections.contest?.value}
               </p>
             </div>
@@ -109,10 +109,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
             />
           </svg>
           <div>
-            <p className="text-paragraph dark:text-darkParagraph text-xl">
+            <p className="text-muted-foreground text-xl">
               {sections.liveClass?.label}
             </p>
-            <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+            <p className="text-foreground font-bold text-2xl mt-1">
               {sections.liveClass?.value}
             </p>
           </div>
@@ -135,10 +135,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
           </svg>
           <div>
             <div>
-              <p className="text-paragraph dark:text-darkParagraph text-xl">
+              <p className="text-muted-foreground text-xl">
                 {sections.archiveClass?.label}
               </p>
-              <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+              <p className="text-foreground font-bold text-2xl mt-1">
                 {sections.archiveClass?.value}
               </p>
             </div>
@@ -161,10 +161,10 @@ export default function CourseStats({ sections }: CourseStatsProps) {
             />
           </svg>
           <div>
-            <p className="text-paragraph dark:text-darkParagraph text-xl">
+            <p className="text-muted-foreground text-xl">
               {sections.codingProblem?.label}
             </p>
-            <p className="text-heading dark:text-darkHeading font-bold text-2xl mt-1">
+            <p className="text-foreground font-bold text-2xl mt-1">
               {sections.codingProblem?.value}
             </p>
           </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 const CourseDashboardLoadingSkeleton: React.FC = () => {
   return (
-    <div className="pt-20 bg-background min-h-screen animate-pulse">
+    <div className="pt-20 bg-page-bg min-h-screen animate-pulse">
       <div className="w-[95%] lg:w-[90%] xl:w-[85%] mx-auto py-8 lg:py-12">
         {/* Course Title Skeleton */}
         <div className="mb-8">
@@ -10,11 +10,11 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
         </div>
 
         {/* Routine Hero Skeleton */}
-        <div className="relative bg-gradient-to-br from-purple-600/90 to-indigo-700/90 dark:from-purple-900/90 dark:to-indigo-900/90 rounded-3xl overflow-hidden mb-8 h-[400px] md:h-[500px]">
+        <div className="relative bg-gradient-to-br from-primary/80 via-primary to-teal/80 rounded-3xl overflow-hidden mb-8 h-[400px] md:h-[500px] border border-primary/20 shadow-xl shadow-primary/20">
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center text-white space-y-4 px-6">
-              <div className="h-8 bg-white/20 rounded-lg w-64 mx-auto"></div>
-              <div className="h-12 bg-white/20 rounded-lg w-48 mx-auto"></div>
+              <div className="h-8 bg-primary-foreground/20 rounded-lg w-64 mx-auto"></div>
+              <div className="h-12 bg-primary-foreground/20 rounded-lg w-48 mx-auto"></div>
             </div>
           </div>
         </div>
@@ -24,7 +24,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
           {/* Left Column (60%) */}
           <div className="lg:col-span-3 space-y-8">
             {/* Streak Card Skeleton */}
-            <div className="bg-background rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-3xl p-6 border border-border shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="h-6 bg-muted rounded w-32"></div>
                 <div className="h-8 w-8 bg-muted rounded-full"></div>
@@ -42,7 +42,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
             </div>
 
             {/* Progress Card Skeleton */}
-            <div className="bg-background rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-3xl p-6 border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="h-6 bg-muted rounded w-40"></div>
                 <div className="h-8 bg-muted rounded-full w-20"></div>
@@ -58,7 +58,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
             </div>
 
             {/* Live Classes Skeleton */}
-            <div className="bg-background rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-3xl p-6 border border-border shadow-sm">
               <div className="h-6 bg-muted rounded w-40 mb-6"></div>
               <div className="space-y-4">
                 {[1, 2].map((i) => (
@@ -76,7 +76,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
             </div>
 
             {/* Feedback Card Skeleton */}
-            <div className="bg-background rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-3xl p-6 border border-border shadow-sm">
               <div className="h-6 bg-muted rounded w-48 mb-4"></div>
               <div className="h-32 bg-muted rounded-xl mb-4"></div>
               <div className="h-12 bg-muted rounded-xl"></div>
@@ -86,7 +86,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
           {/* Right Column (40%) */}
           <div className="lg:col-span-2 space-y-8">
             {/* Announcements Card Skeleton */}
-            <div className="bg-background rounded-2xl p-6 border border-border">
+            <div className="bg-card rounded-3xl p-6 border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="h-6 bg-muted rounded w-32"></div>
                 <div className="h-4 bg-muted rounded-full w-16"></div>
@@ -103,24 +103,24 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
             </div>
 
             {/* Important Message Skeleton */}
-            <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-6">
+            <div className="bg-card border border-primary/20 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-200 dark:bg-purple-800 rounded-lg flex-shrink-0"></div>
+                <div className="w-12 h-12 bg-primary/20 rounded-lg flex-shrink-0"></div>
                 <div className="flex-1">
-                  <div className="h-5 bg-purple-200 dark:bg-purple-800 rounded w-40 mb-2"></div>
-                  <div className="h-4 bg-purple-200 dark:bg-purple-800 rounded w-full"></div>
+                  <div className="h-5 bg-primary/20 rounded w-40 mb-2"></div>
+                  <div className="h-4 bg-primary/20 rounded w-full"></div>
                 </div>
-                <div className="w-5 h-5 bg-purple-200 dark:bg-purple-800 rounded"></div>
+                <div className="w-5 h-5 bg-primary/20 rounded"></div>
               </div>
             </div>
 
             {/* Community Card Skeleton */}
-            <div className="bg-info/10 border border-info/30 rounded-2xl p-6">
+            <div className="bg-card border border-primary/20 rounded-3xl p-6 shadow-sm">
               <div className="text-center">
-                <div className="w-16 h-16 bg-info/20 rounded-full mx-auto mb-4"></div>
-                <div className="h-6 bg-info/20 rounded w-48 mx-auto mb-2"></div>
-                <div className="h-4 bg-info/20 rounded w-full mb-6"></div>
-                <div className="h-12 bg-info/20 rounded-xl"></div>
+                <div className="w-16 h-16 bg-primary/20 rounded-full mx-auto mb-4"></div>
+                <div className="h-6 bg-primary/20 rounded w-48 mx-auto mb-2"></div>
+                <div className="h-4 bg-primary/20 rounded w-full mb-6"></div>
+                <div className="h-12 bg-primary/20 rounded-xl"></div>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@ const CourseDashboardLoadingSkeleton: React.FC = () => {
           <div className="h-8 bg-muted rounded w-64 mb-6"></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-background rounded-2xl overflow-hidden border border-border">
+              <div key={i} className="bg-card rounded-3xl overflow-hidden border border-border shadow-sm">
                 <div className="aspect-video bg-muted"></div>
                 <div className="p-5">
                   <div className="h-6 bg-muted rounded mb-2"></div>

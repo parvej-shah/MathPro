@@ -120,7 +120,7 @@ export default function VideoItem({
           >
             <path
               d="M10 20.5C15.523 20.5 20 16.023 20 10.5C20 4.977 15.523 0.5 10 0.5C4.477 0.5 0 4.977 0 10.5C0 16.023 4.477 20.5 10 20.5Z"
-              fill={isFreeVideo ? "#B153E0" : "#565656"}
+              fill={isFreeVideo ? "oklch(0.718 0.147 159.2)" : "currentColor"}
             />
             <path
               d="M14.2164 11.3862C14.7194 10.9382 14.7194 10.0622 14.2164 9.61419C12.7337 8.28108 11.0347 7.21042 9.19235 6.44819L8.86235 6.31319C8.22935 6.05319 7.56235 6.54719 7.47635 7.30019C7.23705 9.42681 7.23705 11.5736 7.47635 13.7002C7.56135 14.4532 8.22935 14.9462 8.86235 14.6872L9.19235 14.5522C11.0347 13.7899 12.7337 12.7193 14.2164 11.3862Z"
@@ -129,13 +129,13 @@ export default function VideoItem({
           </svg>
 
           {/* Title */}
-          <p className="text-black dark:text-[#737373] text-base flex-1">
+          <p className="text-foreground/80 text-base flex-1">
             {module.title}
           </p>
 
           {/* Badge or Lock */}
           {isFreeVideo ? (
-            <span className="px-3 py-1 bg-purple/20 text-purple text-xs font-semibold rounded-full border border-purple/30 flex-shrink-0">
+            <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full border border-primary/30 flex-shrink-0">
               FREE PREVIEW
             </span>
           ) : (

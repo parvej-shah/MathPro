@@ -72,7 +72,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
     if (loading) {
         return (
             <div className="space-y-4">
-                <div className="bg-background p-6 rounded-3xl shadow-lg border-l-4 border-red-500 animate-pulse">
+                <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-destructive animate-pulse">
                     <div className="h-24 bg-muted rounded"></div>
                 </div>
             </div>
@@ -81,7 +81,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
     if (!liveClasses || liveClasses.length === 0) {
         return (
-            <div className="bg-background p-6 rounded-3xl shadow-lg border-l-4 border-border">
+            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-border">
                 <div className="flex items-center gap-4">
                     <div className="bg-muted p-4 rounded-2xl text-muted-foreground">
                         <BsCalendarEvent className="text-2xl" />
@@ -101,7 +101,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
     if (!nextClass) {
         return (
-            <div className="bg-background p-6 rounded-3xl shadow-lg border-l-4 border-border">
+            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-border">
                 <div className="flex items-center gap-4">
                     <div className="bg-muted p-4 rounded-2xl text-muted-foreground">
                         <BsCalendarEvent className="text-2xl" />
@@ -126,12 +126,12 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
     return (
         <div className="space-y-4">
             {/* Featured Next/Current Live Class - Large Prominent Card */}
-            <div className={`bg-background p-6 rounded-3xl shadow-lg border-l-4 ${
-                isLive ? 'border-red-500' : 'border-purple'
+            <div className={`bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 ${
+                isLive ? 'border-l-destructive' : 'border-l-primary'
             } flex flex-col sm:flex-row items-center justify-between gap-6`}>
                 <div className="flex items-center gap-4 flex-1">
                     <div className={`${
-                        isLive ? 'bg-destructive/15 text-destructive' : 'bg-purple/10 text-purple'
+                        isLive ? 'bg-destructive/15 text-destructive' : 'bg-primary/10 text-primary'
                     } p-4 rounded-2xl`}>
                         {isLive ? (
                             <BsCalendarEvent className="text-2xl" />
@@ -141,11 +141,11 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     </div>
                     <div className="flex-1">
                         <h4 className={`${
-                            isLive ? 'text-destructive' : 'text-purple'
+                            isLive ? 'text-destructive' : 'text-primary'
                         } font-bold uppercase text-xs tracking-wider mb-1`}>
                             {isLive ? '🔴 Live Now' : isPast ? 'Recent Live Class' : 'Upcoming Live Class'}
                         </h4>
-                        <p className="text-lg md:text-xl font-bold text-heading dark:text-darkHeading line-clamp-1">
+                        <p className="text-lg md:text-xl font-bold text-foreground line-clamp-1">
                             {nextClass.title}
                         </p>
                         <p className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
@@ -166,7 +166,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     ) : hasRecording ? (
                         <button
                             onClick={() => window.open(nextClass.data?.recordedMeetingLink ?? '#', '_blank')}
-                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-purple text-white hover:bg-purple/90 shadow-lg shadow-purple/30"
+                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/30"
                         >
                             Watch Recording
                         </button>
@@ -183,9 +183,9 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
             {/* Other Live Classes - Compact List */}
             {remainingClasses.length > 0 && (
-                <div className="bg-background p-6 rounded-3xl shadow-lg">
+                <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold text-heading dark:text-darkHeading">
+                        <h3 className="text-lg font-bold text-foreground">
                             Other Live Classes
                         </h3>
                         <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
@@ -211,7 +211,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                                         <div className="flex items-start gap-3 flex-1 min-w-0">
                                             <div className={`${
-                                                isLiveClass ? 'bg-destructive/15 text-destructive' : 'bg-purple/10 text-purple'
+                                                isLiveClass ? 'bg-destructive/15 text-destructive' : 'bg-primary/10 text-primary'
                                             } p-2.5 rounded-lg shrink-0`}>
                                                 {isLiveClass ? (
                                                     <BsCalendarEvent className="text-base" />
@@ -225,7 +225,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                                         🔴 LIVE
                                                     </span>
                                                 )}
-                                                <h4 className="font-semibold text-heading dark:text-darkHeading line-clamp-1 text-sm">
+                                                <h4 className="font-semibold text-foreground line-clamp-1 text-sm">
                                                     {liveClass.title}
                                                 </h4>
                                                 <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
@@ -246,7 +246,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                             ) : hasRecordingClass ? (
                                                 <button
                                                     onClick={() => window.open(liveClass.data?.recordedMeetingLink ?? '#', '_blank')}
-                                                    className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-purple text-white hover:bg-purple/90"
+                                                    className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-primary text-primary-foreground hover:opacity-90"
                                                 >
                                                     Watch
                                                 </button>
@@ -268,7 +268,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     {remainingClasses.length > 2 && (
                         <button
                             onClick={() => setShowAll(!showAll)}
-                            className="w-full mt-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-muted text-heading dark:text-darkHeading hover:bg-muted-foreground/20 flex items-center justify-center gap-2"
+                            className="w-full mt-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-muted text-foreground hover:bg-muted-foreground/20 flex items-center justify-center gap-2"
                         >
                             {showAll ? (
                                 <>

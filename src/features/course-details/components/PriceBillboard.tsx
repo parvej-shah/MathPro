@@ -168,19 +168,19 @@ export default function PriceBillboard({
   return (
     <div className="pt-12 border-t border-border/20 mt-12">
       <div className="text-center mb-8">
-        <h2 className="text-3xl lg:text-4xl font-bold text-heading dark:text-darkHeading mb-3">
+        <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-3">
           {isCourseDetailsContext ? (
             <>
-              কেন তুমি <span className="text-[#EE4878]">বান্ডেলটি</span> বেছে
+              কেন তুমি <span className="text-primary">বান্ডেলটি</span> বেছে
               নিবে?
             </>
           ) : (
             <>
-              কেন <span className="text-[#EE4878]">বান্ডেলটি</span> কিনবে?
+              কেন <span className="text-primary">বান্ডেলটি</span> কিনবে?
             </>
           )}
         </h2>
-        <p className="text-lg text-paragraph dark:text-darkParagraph">
+        <p className="text-lg text-muted-foreground">
           ভ্যালু প্যাকড লার্নিং, প্র্যাকটিক্যাল স্কিল এবং সেভিংস - সব একসাথে!
         </p>
       </div>
@@ -188,7 +188,7 @@ export default function PriceBillboard({
       <div className="flex flex-col lg:flex-row items-stretch justify-center gap-8 lg:gap-12 mb-8 w-full">
         {/* LEFT SIDE - Individual Courses Stack */}
         <div className="w-full lg:w-[400px] flex-shrink-0">
-          <p className="text-center text-sm font-semibold text-paragraph dark:text-darkParagraph mb-4 uppercase tracking-wide">
+          <p className="text-center text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wide">
             আলাদা আলাদা কিনলে
           </p>
           <div className="space-y-3">
@@ -214,7 +214,7 @@ export default function PriceBillboard({
                 </div>
               ))
             ) : (
-              <div className="p-4 text-center text-paragraph dark:text-darkParagraph">
+              <div className="p-4 text-center text-muted-foreground">
                 No courses available
               </div>
             )}
@@ -266,7 +266,7 @@ export default function PriceBillboard({
 
         {/* RIGHT SIDE - Bundle Box */}
         <div className="w-full lg:w-[400px] flex-shrink-0">
-          <p className="text-center text-sm font-semibold text-paragraph dark:text-darkParagraph mb-4 uppercase tracking-wide">
+          <p className="text-center text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wide">
             বান্ডেল কিনলে
           </p>
           <div className="relative">
@@ -286,8 +286,8 @@ export default function PriceBillboard({
               </div>
             </div>
 
-            {/* Bundle Card - Dark with minimal teal accent */}
-            <div className="relative overflow-hidden rounded-2xl p-8 bg-background dark:bg-muted shadow-2xl border-2 border-teal/30">
+            {/* Bundle Card - deep teal-tinted card visible in both modes */}
+            <div className="relative overflow-hidden rounded-2xl p-8 bg-[oklch(0.22_0.04_180)] shadow-2xl border-2 border-teal/30">
               {/* Subtle teal glow effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-teal/5 via-transparent to-teal/5"></div>
 
@@ -307,9 +307,9 @@ export default function PriceBillboard({
                   </p>
                 </div>
 
-                {/* Savings Badge - Minimal green */}
+                {/* Savings Badge */}
                 {savings > 0 && (
-                  <div className="bg-success/90 text-white px-6 py-4 rounded-xl shadow-xl">
+                  <div className="bg-success/90 text-success-foreground px-6 py-4 rounded-xl shadow-xl">
                     <p className="text-sm font-semibold mb-1">
                       তুমি মোট সেভ করছো
                     </p>
@@ -339,7 +339,7 @@ export default function PriceBillboard({
       {hasDeadline && (
         <div className="mt-6">
           <div className="flex text-sm justify-center">
-            <p className="text-heading dark:text-darkHeading mr-16 font-bold text-lg">
+            <p className="text-foreground mr-16 font-bold text-lg">
               {isPrebookingDeadline
                 ? "প্রিবুকিং শেষ হতে বাকি"
                 : "এনরোলমেন্ট শেষ হতে বাকি"}
@@ -379,34 +379,34 @@ export default function PriceBillboard({
           </div>
           <div className="flex gap-4 justify-center mt-4">
             <div className="flex flex-col items-center">
-              <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+              <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
                 {days.toString().padStart(2, "0")}
               </p>
-              <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+              <p className="mt-1 text-lg font-bold text-muted-foreground">
                 দিন
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+              <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
                 {hours.toString().padStart(2, "0")}
               </p>
-              <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+              <p className="mt-1 text-lg font-bold text-muted-foreground">
                 ঘন্টা
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+              <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
                 {minutes.toString().padStart(2, "0")}
               </p>
-              <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+              <p className="mt-1 text-lg font-bold text-muted-foreground">
                 মিনিট
               </p>
             </div>
             <div className="flex flex-col items-center">
-              <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+              <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
                 {seconds.toString().padStart(2, "0")}
               </p>
-              <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+              <p className="mt-1 text-lg font-bold text-muted-foreground">
                 সেকেন্ড
               </p>
             </div>

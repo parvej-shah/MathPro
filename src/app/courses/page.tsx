@@ -176,11 +176,11 @@ export default function CoursesPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 text-center">
-                <BsBook className="w-14 h-14 text-paragraph/40 mb-4" />
-                <h3 className="text-lg font-semibold text-heading mb-1">
+                <BsBook className="w-14 h-14 text-muted-foreground/40 mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-1">
                   কোনো কোর্স পাওয়া যায়নি
                 </h3>
-                <p className="text-sm text-paragraph max-w-xs">
+                <p className="text-sm text-muted-foreground max-w-xs">
                   JSC, SSC ও HSC এর নতুন গণিত কোর্স শীঘ্রই যোগ করা হবে।
                 </p>
               </div>

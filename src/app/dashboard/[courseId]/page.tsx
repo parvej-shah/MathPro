@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { isLoggedIn } from "@/helpers";
 import DashboardLayout from "@/components/Dashboard/DashboardLayout";
 import CourseDashboardLoadingSkeleton from "@/components/Dashboard/CourseDashboardLoadingSkeleton";
@@ -323,18 +324,18 @@ export default function CourseDashboardPage() {
     if (courseError) {
         return (
             <DashboardLayout>
-                <div className="min-h-screen bg-white dark:bg-[#0B060D] flex items-center justify-center">
+                <div className="min-h-screen bg-page-bg flex items-center justify-center">
                     <div className="text-center max-w-md mx-auto p-8">
                         <div className="text-red-500 text-6xl mb-4">⚠️</div>
-                        <h2 className="text-2xl font-bold text-heading dark:text-darkHeading mb-2">
+                        <h2 className="text-2xl font-bold text-foreground mb-2">
                             Error Loading Course
                         </h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        <p className="text-muted-foreground mb-6">
                             {courseError}
                         </p>
                         <button
                             onClick={() => router.push("/dashboard")}
-                            className="bg-purple text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple/90 transition-colors"
+                            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
                         >
                             Back to Dashboard
                         </button>
@@ -354,10 +355,10 @@ export default function CourseDashboardPage() {
     router.replace(`/course-details/${courseId}`);
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-white dark:bg-[#0B060D] flex items-center justify-center">
+        <div className="min-h-screen bg-page-bg flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
               Redirecting to course details...
             </p>
           </div>
@@ -383,14 +384,19 @@ export default function CourseDashboardPage() {
                 setLmsPreference={setLmsPreference}
                 error={lmsError}
             />
-            <main className="pt-20 bg-white dark:bg-[#0B060D] min-h-screen">
+            <main className="pt-20 bg-page-bg min-h-screen">
                 <div className="w-[95%] lg:w-[90%] xl:w-[85%] mx-auto py-8 lg:py-12">
                     {/* Course Title Section - REAL DATA */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl md:text-4xl font-bold text-heading dark:text-darkHeading">
+                    <motion.div
+                        variants={sectionVariants}
+                        initial="hidden"
+                        animate="show"
+                        className="mb-8"
+                    >
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                             {courseData?.title || "Course Dashboard"}
                         </h1>
-                    </div>
+                    </motion.div>
 
                     {/* Section A: The Hero (The Routine) - ROUTINE IMAGE from API */}
                     <RoutineHero
@@ -403,7 +409,13 @@ export default function CourseDashboardPage() {
                     />
 
                     {/* Section B: The "Action Zone" (Split Layout) */}
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <motion.div
+                        variants={sectionVariants}
+                        initial="hidden"
+                        animate="show"
+                        transition={{ delay: 0.08, duration: 0.35 }}
+                        className="grid grid-cols-1 lg:grid-cols-5 gap-8"
+                    >
                         {/* Left Column: Progress & Learning (60% -> col-span-3) */}
                         <div className="lg:col-span-3 space-y-8">
                             {/* Streak Count Card */}
@@ -441,7 +453,7 @@ export default function CourseDashboardPage() {
                         </div>
 
                         {/* Right Column: Community & Updates (40% -> col-span-2) */}
-                        <div className="lg:col-span-2 space-y-8">
+                        <div className="lg:col-span-2 space-y-6">
                             {/* Ranking Card - Shows user's current rank and score */}
                             <RankingCard
                                 courseId={courseId as string}
@@ -452,11 +464,13 @@ export default function CourseDashboardPage() {
                                 Always shows latest announcement as featured
                                 Remaining announcements shown in list below (if any)
                                 Limited to 6 most recent announcements */}
-                            <AnnouncementsCard
-                                announcements={announcements}
-                                loading={announcementsLoading}
-                                totalCount={totalCount}
-                            />
+                            <div className="mt-6">
+                                <AnnouncementsCard
+                                    announcements={announcements}
+                                    loading={announcementsLoading}
+                                    totalCount={totalCount}
+                                />
+                            </div>
 
                             {/* Important Messages Link - Link to post-payment success page */}
                             {courseData?.id && (
@@ -464,11 +478,11 @@ export default function CourseDashboardPage() {
                                     href={`/post-payment/success?type=course&courseId=${courseData.id}`}
                                     className="block"
                                 >
-                                    <div className="bg-purple/10 dark:bg-purple/20 border border-purple/30 rounded-xl p-6 hover:bg-purple/20 dark:hover:bg-purple/30 transition-all duration-200 group cursor-pointer">
+                                    <div className="bg-card border border-primary/25 rounded-2xl p-6 hover:bg-primary/10 transition-all duration-300 group cursor-pointer shadow-sm hover:shadow-lg hover:shadow-primary/10">
                                         <div className="flex items-center gap-4">
-                                            <div className="flex-shrink-0 w-12 h-12 bg-purple/20 dark:bg-purple/30 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div className="flex-shrink-0 w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                                 <svg
-                                                    className="w-6 h-6 text-purple"
+                                                    className="w-6 h-6 text-primary"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -482,17 +496,17 @@ export default function CourseDashboardPage() {
                                                 </svg>
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="font-bold text-heading dark:text-darkHeading text-lg mb-1 group-hover:text-purple transition-colors">
+                                                <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
                                                     গুরুত্বপূর্ণ বার্তা দেখুন
                                                 </h3>
-                                                <p className="text-sm text-paragraph dark:text-darkParagraph">
+                                                <p className="text-sm text-muted-foreground">
                                                     এনরোলমেন্টের পরের গুরুত্বপূর্ণ তথ্য এবং নির্দেশাবলী
                                                     দেখুন
                                                 </p>
                                             </div>
                                             <div className="flex-shrink-0">
                                                 <svg
-                                                    className="w-5 h-5 text-purple group-hover:translate-x-1 transition-transform"
+                                                    className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -519,7 +533,7 @@ export default function CourseDashboardPage() {
                                 accessCode={accessCode}
                             />
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Section C: Recommended Courses - REAL DATA from courses API */}
                     {recommendedCourses.length > 0 && (
@@ -533,3 +547,11 @@ export default function CourseDashboardPage() {
         </DashboardLayout>
     );
 }
+    const sectionVariants = {
+        hidden: { opacity: 0, y: 16 },
+        show: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.35, ease: "easeOut" as const },
+        },
+    };

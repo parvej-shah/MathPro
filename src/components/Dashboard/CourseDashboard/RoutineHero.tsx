@@ -1,5 +1,6 @@
 import React from 'react';
 import { BsDownload } from 'react-icons/bs';
+import { motion } from 'framer-motion';
 
 interface RoutineHeroProps {
     routineImage: string;
@@ -55,7 +56,12 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
     };
 
     return (
-        <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-8 group shadow-xl">
+        <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="relative w-full h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-8 group shadow-xl border border-border"
+        >
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
             <img
                 src={routineImage}
@@ -68,7 +74,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
                     <h2 className="text-white text-3xl md:text-4xl font-bold mb-2">
                         Module {currentModule} of {totalModules}
                     </h2>
-                    <p className="text-foreground text-sm md:text-base max-w-xl">
+                    <p className="text-white/90 text-sm md:text-base max-w-xl">
                         Stay on track with your learning schedule. Check your progress and upcoming lessons.
                     </p>
                 </div>
@@ -76,13 +82,13 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
                 {routineDownloadUrl && (
                     <button
                         onClick={handleDownload}
-                        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-3 rounded-full transition-all duration-300 border border-white/30 group-hover:border-white/50"
+                        className="flex items-center gap-2 bg-primary/85 hover:bg-primary backdrop-blur-md text-primary-foreground px-5 py-3 rounded-full transition-all duration-300 border border-primary/40 shadow-lg shadow-primary/20"
                     >
                         <BsDownload className="text-lg" />
                         <span className="font-medium">Download Routine</span>
                     </button>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 };

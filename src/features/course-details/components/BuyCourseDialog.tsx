@@ -28,7 +28,7 @@ export default function BuyCourseDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="w-[90vw] lg:w-[40vw] max-w-none text-darkHeading rounded-2xl bg-background/60 dark:bg-background/30 backdrop-blur-lg border border-border/20 p-6"
+        className="w-[90vw] lg:w-[40vw] max-w-none text-foreground rounded-2xl bg-background/60 dark:bg-background/30 backdrop-blur-lg border border-border/20 p-6"
       >
         <DialogTitle
           render={<div />}
@@ -78,7 +78,7 @@ export default function BuyCourseDialog({
                 conditionsChecked
                   ? "bg-success hover:opacity-75 ease-in-out duration-150"
                   : "bg-muted text-muted-foreground cursor-not-allowed"
-              } text-darkHeading py-3 w-full mt-8 rounded-xl`}
+              } text-success-foreground py-3 w-full mt-8 rounded-xl`}
             >
               কোর্সটি কিনুন
             </button>

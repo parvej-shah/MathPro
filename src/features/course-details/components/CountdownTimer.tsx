@@ -54,7 +54,7 @@ export default function CountdownTimer({
     <div className="mt-4 border-t py-4 border-b border-gray-300/30">
       <div>
         <div className="flex text-sm justify-center">
-          <p className="text-heading dark:text-darkHeading mr-16 font-bold text-lg">
+          <p className="text-foreground mr-16 font-bold text-lg">
             {labelText}
           </p>
           <div className="flex gap-2 items-center">
@@ -91,34 +91,34 @@ export default function CountdownTimer({
         </div>
         <div className="flex gap-4 justify-center mt-4">
           <div className="flex flex-col items-center">
-            <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
               {days.toString().padStart(2, "0")}
             </p>
-            <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+            <p className="mt-1 text-lg font-bold text-muted-foreground">
               দিন
             </p>
           </div>
           <div className="flex flex-col items-center">
-            <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
               {hours.toString().padStart(2, "0")}
             </p>
-            <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+            <p className="mt-1 text-lg font-bold text-muted-foreground">
               ঘন্টা
             </p>
           </div>
           <div className="flex flex-col items-center">
-            <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
               {minutes.toString().padStart(2, "0")}
             </p>
-            <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+            <p className="mt-1 text-lg font-bold text-muted-foreground">
               মিনিট
             </p>
           </div>
           <div className="flex flex-col items-center">
-            <p className="text-heading dark:text-darkHeading bg-amber-500/20 dark:bg-amber-400/10 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-amber-500/40 dark:border-amber-400/30">
+            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
               {seconds.toString().padStart(2, "0")}
             </p>
-            <p className="mt-1 text-lg font-bold text-paragraph dark:text-darkParagraph">
+            <p className="mt-1 text-lg font-bold text-muted-foreground">
               সেকেন্ড
             </p>
           </div>

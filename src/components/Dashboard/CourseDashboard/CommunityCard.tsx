@@ -20,8 +20,9 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
         }
     };
     return (
-        <div className="bg-[#1877F2]/5 dark:bg-[#1877F2]/10 p-8 rounded-3xl border border-[#1877F2]/20 text-center relative overflow-hidden group">
+        <div className="bg-card p-8 rounded-3xl border border-border text-center relative overflow-hidden group shadow-sm">
             <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-[#1877F2]/10 rounded-full blur-2xl group-hover:bg-[#1877F2]/20 transition-all"></div>
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
 
             <div className="relative z-10">
                 <div className="w-16 h-16 bg-[#1877F2] text-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
@@ -36,7 +37,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
 
                 {/* Access Code Section */}
                 {accessCode && (
-                    <div className="mb-6 bg-background dark:bg-muted/40 rounded-xl p-4 border border-[#1877F2]/20">
+                    <div className="mb-6 bg-background rounded-xl p-4 border border-[#1877F2]/20">
                         <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider font-semibold">
                             Access Code
                         </p>

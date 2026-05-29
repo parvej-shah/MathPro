@@ -139,10 +139,10 @@ export default function EnrollmentInfo({
                 </div>
               )}
               <div>
-                <p className="text-sm font-medium text-paragraph/80 dark:text-darkParagraph/80">
+                <p className="text-sm font-medium text-muted-foreground/80 dark:text-muted-foreground/80">
                   {section.label}
                 </p>
-                <p className="mt-1 text-lg font-semibold tracking-tight text-heading dark:text-darkHeading">
+                <p className="mt-1 text-lg font-semibold tracking-tight text-foreground">
                   {displayValue}
                 </p>
               </div>

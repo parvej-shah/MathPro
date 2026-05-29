@@ -12,19 +12,8 @@ const Spinner = ({ className = "size-5" }: { className?: string }) => (
     fill="none"
     viewBox="0 0 24 24"
   >
-    <circle
-      className="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      strokeWidth="4"
-    />
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8v8H4z"
-    />
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
   </svg>
 );
 
@@ -40,7 +29,7 @@ export interface CheckoutFormData {
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onProceed: () => void; // Called after successful profile update, before payment
+  onProceed: () => void;
   type: "bundle" | "course";
   title: string;
   price: number;
@@ -51,6 +40,12 @@ interface CheckoutModalProps {
   ownedCoursesCount?: number;
   youGet?: string[];
 }
+
+const FIELD_CLASS = (hasError: boolean, disabled = false) =>
+  `w-full px-4 py-2.5 rounded-xl bg-background border text-foreground text-sm outline-none transition-all
+  focus:ring-2 focus:ring-primary/40 focus:border-primary/60
+  ${hasError ? "border-destructive" : "border-border/60"}
+  ${disabled ? "opacity-60 cursor-not-allowed bg-muted" : ""}`;
 
 export default function CheckoutModal({
   isOpen,
@@ -66,12 +61,7 @@ export default function CheckoutModal({
   ownedCoursesCount,
   youGet,
 }: CheckoutModalProps) {
-  const {
-    profile,
-    loading: profileLoading,
-    error: profileError,
-    refetch,
-  } = useUserProfile();
+  const { profile, loading: profileLoading, error: profileError, refetch } = useUserProfile();
   const [formData, setFormData] = useState<CheckoutFormData>({
     name: "",
     email: "",
@@ -80,13 +70,10 @@ export default function CheckoutModal({
     department: "",
     currentAcademicLevel: "UNIVERSITY",
   });
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof CheckoutFormData, string>>
-  >({});
+  const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // Initialize form data when profile loads - Auto-fill from user profile
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -95,13 +82,11 @@ export default function CheckoutModal({
         phone: profile.phone || profile.profile?.phone || "",
         currentInstitution: profile.profile?.currentInstitution || "",
         department: profile.profile?.department || "",
-        currentAcademicLevel:
-          profile.profile?.currentAcademicLevel || "UNIVERSITY",
+        currentAcademicLevel: profile.profile?.currentAcademicLevel || "UNIVERSITY",
       });
     }
   }, [profile]);
 
-  // Reset form when modal opens if profile is already loaded
   useEffect(() => {
     if (isOpen && profile && !profileLoading) {
       setFormData({
@@ -110,629 +95,415 @@ export default function CheckoutModal({
         phone: profile.phone || profile.profile?.phone || "",
         currentInstitution: profile.profile?.currentInstitution || "",
         department: profile.profile?.department || "",
-        currentAcademicLevel:
-          profile.profile?.currentAcademicLevel || "UNIVERSITY",
+        currentAcademicLevel: profile.profile?.currentAcademicLevel || "UNIVERSITY",
       });
-      // Clear errors when modal opens
       setErrors({});
       setAgreedToTerms(false);
     }
   }, [isOpen, profile, profileLoading]);
 
-  // Determine which fields should be disabled
   const isEmailDisabled = (): boolean => {
     if (!profile) return false;
-    // If user registered with email, email is disabled
     if (profile.login_type === "email") return true;
-    // If email already exists, it's disabled
     if (profile.email || profile.profile?.email) return true;
     return false;
   };
 
   const isPhoneDisabled = (): boolean => {
     if (!profile) return false;
-    // If user registered with phone, phone is disabled
     if (profile.login_type === "phone") return true;
-    // If phone already exists, it's disabled
     if (profile.phone || profile.profile?.phone) return true;
     return false;
   };
 
-  // Validation functions
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
+  const validateEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const validatePhone = (phone: string): boolean => {
-    const phoneDigits = phone.trim().replace(/\D/g, "");
-    if (phoneDigits.length !== 11) return false;
-    if (!phoneDigits.startsWith("01")) return false;
-    return /^01[3-9]\d{8}$/.test(phoneDigits);
+    const d = phone.trim().replace(/\D/g, "");
+    return d.length === 11 && d.startsWith("01") && /^01[3-9]\d{8}$/.test(d);
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof CheckoutFormData, string>> = {};
-
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Please enter your name";
-    }
-
-    // Email validation
+    if (!formData.name.trim()) newErrors.name = "নাম প্রয়োজন";
     if (!isEmailDisabled()) {
-      if (!formData.email.trim()) {
-        newErrors.email = "Please enter your email";
-      } else if (!validateEmail(formData.email.trim())) {
-        newErrors.email = "Please enter a valid email address";
-      }
+      if (!formData.email.trim()) newErrors.email = "ইমেইল প্রয়োজন";
+      else if (!validateEmail(formData.email.trim())) newErrors.email = "সঠিক ইমেইল দিন";
     } else if (!formData.email.trim()) {
-      // Even if disabled, we need email for validation
-      newErrors.email = "Email is required";
+      newErrors.email = "ইমেইল প্রয়োজন";
     }
-
-    // Phone validation
     if (!isPhoneDisabled()) {
-      if (!formData.phone.trim()) {
-        newErrors.phone = "Please enter your phone number";
-      } else if (!validatePhone(formData.phone.trim())) {
-        newErrors.phone = "Phone number must be 11 digits (e.g., 01XXXXXXXXX)";
-      }
+      if (!formData.phone.trim()) newErrors.phone = "ফোন নম্বর প্রয়োজন";
+      else if (!validatePhone(formData.phone.trim())) newErrors.phone = "১১ সংখ্যার ফোন নম্বর দিন (01XXXXXXXXX)";
     } else if (!formData.phone.trim()) {
-      // Even if disabled, we need phone for validation
-      newErrors.phone = "Phone number is required";
+      newErrors.phone = "ফোন নম্বর প্রয়োজন";
     }
-
-    // Institute validation
-    if (!formData.currentInstitution.trim()) {
-      newErrors.currentInstitution = "Please enter your institute";
-    }
-
-    // Department validation
-    if (!formData.department.trim()) {
-      newErrors.department = "Please enter your department/group";
-    }
-
-    // Academic level validation
-    if (!formData.currentAcademicLevel) {
-      newErrors.currentAcademicLevel = "Please select your academic level";
-    }
-
+    if (!formData.currentInstitution.trim()) newErrors.currentInstitution = "ইনস্টিটিউট প্রয়োজন";
+    if (!formData.department.trim()) newErrors.department = "ডিপার্টমেন্ট প্রয়োজন";
+    if (!formData.currentAcademicLevel) newErrors.currentAcademicLevel = "একাডেমিক লেভেল বেছে নিন";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!agreedToTerms) {
-      toast.error("অনুগ্রহ করে শর্তাবলী সম্মত হন");
-      return;
-    }
-
-    if (!validateForm()) {
-      toast.error("অনুগ্রহ করে সকল তথ্য সঠিকভাবে পূরণ করুন");
-      return;
-    }
-
+    if (!agreedToTerms) { toast.error("অনুগ্রহ করে শর্তাবলী সম্মত হন"); return; }
+    if (!validateForm()) { toast.error("অনুগ্রহ করে সকল তথ্য সঠিকভাবে পূরণ করুন"); return; }
     setIsSubmitting(true);
-
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Authentication required");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Prepare update data - only include fields that can be updated
-      // Backend endpoint: PUT /user/profile (user_id extracted from JWT token automatically)
+      if (!token) { toast.error("Authentication required"); setIsSubmitting(false); return; }
       const updateData: any = {
         name: formData.name.trim(),
         currentInstitution: formData.currentInstitution.trim(),
         department: formData.department.trim(),
         currentAcademicLevel: formData.currentAcademicLevel,
       };
-
-      // Only add email if it's not disabled (user can add it)
-      if (!isEmailDisabled() && formData.email.trim()) {
-        updateData.email = formData.email.trim();
-      }
-
-      // Only add phone if it's not disabled (user can add it)
-      if (!isPhoneDisabled() && formData.phone.trim()) {
-        updateData.phone = formData.phone.trim();
-      }
-
-      // Update profile using backend endpoint
-      const response = await axios.put(
-        `${BACKEND_URL}/user/profile`,
-        updateData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      // Backend response structure: { success: true, data: {...}, message: "..." }
+      if (!isEmailDisabled() && formData.email.trim()) updateData.email = formData.email.trim();
+      if (!isPhoneDisabled() && formData.phone.trim()) updateData.phone = formData.phone.trim();
+      const response = await axios.put(`${BACKEND_URL}/user/profile`, updateData, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
       if (response.data.success) {
-        // Refresh profile to get updated data
         await refetch();
-        // Close modal and proceed to payment
         onClose();
         onProceed();
       } else {
         throw new Error(response.data.error || "Failed to update profile");
       }
     } catch (error: any) {
-      console.error("Error updating profile:", error);
-      // Backend error response: { success: false, error: "..." }
       const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to update profile. Please try again.";
+        error.response?.data?.error || error.response?.data?.message || error.message || "Failed to update profile.";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (
-    field: keyof CheckoutFormData,
-    value: string | "SSC" | "HSC" | "UNIVERSITY" | "OTHERS",
-  ) => {
+  const handleInputChange = (field: keyof CheckoutFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error for this field
-    if (errors[field]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[field];
-        return newErrors;
-      });
-    }
+    if (errors[field]) setErrors((prev) => { const n = { ...prev }; delete n[field]; return n; });
   };
 
-  // Format price
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-BD", {
-      style: "currency",
-      currency: "BDT",
-      minimumFractionDigits: 0,
-    })
-      .format(price)
+  const formatPrice = (p: number) =>
+    new Intl.NumberFormat("en-BD", { style: "currency", currency: "BDT", minimumFractionDigits: 0 })
+      .format(p)
       .replace("BDT", "৳");
-  };
+
+  const canSubmit = agreedToTerms && !isSubmitting && !profileLoading;
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) onClose();
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent
         showCloseButton={false}
-        className="w-full max-w-lg text-darkHeading rounded-2xl bg-background/90 backdrop-blur-lg border border-purple/30 p-0 max-h-[90vh] overflow-y-auto"
+        className="w-[96vw] max-w-4xl max-h-[92vh] overflow-hidden p-0 rounded-2xl border border-border/30 bg-background shadow-2xl"
         overlayClassName="backdrop-blur-sm"
       >
+        <DialogTitle render={<div />} className="sr-only">
+          {type === "bundle" ? "Bundle ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+        </DialogTitle>
+
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-50 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          aria-label="Close modal"
+          className="absolute top-4 right-4 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+          aria-label="Close"
         >
-          <svg
-            className="w-5 h-5 text-heading dark:text-darkHeading"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <DialogTitle
-          render={<div />}
-          className="text-lg font-medium leading-6 p-6 pb-4 border-b border-border/20"
-        >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-purple/20 flex items-center justify-center">
-                      <svg
-                        className="w-6 h-6 text-purple"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-heading dark:text-darkHeading text-xl font-bold">
-                        {type === "bundle"
-                          ? "Bundle ক্রয় নিশ্চিত করো"
-                          : "কোর্স ক্রয় নিশ্চিত করো"}
-                      </p>
-                      <p className="text-paragraph dark:text-darkParagraph text-sm mt-1">
-                        অনুগ্রহ করে আপনার তথ্য যাচাই করুন
-                      </p>
-                    </div>
+        <div className="flex flex-col lg:flex-row h-full max-h-[92vh]">
+
+          {/* ─── LEFT PANEL — Order Summary ─── */}
+          <div className="lg:w-[42%] flex-shrink-0 bg-[oklch(0.18_0.04_170)] text-white flex flex-col rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none overflow-hidden">
+
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6 border-b border-white/10">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-lg font-bold leading-tight">
+                    {type === "bundle" ? "Bundle ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+                  </p>
+                  <p className="text-white/50 text-xs">অনুগ্রহ করে আপনার তথ্য যাচাই করুন</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Course/Bundle info */}
+            <div className="px-8 py-6 flex-1 overflow-y-auto space-y-6">
+              {/* Item card */}
+              <div className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-3">
+                <p className="font-semibold text-white/90 text-sm leading-snug">{title}</p>
+                <div className="flex items-center justify-between text-xs text-white/50">
+                  <span>{type === "bundle" && courseCount ? `${courseCount}টি কোর্স` : "কোর্স"}</span>
+                  {originalPrice && (
+                    <span className="line-through">{formatPrice(originalPrice)}</span>
+                  )}
+                </div>
+                <div className="border-t border-white/10 pt-3 flex items-center justify-between">
+                  <span className="text-sm text-white/60 font-medium">মূল্য</span>
+                  <span className="text-2xl font-black text-primary">{formatPrice(price)}</span>
+                </div>
+                {savings !== undefined && savings > 0 && (
+                  <div className="bg-success/15 border border-success/30 rounded-lg px-3 py-2 flex items-center justify-between">
+                    <span className="text-success text-xs font-semibold">সাশ্রয়</span>
+                    <span className="text-success font-bold text-sm">
+                      {formatPrice(savings)}{discountPercentage && ` (${discountPercentage})`}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* What you get */}
+              {youGet && youGet.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-white/40">তুমি পাচ্ছো</p>
+                  <ul className="space-y-2">
+                    {youGet.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                        <svg className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Owned course warning */}
+              {ownedCoursesCount !== undefined && ownedCoursesCount > 0 && (
+                <div className="bg-warning/10 border border-warning/30 rounded-xl p-3 flex items-start gap-2">
+                  <svg className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-warning text-xs">সতর্কতা: তোমার কাছে ইতিমধ্যে {ownedCoursesCount}টি কোর্স আছে</p>
+                </div>
+              )}
+
+              {/* Trust badges */}
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                {[
+                  { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", label: "নিরাপদ পেমেন্ট" },
+                  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "যাচাইকৃত কোর্স" },
+                ].map((b, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
+                    <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={b.icon} />
+                    </svg>
+                    <span className="text-white/60 text-xs">{b.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </DialogTitle>
 
-        <form onSubmit={handleSubmit}>
-                  <div className="p-6 space-y-4">
-                    {/* Summary Section - Compact - Always show */}
-                    <div className="bg-muted rounded-xl p-4">
-                      <h3 className="font-semibold text-heading dark:text-darkHeading mb-2 text-sm">
-                        {title}
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <span className="text-paragraph dark:text-darkParagraph text-xs">
-                          {type === "bundle" && courseCount
-                            ? `${courseCount}টি কোর্স`
-                            : "কোর্স"}
-                        </span>
-                        {originalPrice && (
-                          <span className="text-paragraph dark:text-darkParagraph text-xs line-through">
-                            {formatPrice(originalPrice)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="font-bold text-heading dark:text-darkHeading text-sm">
-                          মূল্য
-                        </span>
-                        <span className="text-xl font-bold text-purple">
-                          {formatPrice(price)}
-                        </span>
-                      </div>
-                      {savings !== undefined && savings > 0 && (
-                        <div className="mt-2 pt-2 border-t border-border/20">
-                          <div className="flex items-center justify-between">
-                            <span className="text-success font-semibold text-xs">
-                              সাশ্রয়
-                            </span>
-                            <span className="text-success font-bold text-sm">
-                              {formatPrice(savings)}
-                              {discountPercentage && ` (${discountPercentage})`}
-                            </span>
-                          </div>
-                        </div>
-                      )}
+          {/* ─── RIGHT PANEL — Form ─── */}
+          <div className="flex-1 flex flex-col overflow-hidden rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none">
+
+            {/* Form header */}
+            <div className="px-8 pt-7 pb-4 border-b border-border/20 flex-shrink-0">
+              <p className="font-bold text-foreground text-base">আপনার তথ্য পূরণ করুন</p>
+              <p className="text-muted-foreground text-xs mt-0.5">পেমেন্টের আগে তথ্য যাচাই করা জরুরি</p>
+            </div>
+
+            {/* Scrollable form body */}
+            <div className="flex-1 overflow-y-auto">
+              <form onSubmit={handleSubmit}>
+                <div className="px-8 py-5 space-y-4">
+
+                  {/* Status banners */}
+                  {profileLoading && (
+                    <div className="bg-info/10 border border-info/20 rounded-xl p-3 flex items-center gap-2">
+                      <Spinner className="size-4 text-info" />
+                      <p className="text-sm text-info">প্রোফাইল লোড হচ্ছে...</p>
                     </div>
-
-                    {/* Loading State - Show above form */}
-                    {profileLoading && (
-                      <div className="bg-info/10 border border-info/30 rounded-lg p-3">
-                        <div className="flex items-center gap-2">
-                          <Spinner className="size-5 text-info" />
-                          <p className="text-sm text-info">
-                            আপনার প্রোফাইল লোড হচ্ছে...
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Error State */}
-                    {!profileLoading && profileError && (
-                      <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-4">
-                        <p className="text-sm text-destructive">
-                          ⚠️ প্রোফাইল লোড করতে সমস্যা হয়েছে: {profileError}
-                        </p>
-                        <p className="text-xs text-destructive mt-2">
-                          আপনি এখনও ফর্ম পূরণ করতে পারবেন, তবে কিছু তথ্য
-                          স্বয়ংক্রিয়ভাবে পূরণ হবে না।
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Warning Message */}
-                    <div className="bg-info/10 border border-info/30 rounded-lg p-3">
-                      <p className="text-xs text-info">
-                        ⚠️ অনুগ্রহ করে নিশ্চিত করুন যে এই ফোন নম্বর এবং ইমেইল
-                        ঠিকানা সম্পূর্ণ সঠিক
-                      </p>
+                  )}
+                  {!profileLoading && profileError && (
+                    <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
+                      <p className="text-sm text-destructive">⚠️ প্রোফাইল লোড করতে সমস্যা হয়েছে।</p>
                     </div>
+                  )}
+                  <div className="bg-warning/10 border border-warning/20 rounded-xl p-3">
+                    <p className="text-xs text-warning">⚠️ ফোন নম্বর ও ইমেইল ঠিকানা সম্পূর্ণ সঠিক কিনা নিশ্চিত করুন</p>
+                  </div>
 
-                    {/* Form Fields - Always render */}
-                    <div className="space-y-4">
-                      {/* Name */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          নাম <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) =>
-                            handleInputChange("name", e.target.value)
-                          }
-                          placeholder="আপনার নাম"
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.name
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading`}
-                          required
-                        />
-                        {errors.name && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.name}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Email */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          ইমেইল <span className="text-destructive">*</span>
-                          {isEmailDisabled() && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              (আপডেট করা যাবে না)
-                            </span>
-                          )}
-                        </label>
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) =>
-                            handleInputChange("email", e.target.value)
-                          }
-                          placeholder="support@codervai.com"
-                          disabled={isEmailDisabled()}
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.email
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading ${
-                            isEmailDisabled()
-                              ? "bg-muted cursor-not-allowed opacity-70"
-                              : ""
-                          }`}
-                          required
-                        />
-                        {errors.email && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.email}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Phone */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          ফোন নম্বর <span className="text-destructive">*</span>
-                          {isPhoneDisabled() && (
-                            <span className="text-xs text-muted-foreground ml-2">
-                              (আপডেট করা যাবে না)
-                            </span>
-                          )}
-                        </label>
-                        <input
-                          type="tel"
-                          value={formData.phone}
-                          onChange={(e) =>
-                            handleInputChange("phone", e.target.value)
-                          }
-                          placeholder="01xxxxxxxxx"
-                          disabled={isPhoneDisabled()}
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.phone
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading ${
-                            isPhoneDisabled()
-                              ? "bg-muted cursor-not-allowed opacity-70"
-                              : ""
-                          }`}
-                          required
-                        />
-                        {errors.phone && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.phone}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Institute */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          ইনস্টিটিউট <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.currentInstitution}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "currentInstitution",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="আপনার ইনস্টিটিউট"
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.currentInstitution
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading`}
-                          required
-                        />
-                        {errors.currentInstitution && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.currentInstitution}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Academic Level */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          একাডেমিক লেভেল <span className="text-destructive">*</span>
-                        </label>
-                        <select
-                          value={formData.currentAcademicLevel}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "currentAcademicLevel",
-                              e.target.value as
-                                | "SSC"
-                                | "HSC"
-                                | "UNIVERSITY"
-                                | "OTHERS",
-                            )
-                          }
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.currentAcademicLevel
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading`}
-                          required
-                        >
-                          <option value="SSC">SSC</option>
-                          <option value="HSC">HSC</option>
-                          <option value="UNIVERSITY">University</option>
-                          <option value="OTHERS">Others</option>
-                        </select>
-                        {errors.currentAcademicLevel && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.currentAcademicLevel}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Department */}
-                      <div>
-                        <label className="block text-sm font-medium text-heading dark:text-darkHeading mb-1">
-                          ডিপার্টমেন্ট/গ্রুপ{" "}
-                          <span className="text-destructive">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.department}
-                          onChange={(e) =>
-                            handleInputChange("department", e.target.value)
-                          }
-                          placeholder="আপনার ডিপার্টমেন্ট/গ্রুপ"
-                          className={`w-full px-4 py-2 rounded-lg bg-background/50 border ${
-                            errors.department
-                              ? "border-destructive"
-                              : "border-border"
-                          } outline-none focus:ring-2 focus:ring-purple/50 text-heading dark:text-darkHeading`}
-                          required
-                        />
-                        {errors.department && (
-                          <p className="text-destructive text-xs mt-1">
-                            {errors.department}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Duplicate Course Warning */}
-                    {ownedCoursesCount !== undefined &&
-                      ownedCoursesCount > 0 && (
-                        <div className="bg-warning/10 border border-warning/30 rounded-xl p-3">
-                          <div className="flex items-start gap-2">
-                            <svg
-                              className="w-4 h-4 text-warning flex-shrink-0 mt-0.5"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            <div className="flex-1">
-                              <p className="text-warning text-xs">
-                                সতর্কতা: তোমার কাছে ইতিমধ্যে {ownedCoursesCount}
-                                টি কোর্স আছে
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                    {/* Terms and Conditions */}
+                  {/* Name + Phone row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="flex items-start gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={agreedToTerms}
-                          onChange={(e) => setAgreedToTerms(e.target.checked)}
-                          className="mt-1 w-5 h-5 rounded border-border text-purple focus:ring-purple focus:ring-offset-0 cursor-pointer"
-                        />
-                        <span className="text-xs text-paragraph dark:text-darkParagraph group-hover:text-heading dark:group-hover:text-darkHeading transition-colors">
-                          আমি{" "}
-                          <a
-                            href="https://www.codervai.com/terms-and-conditions"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-purple hover:underline font-medium"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            শর্তাবলী
-                          </a>{" "}
-                          এবং{" "}
-                          <a
-                            href="https://www.codervai.com/privacy-policy"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-purple hover:underline font-medium"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            গোপনীয়তা নীতি
-                          </a>{" "}
-                          সম্মত এবং বুঝতে পেরেছি যে এটি একটি ডিজিটাল পণ্য এবং
-                          ক্রয়ের পর রিফান্ড করা যাবে না।
-                        </span>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        নাম <span className="text-destructive">*</span>
                       </label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        placeholder="আপনার পুরো নাম"
+                        className={FIELD_CLASS(!!errors.name)}
+                        required
+                      />
+                      {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-2">
-                      <button
-                        type="button"
-                        onClick={onClose}
-                        className="flex-1 px-4 py-3 rounded-xl border border-border text-heading dark:text-darkHeading hover:bg-muted transition-colors font-medium"
-                      >
-                        বাতিল করো
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={
-                          !agreedToTerms || isSubmitting || profileLoading
-                        }
-                        className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-all ${
-                          agreedToTerms && !isSubmitting && !profileLoading
-                            ? "bg-gradient-to-r from-purple to-teal hover:shadow-lg hover:scale-105"
-                            : "bg-muted text-muted-foreground cursor-not-allowed"
-                        }`}
-                      >
-                        {isSubmitting ? (
-                          <div className="flex items-center justify-center gap-2">
-                            <Spinner className="size-5 text-white" />
-                            <span>প্রসেস হচ্ছে...</span>
-                          </div>
-                        ) : (
-                          "পেমেন্ট করো"
-                        )}
-                      </button>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        ফোন নম্বর <span className="text-destructive">*</span>
+                        {isPhoneDisabled() && <span className="text-muted-foreground font-normal ml-1">(আপডেট করা যাবে না)</span>}
+                      </label>
+                      <input
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        placeholder="01XXXXXXXXX"
+                        disabled={isPhoneDisabled()}
+                        className={FIELD_CLASS(!!errors.phone, isPhoneDisabled())}
+                        required
+                      />
+                      {errors.phone && <p className="text-destructive text-xs mt-1">{errors.phone}</p>}
                     </div>
                   </div>
-        </form>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-xs font-semibold text-foreground mb-1.5">
+                      ইমেইল <span className="text-destructive">*</span>
+                      {isEmailDisabled() && <span className="text-muted-foreground font-normal ml-1">(আপডেট করা যাবে না)</span>}
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      placeholder="you@example.com"
+                      disabled={isEmailDisabled()}
+                      className={FIELD_CLASS(!!errors.email, isEmailDisabled())}
+                      required
+                    />
+                    {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
+                  </div>
+
+                  {/* Institute + Academic Level row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        ইনস্টিটিউট <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.currentInstitution}
+                        onChange={(e) => handleInputChange("currentInstitution", e.target.value)}
+                        placeholder="আপনার প্রতিষ্ঠান"
+                        className={FIELD_CLASS(!!errors.currentInstitution)}
+                        required
+                      />
+                      {errors.currentInstitution && <p className="text-destructive text-xs mt-1">{errors.currentInstitution}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        একাডেমিক লেভেল <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={formData.currentAcademicLevel}
+                        onChange={(e) => handleInputChange("currentAcademicLevel", e.target.value as any)}
+                        className={FIELD_CLASS(!!errors.currentAcademicLevel)}
+                        required
+                      >
+                        <option value="SSC">SSC</option>
+                        <option value="HSC">HSC</option>
+                        <option value="UNIVERSITY">University</option>
+                        <option value="OTHERS">Others</option>
+                      </select>
+                      {errors.currentAcademicLevel && <p className="text-destructive text-xs mt-1">{errors.currentAcademicLevel}</p>}
+                    </div>
+                  </div>
+
+                  {/* Department */}
+                  <div>
+                    <label className="block text-xs font-semibold text-foreground mb-1.5">
+                      ডিপার্টমেন্ট / গ্রুপ <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.department}
+                      onChange={(e) => handleInputChange("department", e.target.value)}
+                      placeholder="আপনার বিভাগ বা গ্রুপ"
+                      className={FIELD_CLASS(!!errors.department)}
+                      required
+                    />
+                    {errors.department && <p className="text-destructive text-xs mt-1">{errors.department}</p>}
+                  </div>
+
+                  {/* Terms */}
+                  <label className="flex items-start gap-3 cursor-pointer group pt-1">
+                    <div className="relative mt-0.5">
+                      <input
+                        type="checkbox"
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-5 h-5 rounded border-2 border-border peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+                        {agreedToTerms && (
+                          <svg className="w-3 h-3 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
+                      আমি{" "}
+                      <a href="https://www.codervai.com/terms-and-conditions" target="_blank" rel="noopener noreferrer"
+                        className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
+                        শর্তাবলী
+                      </a>{" "}
+                      এবং{" "}
+                      <a href="https://www.codervai.com/privacy-policy" target="_blank" rel="noopener noreferrer"
+                        className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
+                        গোপনীয়তা নীতি
+                      </a>{" "}
+                      সম্মত এবং বুঝতে পেরেছি যে এটি একটি ডিজিটাল পণ্য এবং ক্রয়ের পর রিফান্ড করা যাবে না।
+                    </span>
+                  </label>
+                </div>
+
+                {/* Sticky action bar */}
+                <div className="sticky bottom-0 px-8 py-5 border-t border-border/20 bg-background flex gap-3">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 px-4 py-3 rounded-xl border border-border text-foreground hover:bg-muted transition-colors font-medium text-sm"
+                  >
+                    বাতিল করো
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className={`flex-1 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+                      canSubmit
+                        ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02]"
+                        : "bg-muted text-muted-foreground cursor-not-allowed"
+                    }`}
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Spinner className="size-4" />
+                        প্রসেস হচ্ছে...
+                      </span>
+                    ) : (
+                      "পেমেন্ট করো →"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
       </DialogContent>
     </Dialog>
   );

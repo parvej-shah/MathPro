@@ -110,7 +110,7 @@ export default function PdfItem({
                     >
                         <path
                             d="M10 20.5C15.5228 20.5 20 16.0228 20 10.5C20 4.97715 15.5228 0.5 10 0.5C4.47715 0.5 0 4.97715 0 10.5C0 16.0228 4.47715 20.5 10 20.5Z"
-                            fill={!isLocked ? '#B153E0' : '#565656'}
+                            fill={!isLocked ? 'oklch(0.718 0.147 159.2)' : 'currentColor'}
                         />
                         <path
                             fillRule="evenodd"
@@ -121,13 +121,13 @@ export default function PdfItem({
                     </svg>
 
                     {/* Title */}
-                    <p className="text-black dark:text-[#737373] text-base flex-1">
+                    <p className="text-foreground/80 text-base flex-1">
                         PDF: {module.title}
                     </p>
 
                     {/* Badge or Lock */}
                     {!isLocked ? (
-                        <span className="px-3 py-1 bg-purple/20 text-purple text-xs font-semibold rounded-full border border-purple/30 flex-shrink-0">
+                        <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full border border-primary/30 flex-shrink-0">
                             FREE PREVIEW
                         </span>
                     ) : (

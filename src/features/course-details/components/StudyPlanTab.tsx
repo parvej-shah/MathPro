@@ -25,7 +25,7 @@ export default function StudyPlanTab({ chapters, courseData, courseId }: StudyPl
         <div>
             <div className="my-8 flex lg:items-center gap-8 flex-col lg:flex-row">
                 <p className="text-2xl lg:text-3xl font-semibold">স্টাডি প্ল্যান</p>
-                <div className="flex items-center px-4 py-2 text-lg border border-[#B153E0]/50 bg-[#B153E0]/5 gap-4 rounded flex-wrap">
+                <div className="flex items-center px-4 py-2 text-lg border border-primary/50 bg-primary/5 gap-4 rounded flex-wrap">
                     <p>{englishToBanglaNumbers(stats.totalModules)} টি মডিউল</p>
                     <svg
                         width="5"

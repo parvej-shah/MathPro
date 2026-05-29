@@ -44,19 +44,19 @@ export default function CourseDetailsTab({
           </div>
         </div>
       )}
-      <div className="my-6 text-black/70 dark:text-[#A3A3A3] text-lg relative z-10">
+      <div className="my-6 text-muted-foreground text-lg relative z-10">
         <div
           className={`${!expandedDescription && "max-h-[150px] overflow-hidden relative"} transition-all duration-300`}
         >
           <SafeHtmlRenderer
             content={description}
-            className="text-black/70 dark:text-[#A3A3A3]"
+            className="text-muted-foreground"
           />
         </div>
         {description.length > 300 && (
           <button
             onClick={() => setExpandedDescription(!expandedDescription)}
-            className="flex items-center gap-2 text-purple hover:text-purple/80 font-medium mt-2 transition-all"
+            className="flex items-center gap-2 text-primary hover:text-primary/80 font-medium mt-2 transition-all"
           >
             {expandedDescription ? "সংক্ষিপ্ত করো" : "আরও পড়ো"}
             <svg
@@ -123,7 +123,7 @@ export default function CourseDetailsTab({
                       </clipPath>
                     </defs>
                   </svg>
-                  <div className="py-8 text-xl text-paragraph dark:text-darkParagraph">
+                  <div className="py-8 text-xl text-muted-foreground">
                     <SafeHtmlRenderer content={feedback.description} />
                   </div>
                   <div className="flex gap-4">
@@ -134,7 +134,7 @@ export default function CourseDetailsTab({
                     />
                     <div>
                       <p className="text-xl">{feedback.name}</p>
-                      <p className="text-paragraph dark:text-darkParagraph">
+                      <p className="text-muted-foreground">
                         {feedback.bio}
                       </p>
                     </div>
@@ -214,7 +214,7 @@ export default function CourseDetailsTab({
           ))
         ) : (
           <div className="text-center py-8">
-            <p className="text-paragraph dark:text-darkParagraph">
+            <p className="text-muted-foreground">
               FAQ শীঘ্রই আপডেট করা হবে
             </p>
           </div>

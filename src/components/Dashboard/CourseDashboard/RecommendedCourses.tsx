@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 interface Course {
   id: number;
@@ -38,7 +39,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
     <div className="mt-12 md:mt-16 border-t border-border pt-8 md:pt-12">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-heading dark:text-darkHeading">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">
             Recommended for You
           </h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
@@ -48,7 +49,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
         </div>
         <Link
           href="/courses"
-          className="text-purple font-semibold hover:underline hidden sm:block text-sm md:text-base whitespace-nowrap"
+          className="text-primary font-semibold hover:underline hidden sm:block text-sm md:text-base whitespace-nowrap"
         >
           Explore All Courses
         </Link>
@@ -113,9 +114,17 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
               : 0;
 
           return (
-            <Link key={course.id} href={`/course-details/${course.id}`}>
-              <div className="bg-background rounded-xl md:rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-300 group flex flex-col sm:flex-row h-full cursor-pointer">
+            <motion.div
+              key={course.id}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.35 }}
+            >
+            <Link href={`/course-details/${course.id}`}>
+              <div className="bg-card rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-border hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group flex flex-col sm:flex-row h-full cursor-pointer">
                 <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
+                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent z-10" />
                   <img
                     src={
                       course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
@@ -134,7 +143,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
 
                 <div className="p-4 md:p-6 flex flex-col justify-between w-full">
                   <div>
-                    <h3 className="font-bold text-base md:text-lg text-heading dark:text-darkHeading mb-2 group-hover:text-purple transition-colors line-clamp-2">
+                    <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2">
                       {course.title}
                     </h3>
                     <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 mb-3 md:mb-4">
@@ -160,7 +169,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                           ৳{courseXPrice}
                         </span>
                       )}
-                      <div className="text-purple font-bold text-base md:text-lg">
+                      <div className="text-primary font-bold text-base md:text-lg">
                         ৳{coursePrice}
                       </div>
                     </div>
@@ -168,6 +177,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                 </div>
               </div>
             </Link>
+            </motion.div>
           );
         })}
       </div>
@@ -175,7 +185,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
       <div className="mt-6 md:mt-8 text-center sm:hidden">
         <Link
           href="/courses"
-          className="text-purple font-semibold hover:underline text-sm"
+          className="text-primary font-semibold hover:underline text-sm"
         >
           Explore All Courses
         </Link>

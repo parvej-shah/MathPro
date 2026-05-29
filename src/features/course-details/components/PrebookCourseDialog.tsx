@@ -67,7 +67,7 @@ export default function PrebookCourseDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="w-full max-w-md lg:max-w-lg text-darkHeading rounded-2xl bg-[#B2F100]/5 dark:bg-[#B2F100]/5 backdrop-blur-lg border border-[#B2F100]/60 p-0"
+        className="w-full max-w-md lg:max-w-lg text-foreground rounded-2xl bg-primary/5 dark:bg-primary/5 backdrop-blur-lg border border-primary/60 p-0"
       >
         <button
           onClick={onClose}
@@ -75,7 +75,7 @@ export default function PrebookCourseDialog({
           aria-label="Close modal"
         >
           <svg
-            className="w-5 h-5 text-heading dark:text-darkHeading"
+            className="w-5 h-5 text-foreground"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -96,10 +96,10 @@ export default function PrebookCourseDialog({
           <div className="flex items-center flex-col lg:flex-row">
             <img src="/logo.png" alt="" className="py-6 lg:p-6" />
             <div>
-              <p className="text-heading dark:text-darkHeading text-xl text-center lg:text-left">
+              <p className="text-foreground text-xl text-center lg:text-left">
                 {courseTitle}
               </p>
-              <p className="text-paragraph dark:text-darkParagraph mt-2 text-base text-center lg:text-left">
+              <p className="text-muted-foreground mt-2 text-base text-center lg:text-left">
                 খুব শীঘ্রই আসছে আমাদের এই কোর্স! কোর্স সম্বন্ধে আগাম জেনে রাখার
                 জন্য এখনি নিচে দেওয়া ফর্ম ফিল আপ করো!
               </p>
@@ -108,7 +108,7 @@ export default function PrebookCourseDialog({
         </DialogTitle>
         <div className="border-b border-t border-border/20 py-8 px-6">
           <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
-            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
               First Name
             </p>
             <input
@@ -120,11 +120,11 @@ export default function PrebookCourseDialog({
                   name: e.target.value,
                 })
               }
-              className="w-full bg-white/0 border lg:flex-[2] border-border outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+              className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
             />
           </div>
           <div className="flex flex-col lg:flex-row lg:items-center gap-2 mb-6">
-            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
               Phone Number
             </p>
             <input
@@ -137,11 +137,11 @@ export default function PrebookCourseDialog({
                   phone: e.target.value,
                 })
               }
-              className="w-full bg-white/0 border lg:flex-[2] border-border outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+              className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
             />
           </div>
           <div className="flex flex-col lg:flex-row lg:items-center gap-2">
-            <p className="text-paragraph dark:text-darkParagraph text-sm lg:text-base lg:flex-1">
+            <p className="text-muted-foreground text-sm lg:text-base lg:flex-1">
               Email
             </p>
             <input
@@ -154,14 +154,14 @@ export default function PrebookCourseDialog({
                   email: e.target.value,
                 })
               }
-              className="w-full bg-white/0 border lg:flex-[2] border-border outline-none text-heading dark:text-darkHeading px-4 py-2 text-lg rounded-lg"
+              className="w-full bg-transparent border lg:flex-[2] border-border outline-none text-foreground px-4 py-2 text-lg rounded-lg"
             />
           </div>
         </div>
         <div className="flex p-6 gap-4">
           <button
             onClick={onClose}
-            className="bg-muted/10 hover:bg-muted/20 ease-in-out duration-150 border border-border/30 backdrop-blur-lg text-darkHeading py-3 w-full rounded-xl font-bold"
+            className="bg-muted/10 hover:bg-muted/20 ease-in-out duration-150 border border-border/30 backdrop-blur-lg text-foreground py-3 w-full rounded-xl font-bold"
           >
             Cancel
           </button>

@@ -291,7 +291,8 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
     if (loading || checkingFeedback) {
         return (
-            <div className="bg-background p-6 rounded-3xl shadow-lg border border-border animate-pulse">
+            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border animate-pulse relative overflow-hidden">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
                 <div className="space-y-4">
                     <div className="h-5 bg-muted rounded w-40" />
                     <div className="h-4 bg-muted rounded w-full" />
