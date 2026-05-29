@@ -17,12 +17,12 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
       <motion.div
         whileHover={{ scale: 1.02, y: -2 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-gradient-to-r from-purple/20 via-purple/15 to-pink-500/20 backdrop-blur-lg border border-purple/30 rounded-2xl p-6 shadow-2xl relative overflow-hidden"
+        className="bg-gradient-to-r from-primary/15 via-primary/10 to-teal/15 backdrop-blur-lg border border-primary/25 rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden"
       >
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple/5 to-pink-500/5 rounded-2xl"></div>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-purple/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-pink-500/10 rounded-full blur-2xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-teal/5 rounded-2xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal/10 rounded-full blur-2xl"></div>
         
         <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -30,12 +30,12 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-              className="bg-purple/20 p-3 rounded-full border border-purple/30 shadow-lg"
+              className="bg-primary/20 p-3 rounded-full border border-primary/30 shadow-lg"
             >
               <motion.svg 
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="w-8 h-8 text-purple" 
+                className="w-8 h-8 text-primary" 
                 fill="currentColor" 
                 viewBox="0 0 20 20"
               >
@@ -47,7 +47,7 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="text-darkParagraph font-semibold text-sm mb-1"
+                className="text-muted-foreground font-semibold text-sm mb-1"
               >
                 Your Current Rank
               </motion.div>
@@ -55,9 +55,9 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
-                className="text-darkHeading text-3xl font-bold flex items-center gap-2"
+                className="text-foreground text-3xl font-bold flex items-center gap-2"
               >
-                <span className="text-purple">#{myData.rank}</span>
+                <span className="text-primary">#{myData.rank}</span>
                 {parseInt(myData.rank) <= 3 && (
                   <motion.svg 
                     initial={{ scale: 0 }}
@@ -84,12 +84,12 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
               transition={{ delay: 0.6 }}
               className="text-center"
             >
-              <div className="text-darkParagraph text-sm mb-1">Your Score</div>
+              <div className="text-muted-foreground text-sm mb-1">Your Score</div>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
-                className="text-darkHeading text-2xl font-bold text-purple"
+                className="text-2xl font-bold text-primary"
               >
                 {myData.score}
               </motion.div>
@@ -105,7 +105,7 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
                 href={`https://codeforces.com/profile/${myData.cf_handle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-purple/20 border border-purple/30 text-purple px-4 py-2 rounded-lg hover:bg-purple/30 transition-all duration-200 font-medium shadow-lg flex items-center gap-2"
+                className="bg-primary/20 border border-primary/30 text-primary px-4 py-2 rounded-lg hover:bg-primary/30 transition-all duration-200 font-medium shadow-lg flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
@@ -121,7 +121,7 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.9, duration: 0.8 }}
-          className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-purple to-pink-500 rounded-full"
+          className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-primary to-teal rounded-full"
           style={{ width: '100%' }}
         />
       </motion.div>

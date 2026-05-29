@@ -195,7 +195,7 @@ export default function CheckoutModal({
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent
         showCloseButton={false}
-        className="w-[96vw] max-w-4xl max-h-[92vh] overflow-hidden p-0 rounded-2xl border border-border/30 bg-background shadow-2xl"
+        className="w-[98vw] sm:w-[96vw] max-w-4xl max-h-[95vh] sm:max-h-[92vh] overflow-hidden p-0 rounded-xl sm:rounded-2xl border border-border/30 bg-background shadow-2xl"
         overlayClassName="backdrop-blur-sm"
       >
         <DialogTitle render={<div />} className="sr-only">
@@ -213,31 +213,31 @@ export default function CheckoutModal({
           </svg>
         </button>
 
-        <div className="flex flex-col lg:flex-row h-full max-h-[92vh]">
+        <div className="flex flex-col lg:flex-row h-full max-h-[95vh] sm:max-h-[92vh]">
 
           {/* ─── LEFT PANEL — Order Summary ─── */}
-          <div className="lg:w-[42%] flex-shrink-0 bg-[oklch(0.18_0.04_170)] text-white flex flex-col rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none overflow-hidden">
+          <div className="lg:w-[42%] flex-shrink-0 bg-[oklch(0.18_0.04_170)] text-white flex flex-col rounded-t-xl sm:rounded-t-2xl lg:rounded-l-2xl lg:rounded-tr-none overflow-hidden max-h-[35vh] lg:max-h-none">
 
             {/* Header */}
-            <div className="px-8 pt-8 pb-6 border-b border-white/10">
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7 lg:pt-8 pb-4 sm:pb-6 border-b border-white/10 flex-shrink-0">
               <div className="flex items-center gap-3 mb-1">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-lg font-bold leading-tight">
+                  <p className="text-base sm:text-lg font-bold leading-tight">
                     {type === "bundle" ? "Bundle ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
                   </p>
-                  <p className="text-white/50 text-xs">অনুগ্রহ করে আপনার তথ্য যাচাই করুন</p>
+                  <p className="text-white/50 text-xs hidden sm:block">অনুগ্রহ করে আপনার তথ্য যাচাই করুন</p>
                 </div>
               </div>
             </div>
 
             {/* Course/Bundle info */}
-            <div className="px-8 py-6 flex-1 overflow-y-auto space-y-6">
+            <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 flex-1 overflow-y-auto space-y-4 sm:space-y-6">
               {/* Item card */}
               <div className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-3">
                 <p className="font-semibold text-white/90 text-sm leading-snug">{title}</p>
@@ -289,7 +289,7 @@ export default function CheckoutModal({
               )}
 
               {/* Trust badges */}
-              <div className="grid grid-cols-2 gap-2 pt-2">
+              <div className="hidden sm:grid grid-cols-2 gap-2 pt-2">
                 {[
                   { icon: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z", label: "নিরাপদ পেমেন্ট" },
                   { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "যাচাইকৃত কোর্স" },
@@ -306,18 +306,18 @@ export default function CheckoutModal({
           </div>
 
           {/* ─── RIGHT PANEL — Form ─── */}
-          <div className="flex-1 flex flex-col overflow-hidden rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none">
+          <div className="flex-1 flex flex-col overflow-hidden rounded-b-xl sm:rounded-b-2xl lg:rounded-r-2xl lg:rounded-bl-none">
 
             {/* Form header */}
-            <div className="px-8 pt-7 pb-4 border-b border-border/20 flex-shrink-0">
-              <p className="font-bold text-foreground text-base">আপনার তথ্য পূরণ করুন</p>
-              <p className="text-muted-foreground text-xs mt-0.5">পেমেন্টের আগে তথ্য যাচাই করা জরুরি</p>
+            <div className="px-4 sm:px-6 lg:px-8 pt-5 sm:pt-7 pb-3 sm:pb-4 border-b border-border/20 flex-shrink-0">
+              <p className="font-bold text-foreground text-sm sm:text-base">আপনার তথ্য পূরণ করুন</p>
+              <p className="text-muted-foreground text-xs mt-0.5 hidden sm:block">পেমেন্টের আগে তথ্য যাচাই করা জরুরি</p>
             </div>
 
             {/* Scrollable form body */}
             <div className="flex-1 overflow-y-auto">
               <form onSubmit={handleSubmit}>
-                <div className="px-8 py-5 space-y-4">
+                <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 space-y-3 sm:space-y-4">
 
                   {/* Status banners */}
                   {profileLoading && (
@@ -336,7 +336,7 @@ export default function CheckoutModal({
                   </div>
 
                   {/* Name + Phone row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
                         নাম <span className="text-destructive">*</span>
@@ -388,7 +388,7 @@ export default function CheckoutModal({
                   </div>
 
                   {/* Institute + Academic Level row */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
                         ইনস্টিটিউট <span className="text-destructive">*</span>
@@ -472,7 +472,7 @@ export default function CheckoutModal({
                 </div>
 
                 {/* Sticky action bar */}
-                <div className="sticky bottom-0 px-8 py-5 border-t border-border/20 bg-background flex gap-3">
+                <div className="sticky bottom-0 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-t border-border/20 bg-background flex gap-3">
                   <button
                     type="button"
                     onClick={onClose}

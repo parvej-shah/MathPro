@@ -3,8 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MenuIcon, XIcon } from "lucide-react";
 import { isLoggedIn, logout } from "@/helpers";
 import ThemeToggle from "@/components/ThemeToggle";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 type NavMode = "landing" | "default";
 
@@ -16,7 +25,11 @@ export default function Nav({ mode = "default" }: NavProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(mode !== "landing");
   const [loggedIn, setLoggedIn] = useState(false);
-  const [loginHref, setLoginHref] = useState("https://www.mathpro.com/auth/login");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const loginHref =
+    typeof window === "undefined"
+      ? "https://www.mathpro.com/auth/login"
+      : `https://www.mathpro.com/auth/login?redirect=${encodeURIComponent(window.location.href)}`;
 
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
@@ -37,22 +50,21 @@ export default function Nav({ mode = "default" }: NavProps) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [mode]);
 
-  useEffect(() => {
-    setLoginHref(
-      `https://www.mathpro.com/auth/login?redirect=${encodeURIComponent(window.location.href)}`,
-    );
-  }, []);
-
   const navTextClass = isScrolled ? "text-foreground/80" : "text-white/90";
   const navHoverClass = isScrolled
     ? "hover:text-emerald-600 dark:hover:text-emerald-400"
     : "hover:text-emerald-400";
   const coursesActive = pathname?.startsWith("/courses");
   const dashboardActive = pathname?.startsWith("/dashboard");
+  const authButtonClass = `px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
+    isScrolled
+      ? "bg-emerald-500 text-white hover:bg-emerald-600"
+      : "bg-white text-slate-900 hover:bg-emerald-50 dark:bg-white/90 dark:text-slate-900"
+  }`;
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-[9000] transition-all duration-300 ${
         isScrolled
           ? "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
           : "bg-transparent border-b border-white/10"
@@ -92,44 +104,143 @@ export default function Nav({ mode = "default" }: NavProps) {
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             {loggedIn ? (
               <button
                 onClick={logout}
-                className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
-                  isScrolled
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "bg-white text-slate-900 hover:bg-emerald-50 dark:bg-white/90 dark:text-slate-900"
-                }`}
+                className={authButtonClass}
               >
                 লগআউট
               </button>
             ) : (
               <a
                 href={loginHref}
-                className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
-                  isScrolled
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "bg-white text-slate-900 hover:bg-emerald-50 dark:bg-white/90 dark:text-slate-900"
-                }`}
+                className={authButtonClass}
               >
                 লগইন
               </a>
             )}
           </div>
+
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
+            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <SheetTrigger
+                render={
+                  <button
+                    type="button"
+                    aria-label="Open menu"
+                    className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-colors ${
+                      isScrolled
+                        ? "border-border bg-background text-foreground hover:bg-muted"
+                        : "border-white/20 bg-white/10 text-white hover:bg-white/20"
+                    }`}
+                  />
+                }
+              >
+                <MenuIcon className="size-5" aria-hidden />
+                <span className="sr-only">Open menu</span>
+              </SheetTrigger>
+
+              <SheetContent
+                side="right"
+                showCloseButton={false}
+                className="w-[82vw] max-w-[340px] gap-0 overflow-hidden border-l border-emerald-400/20 !bg-[#03110f] !text-white shadow-[-24px_0_80px_rgba(0,0,0,0.55)]"
+              >
+                <SheetHeader className="border-b border-white/10 bg-[#071815] px-5 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <SheetTitle className="text-base font-black text-emerald-300">
+                      মেনু
+                    </SheetTitle>
+                    <SheetClose
+                      render={
+                        <button
+                          type="button"
+                          aria-label="Close menu"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white shadow-sm transition-colors hover:bg-white/15"
+                        />
+                      }
+                    >
+                      <XIcon className="size-4" aria-hidden />
+                      <span className="sr-only">Close menu</span>
+                    </SheetClose>
+                  </div>
+                </SheetHeader>
+
+                <div className="flex min-h-0 flex-1 flex-col px-5 py-5">
+                  <div className="flex flex-col gap-2.5 text-base font-extrabold">
+                    <Link
+                      href="/courses"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`rounded-xl border px-4 py-3 transition-colors ${
+                        coursesActive
+                          ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                          : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                      }`}
+                    >
+                      কোর্সসমূহ
+                    </Link>
+                    {loggedIn && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`rounded-xl border px-4 py-3 transition-colors ${
+                          dashboardActive
+                            ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                            : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                        }`}
+                      >
+                        ড্যাশবোর্ড
+                      </Link>
+                    )}
+                    {mode === "landing" && (
+                      <>
+                        <a
+                          href="#features"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white transition-colors hover:bg-white/[0.1]"
+                        >
+                          বৈশিষ্ট্য
+                        </a>
+                        <a
+                          href="#branches"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white transition-colors hover:bg-white/[0.1]"
+                        >
+                          শাখাসমূহ
+                        </a>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="mt-auto border-t border-white/10 pt-5">
+                    {loggedIn ? (
+                      <button
+                        onClick={() => {
+                          setMobileMenuOpen(false);
+                          logout();
+                        }}
+                        className="inline-flex w-full justify-center rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-emerald-950/30 transition-colors hover:bg-emerald-400"
+                      >
+                        লগআউট
+                      </button>
+                    ) : (
+                      <a
+                        href={loginHref}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="inline-flex w-full justify-center rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-emerald-950/30 transition-colors hover:bg-emerald-400"
+                      >
+                        লগইন
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
 
-        <div className={`md:hidden mt-3 flex items-center gap-4 text-sm font-semibold ${navTextClass}`}>
-          <Link href="/courses" className={`${navHoverClass} ${coursesActive ? "text-emerald-600" : ""}`}>
-            কোর্সসমূহ
-          </Link>
-          {loggedIn && (
-            <Link href="/dashboard" className={`${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}>
-              ড্যাশবোর্ড
-            </Link>
-          )}
-        </div>
       </div>
     </nav>
   );

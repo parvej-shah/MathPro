@@ -18,7 +18,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import Image from "next/image";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 
-// Componentsz
+// Components
 import {
   PrebookCourseDialog,
   PrebookSuccessDialog,
@@ -406,9 +406,9 @@ export default function CourseDetailsPage() {
           </button>
 
           {/* Main Content Section */}
-          <div className="pt-20 bg-background overflow-x-hidden">
-            <div className="w-[90%] lg:w-[90%] max-w-[1440px] mx-auto py-12 z-20">
-              <div className="flex flex-col-reverse lg:flex-row gap-24 relative">
+          <div className="pt-20 pb-24 lg:pb-0 bg-background overflow-x-hidden">
+            <div className="w-[94%] sm:w-[92%] lg:w-[90%] max-w-[1440px] mx-auto py-8 lg:py-12 z-20">
+              <div className="flex flex-col-reverse lg:flex-row gap-8 md:gap-12 lg:gap-16 xl:gap-24 relative">
                 {/* Background Gradient */}
                 <svg
                   viewBox="0 0 980 892"
@@ -459,13 +459,14 @@ export default function CourseDetailsPage() {
                   <CourseHeader
                     title={courseData.title}
                     isPrebookingMode={isPrebookingMode}
+                    enrolled={isPrebookingMode ? courseData?.prebooking : courseData?.enrolled}
                   />
 
-                  <div className="flex gap-8 items-center pb-6 border-b border-gray-300/80 dark:border-gray-300/10 relative"></div>
-
-                  <p className="mt-6 text-muted-foreground text-lg">
-                    {courseData.short_description}
-                  </p>
+                  {courseData.short_description && (
+                    <p className="mt-2 text-muted-foreground text-lg leading-relaxed border-b border-border/30 pb-6">
+                      {courseData.short_description}
+                    </p>
+                  )}
 
                   <CourseStats sections={courseData?.chips?.sections} />
 
@@ -491,18 +492,20 @@ export default function CourseDetailsPage() {
                       feedbacks={courseData?.feedback_list?.feedbacks}
                       faqs={courseData?.faq_list?.faqs}
                       deadline={courseData?.chips?.deadline}
+                      youGet={courseData?.you_get?.you_get}
                     />
                   )}
                 </div>
 
                 {/* Right Column - Sidebar */}
-                <div className="w-full lg:w-[400px] flex-shrink-0">
-                  <div className="text-foreground bg-muted/20 dark:bg-muted/5 backdrop-blur-xl rounded-xl rounded-b-none">
+                <div className="w-full lg:w-[380px] xl:w-[420px] flex-shrink-0">
+                  {/* Premium Purchase Card */}
+                  <div className="text-foreground bg-card border border-border/60 rounded-2xl shadow-xl shadow-black/5 overflow-hidden sticky top-20">
                     {/* Course Thumbnail/Video */}
-                    <div className="rounded-t-xl w-full min-h-[200px] lg:min-h-[260px] relative">
+                    <div className="w-full aspect-video relative bg-muted">
                       {courseData.intro_video ? (
                         <iframe
-                          className="rounded-t-xl w-full min-h-[200px] lg:min-h-[260px]"
+                          className="rounded-t-2xl w-full h-full absolute inset-0"
                           src={
                             courseData.intro_video +
                             "?rel=0&modestbranding=1&autohide=1&showinfo=0"
@@ -512,79 +515,87 @@ export default function CourseDetailsPage() {
                           allowFullScreen
                         ></iframe>
                       ) : (
-                        <>
-                          {/* Try trailer_video_thumb_16_9 first, then course_thumbnail_link_16_9, then old course_thumbnail_link */}
-                          {(() => {
-                            const thumbnail =
-                              courseData?.chips?.thumbnails
-                                ?.trailer_video_thumb_16_9 ||
-                              courseData?.chips?.thumbnails
-                                ?.course_thumbnail_link_16_9 ||
-                              courseData?.chips?.course_thumbnail_link ||
-                              courseData?.thumbnail ||
-                              courseData?.image?.imageUploadedLink;
-
-                            // If intro_video exists but no thumbnail, try YouTube thumbnail
-                            const youtubeThumbnail = courseData.intro_video
-                              ? getYouTubeThumbnail(courseData.intro_video)
-                              : null;
-
-                            const finalThumbnail =
-                              thumbnail || youtubeThumbnail;
-
-                            return finalThumbnail ? (
-                              <Image
-                                src={finalThumbnail}
-                                alt={courseData?.title || "Course thumbnail"}
-                                fill
-                                className="rounded-t-xl object-cover"
-                              />
-                            ) : null;
-                          })()}
-                        </>
+                        (() => {
+                          const thumbnail =
+                            courseData?.chips?.thumbnails?.trailer_video_thumb_16_9 ||
+                            courseData?.chips?.thumbnails?.course_thumbnail_link_16_9 ||
+                            courseData?.chips?.course_thumbnail_link ||
+                            courseData?.thumbnail ||
+                            courseData?.image?.imageUploadedLink;
+                          const youtubeThumbnail = courseData.intro_video
+                            ? getYouTubeThumbnail(courseData.intro_video)
+                            : null;
+                          const finalThumbnail = thumbnail || youtubeThumbnail;
+                          return finalThumbnail ? (
+                            <Image
+                              src={finalThumbnail}
+                              alt={courseData?.title || "Course thumbnail"}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-teal/20 flex items-center justify-center">
+                              <svg className="w-16 h-16 text-primary/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
+                              </svg>
+                            </div>
+                          );
+                        })()
                       )}
                     </div>
 
-                    <div className="p-4">
-                      {/* Pricing */}
-                      <div className="flex flex-col lgXxl:flex-row items-center gap-4 md:gap-2 justify-between pt-2 pb-4 border-b border-gray-300/20">
-                        <div>
-                          <p className="font-bold text-base text-muted-foreground text-center lgXxl:text-left">
-                            কোর্স প্রাইস
-                          </p>
-                          <div className="flex items-center gap-4">
-                            <div>
-                              <p className="text-3xl font-bold">
-                                {courseData?.price}/-
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-destructive line-through font-semibold text-lg">
-                                {courseData?.x_price}/-
-                              </p>
-                            </div>
-                          </div>
+                    <div className="p-5">
+                      {/* Pricing Block */}
+                      <div className="mb-5">
+                        <div className="flex items-end gap-3 flex-wrap">
+                          <span className="text-4xl font-extrabold text-foreground tracking-tight">
+                            ৳{discountInfo ? discountInfo.final_price : courseData?.price}
+                          </span>
+                          {courseData?.x_price && (
+                            <span className="text-lg text-muted-foreground line-through mb-1">
+                              ৳{courseData.x_price}
+                            </span>
+                          )}
+                          {courseData?.x_price && courseData?.price && (
+                            <span className="mb-1 text-sm font-bold text-success bg-success/15 border border-success/30 px-2 py-0.5 rounded-full">
+                              {Math.round(((courseData.x_price - courseData.price) / courseData.x_price) * 100)}% ছাড়
+                            </span>
+                          )}
                         </div>
-                        <div className="flex gap-3">
-                          <div className="flex items-center gap-4">
-                            <div className="text-center lgXxl:text-left">
-                              <p className="font-bold text-base text-muted-foreground">
-                                {isPrebookingMode
-                                  ? "প্রিবুক করেছে"
-                                  : "কোর্সটিতে ভর্তি হয়েছে"}
-                              </p>
-                              <p className="text-3xl font-bold">
-                                {isPrebookingMode
-                                  ? englishToBanglaNumbers(
-                                      courseData?.prebooking || 0,
-                                    )
-                                  : englishToBanglaNumbers(
-                                      courseData?.enrolled || 0,
-                                    )}{" "}
-                                জন
-                              </p>
+                        {/* Discount breakdown */}
+                        {discountInfo && (
+                          <div className="mt-3 p-3 bg-success/8 border border-success/25 rounded-xl space-y-1.5">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">মূল মূল্য</span>
+                              <span className="line-through text-muted-foreground">৳{discountInfo.original_price}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">কুপন ছাড়</span>
+                              <span className="font-semibold text-success">-৳{discountInfo.discount_amount}</span>
+                            </div>
+                            <div className="flex justify-between text-base font-bold pt-1 border-t border-success/20">
+                              <span className="text-foreground">সর্বমোট</span>
+                              <span className="text-success">৳{discountInfo.final_price}</span>
                             </div>
                           </div>
+                        )}
+                        {/* Social proof */}
+                        <div className="mt-3 flex items-center gap-2">
+                          <div className="flex -space-x-2">
+                            {[...Array(4)].map((_, i) => (
+                              <div key={i} className={`w-7 h-7 rounded-full border-2 border-card bg-primary/${(i + 2) * 10} flex items-center justify-center text-[10px] font-bold text-primary-foreground`}>
+                                {String.fromCharCode(65 + i)}
+                              </div>
+                            ))}
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            <span className="font-semibold text-foreground">
+                              {isPrebookingMode
+                                ? englishToBanglaNumbers(courseData?.prebooking || 0)
+                                : englishToBanglaNumbers(courseData?.enrolled || 0)}+
+                            </span>{" "}
+                            জন {isPrebookingMode ? "প্রিবুক করেছে" : "ভর্তি হয়েছে"}
+                          </span>
                         </div>
                       </div>
 
@@ -594,61 +605,21 @@ export default function CourseDetailsPage() {
                         isPrebookingMode={isPrebookingMode}
                       />
 
-                      {/* Features List */}
-                      <p className="text-lg mt-6 font-bold">
-                        এই কোর্সে তুমি পাচ্ছো
-                      </p>
-                      <div className="grid grid-cols-1 lg:grid-cols-2 mt-3 gap-y-1 gap-x-16">
-                        {courseData?.you_get?.you_get
-                          ?.split(",")
-                          .map((item: string, idx: number) => (
-                            <div className="flex gap-2 items-center" key={idx}>
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="min-w-[16px] min-h-[16px]"
-                              >
-                                <g opacity="0.7">
-                                  <path
-                                    d="M8.00065 14.6663C4.31865 14.6663 1.33398 11.6817 1.33398 7.99967C1.33398 4.31767 4.31865 1.33301 8.00065 1.33301C11.6827 1.33301 14.6673 4.31767 14.6673 7.99967C14.6673 11.6817 11.6827 14.6663 8.00065 14.6663ZM8.00065 13.333C9.41512 13.333 10.7717 12.7711 11.7719 11.7709C12.7721 10.7707 13.334 9.41414 13.334 7.99967C13.334 6.58519 12.7721 5.22863 11.7719 4.22844C10.7717 3.22824 9.41512 2.66634 8.00065 2.66634C6.58616 2.66634 5.22961 3.22824 4.22942 4.22844C3.22922 5.22863 2.66732 6.58519 2.66732 7.99967C2.66732 9.41414 3.22922 10.7707 4.22942 11.7709C5.22961 12.7711 6.58616 13.333 8.00065 13.333ZM7.33598 10.6663L4.50732 7.83767L5.44998 6.89501L7.33598 8.78101L11.1067 5.00967L12.05 5.95234L7.33598 10.6663Z"
-                                    fill="oklch(0.718 0.147 159.2)"
-                                  />
-                                </g>
-                              </svg>
-                              <p>{item}</p>
-                            </div>
-                          ))}
-                      </div>
-
                       {/* Course Outline Link */}
                       {courseData?.chips?.course_outline && (
                         <a
                           href={courseData.chips.course_outline}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full mt-6 flex items-center justify-center gap-2 px-4 py-3 text-foreground border border-primary/30 hover:border-primary/60 transition-all duration-300 rounded-lg font-medium relative group overflow-hidden"
-                          style={{
-                            boxShadow: "0 0 10px rgba(177, 83, 224, 0.1)",
-                          }}
+                          className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 text-foreground border border-border hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 rounded-xl font-medium text-sm group"
                         >
-                          <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-gradient-to-r from-primary via-primary/70 to-primary transition-opacity duration-300"></div>
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="text-primary"
-                          >
-                            <path
-                              d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"
-                              fill="currentColor"
-                            />
+                          <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
                           </svg>
-                          See Course Outline
+                          কোর্স আউটলাইন দেখো
+                          <svg className="w-3 h-3 opacity-50 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
                         </a>
                       )}
 
@@ -662,9 +633,9 @@ export default function CourseDetailsPage() {
                         isLive={courseData?.is_live}
                       />
 
-                      {/* Coupon Input - For entering coupon code */}
+                      {/* Coupon Input */}
                       {isCourseLive && !courseData.isTaken && (
-                        <div className="mt-6">
+                        <div className="mt-5">
                           <CouponInput
                             courseId={courseData.id}
                             originalPrice={courseData.price}
@@ -677,81 +648,30 @@ export default function CourseDetailsPage() {
                         </div>
                       )}
 
-                      {/* Discount Info Display */}
-                      {discountInfo && (
-                        <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 rounded-lg">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-green-800 dark:text-green-200">
-                              Original Price:
-                            </span>
-                            <span className="text-sm text-green-800 dark:text-green-200 line-through">
-                              ৳{discountInfo.original_price}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-green-800 dark:text-green-200">
-                              Discount:
-                            </span>
-                            <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                              -৳{discountInfo.discount_amount}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between pt-2 border-t border-green-300 dark:border-green-700">
-                            <span className="text-base font-bold text-green-800 dark:text-green-200">
-                              Final Price:
-                            </span>
-                            <span className="text-xl font-bold text-green-600 dark:text-green-400">
-                              ৳{discountInfo.final_price}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-
                       {/* Action Buttons */}
-                      <div id="purchase-section">
+                      <div id="purchase-section" className="mt-5">
                         {courseData.isTaken ? (
                           renderGotoCourseButton()
                         ) : isPrebookingMode ? (
                           courseData.isWishList || hasPrebooked ? (
-                            <div className="bg-success/20 border border-success/60 text-foreground py-3 px-4 w-full mt-8 rounded-xl text-center">
-                              <div className="flex items-center justify-center gap-2">
-                                <svg
-                                  className="w-5 h-5"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
+                            <div className="bg-success/15 border border-success/40 text-foreground py-4 px-4 w-full rounded-xl text-center">
+                              <div className="flex items-center justify-center gap-2 font-semibold">
+                                <svg className="w-5 h-5 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                 </svg>
-                                <span className="font-semibold">
-                                  তুমি ইতোমধ্যে কোর্সটি প্রিবুক করেছ! ✅
-                                </span>
+                                তুমি প্রিবুক করেছ! ✅
                               </div>
-                              <p className="text-sm mt-2 opacity-80">
-                                কোর্স লাইভ হলে তোমার ফোন ও ইমেইলে বিস্তারিত
-                                জানানো হবে!
+                              <p className="text-sm mt-2 text-muted-foreground">
+                                কোর্স লাইভ হলে তোমার ফোন ও ইমেইলে জানানো হবে
                               </p>
                             </div>
                           ) : (
                             <button
                               onClick={() => setOpenPrebookCourse(true)}
-                              className="group relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 px-6 w-full mt-8 rounded-lg hover:shadow-lg hover:shadow-primary/30 ease-in-out duration-200 font-semibold flex items-center justify-center gap-3 active:scale-95 transition-transform"
+                              className="group relative bg-linear-to-r from-primary to-primary/80 text-primary-foreground py-4 px-6 w-full rounded-xl hover:shadow-lg hover:shadow-primary/30 duration-200 font-bold text-lg flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
                             >
-                              <svg
-                                className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                                />
+                              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                               </svg>
                               প্রিবুক করো
                             </button>
@@ -759,10 +679,33 @@ export default function CourseDetailsPage() {
                         ) : (
                           <button
                             onClick={handleBuyCourse}
-                            className="bg-primary text-primary-foreground py-3 w-full mt-8 rounded-xl hover:bg-primary/80 ease-in-out duration-150 font-semibold"
+                            className="group relative overflow-hidden bg-linear-to-r from-primary to-primary/85 text-primary-foreground py-4 w-full rounded-xl hover:shadow-xl hover:shadow-primary/25 duration-200 font-bold text-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
                           >
-                            কোর্সটি কিনুন
+                            <span className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-200" />
+                            <svg className="w-5 h-5 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span className="relative">এখনই ভর্তি হও</span>
                           </button>
+                        )}
+
+                        {/* Trust strip */}
+                        {!courseData.isTaken && (
+                          <div className="mt-3 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <svg className="w-3.5 h-3.5 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                              নিরাপদ পেমেন্ট
+                            </span>
+                            <span className="w-px h-3 bg-border" />
+                            <span className="flex items-center gap-1">
+                              <svg className="w-3.5 h-3.5 text-primary" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              ৭ দিনের রিফান্ড
+                            </span>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -811,6 +754,46 @@ export default function CourseDetailsPage() {
           />
 
           {process.env.NODE_ENV === "development" && <AuthTest />}
+
+          {/* Sticky Mobile Buy Bar — hidden on lg and above where sidebar is visible */}
+          {!courseData.isTaken && (
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3 flex items-center gap-3">
+              <div className="flex flex-col min-w-0">
+                <span className="text-xl font-extrabold text-foreground leading-none">
+                  ৳{discountInfo ? discountInfo.final_price : courseData?.price}
+                </span>
+                {courseData?.x_price && (
+                  <span className="text-xs text-muted-foreground line-through">
+                    ৳{courseData.x_price}
+                  </span>
+                )}
+              </div>
+              {isPrebookingMode ? (
+                courseData.isWishList || hasPrebooked ? (
+                  <div className="flex-1 text-center text-sm font-semibold text-success bg-success/15 border border-success/40 rounded-xl py-3 px-4">
+                    ✅ প্রিবুক হয়েছে
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setOpenPrebookCourse(true)}
+                    className="flex-1 bg-linear-to-r from-primary to-primary/80 text-primary-foreground font-bold py-3 rounded-xl text-base active:scale-95 transition-transform"
+                  >
+                    প্রিবুক করো
+                  </button>
+                )
+              ) : (
+                <button
+                  onClick={handleBuyCourse}
+                  className="flex-1 bg-linear-to-r from-primary to-primary/85 text-primary-foreground font-bold py-3 rounded-xl text-base active:scale-95 transition-transform flex items-center justify-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  এখনই ভর্তি হও
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>

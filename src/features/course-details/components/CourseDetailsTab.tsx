@@ -10,6 +10,7 @@ interface CourseDetailsTabProps {
   feedbacks?: Feedback[];
   faqs?: FAQ[];
   deadline?: string;
+  youGet?: string;
 }
 
 export default function CourseDetailsTab({
@@ -17,14 +18,37 @@ export default function CourseDetailsTab({
   feedbacks,
   faqs,
   deadline,
+  youGet,
 }: CourseDetailsTabProps) {
   const [expandedDescription, setExpandedDescription] = useState(false);
+
+  const youGetItems = youGet ? youGet.split(",").map((s) => s.trim()).filter(Boolean) : [];
 
   return (
     <div>
       <h2 className="text-2xl lg:text-4xl font-semibold pt-12 border-t border-border/20 relative z-10">
         কোর্স সম্পর্কে বিস্তারিত
       </h2>
+
+      {/* What you get */}
+      {youGetItems.length > 0 && (
+        <div className="mt-6 mb-8">
+          <p className="text-lg font-bold mb-4">এই কোর্সে তুমি পাচ্ছো</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {youGetItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-center gap-2.5 bg-primary/5 border border-primary/15 rounded-lg px-3 py-2.5 text-sm"
+              >
+                <svg className="w-4 h-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span className="text-foreground">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {deadline && (
         <div className="flex gap-8 items-center pb-6 border-b border-border/20 relative z-10">
           <div className="flex gap-3 mt-6 items-center bg-[#FFF1E9]/20 px-3 py-2 rounded-xl">
