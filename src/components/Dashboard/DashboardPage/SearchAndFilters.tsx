@@ -26,14 +26,14 @@ export default function SearchAndFilters({
   availableBundles,
 }: SearchAndFiltersProps) {
   return (
-    <div className="flex flex-col gap-3 mb-8 bg-background p-3 sm:p-4 rounded-xl shadow-sm border border-border">
+    <div className="flex flex-col gap-3 mb-8 bg-card p-3 sm:p-4 rounded-xl shadow-sm border border-border">
       {/* Search */}
       <div className="relative w-full">
         <BsSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
           placeholder="Search your courses..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted border-none focus:ring-2 focus:ring-purple text-heading dark:text-darkHeading text-sm"
+          className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted text-foreground border border-input focus:ring-2 focus:ring-ring text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -42,7 +42,7 @@ export default function SearchAndFilters({
       {/* Filters & Sort */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 w-full">
         <select
-          className="bg-muted border-none rounded-lg py-2.5 px-3 text-heading dark:text-darkHeading focus:ring-2 focus:ring-purple cursor-pointer text-sm w-full"
+          className="bg-muted border border-input rounded-lg py-2.5 px-3 text-foreground focus:ring-2 focus:ring-ring cursor-pointer text-sm w-full"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
@@ -60,7 +60,7 @@ export default function SearchAndFilters({
         </select>
 
         <select
-          className="bg-muted border-none rounded-lg py-2.5 px-3 text-heading dark:text-darkHeading focus:ring-2 focus:ring-purple cursor-pointer text-sm w-full"
+          className="bg-muted border border-input rounded-lg py-2.5 px-3 text-foreground focus:ring-2 focus:ring-ring cursor-pointer text-sm w-full"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as any)}
         >
@@ -71,7 +71,7 @@ export default function SearchAndFilters({
         </select>
 
         <select
-          className="bg-muted border-none rounded-lg py-2.5 px-3 text-heading dark:text-darkHeading focus:ring-2 focus:ring-purple cursor-pointer text-sm w-full"
+          className="bg-muted border border-input rounded-lg py-2.5 px-3 text-foreground focus:ring-2 focus:ring-ring cursor-pointer text-sm w-full"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as any)}
         >

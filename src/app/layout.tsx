@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anek_Bangla, Geist_Mono, Manrope } from "next/font/google";
+import AppNavbar from "@/components/AppNavbar";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -36,7 +37,10 @@ export default function RootLayout({
       className={`${anekBangla.variable} ${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
-        <Providers>{children}</Providers>
+        <Providers>
+          <AppNavbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

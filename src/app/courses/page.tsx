@@ -1,6 +1,5 @@
 "use client";
 
-import Nav from "@/components/Nav";
 import SEO from "@/components/SEO";
 import Footer from "@/components/footer";
 import { Toaster } from "react-hot-toast";
@@ -61,7 +60,6 @@ export default function CoursesPage() {
     return (
       <div className="font-hind overflow-x-hidden">
         <SEO title={pageTitle} description={pageDescription} />
-        <Nav />
         <CoursesLoadingSkeleton />
         <Footer />
       </div>
@@ -72,7 +70,6 @@ export default function CoursesPage() {
     return (
       <div className="font-hind overflow-x-hidden">
         <SEO title={pageTitle} description={pageDescription} />
-        <Nav />
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
             <p className="text-destructive text-lg mb-4">{error}</p>
@@ -94,14 +91,16 @@ export default function CoursesPage() {
   return (
     <div className="font-hind overflow-x-hidden">
       <SEO title={pageTitle} description={pageDescription} />
-      <Nav />
       <Toaster position="top-right" />
 
       {/* Ambient gradient blobs — theme-aware */}
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-        <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-primary/10 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 w-125 h-125 rounded-full bg-primary/8 blur-[100px]" />
+        <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-primary/10 dark:bg-primary/15 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-125 h-125 rounded-full bg-primary/8 dark:bg-primary/12 blur-[100px]" />
+        <div className="absolute bottom-0 left-1/4 w-100 h-100 rounded-full bg-primary/5 dark:bg-primary/10 blur-[100px]" />
       </div>
+      {/* Dark mode ambient top glow — matches landing page atmosphere */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] pointer-events-none z-[39] hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)' }} />
 
       {/* Global subtle graph paper grid overlay */}
       <div

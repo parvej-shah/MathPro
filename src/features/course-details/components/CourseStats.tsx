@@ -18,7 +18,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
   return (
     <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-y-3 gap-x-3">
       {isSectionValid(sections.chapter) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="24"
             height="24"
@@ -43,7 +43,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
       )}
 
       {isSectionValid(sections.video) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="24"
             height="18"
@@ -68,7 +68,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
       )}
 
       {isSectionValid(sections.contest) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="22"
             height="24"
@@ -95,7 +95,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
       )}
 
       {isSectionValid(sections.liveClass) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="25"
             height="18"
@@ -120,7 +120,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
       )}
 
       {isSectionValid(sections.archiveClass) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="19"
             height="24"
@@ -147,7 +147,7 @@ export default function CourseStats({ sections }: CourseStatsProps) {
       )}
 
       {isSectionValid(sections.codingProblem) && (
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-black/20 dark:bg-white/5">
+        <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5">
           <svg
             width="24"
             height="24"

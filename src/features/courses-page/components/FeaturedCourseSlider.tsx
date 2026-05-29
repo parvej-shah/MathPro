@@ -148,7 +148,7 @@ export default function FeaturedCourseSlider({
       `}</style>
 
       <div
-        className="relative rounded-3xl overflow-hidden shadow-[0_20px_60px_-10px_rgba(139,92,246,0.25)] border border-white/10 dark:border-white/5 select-none"
+        className="relative rounded-3xl overflow-hidden shadow-[0_20px_60px_-10px_rgba(139,92,246,0.25)] dark:shadow-[0_20px_80px_-10px_rgba(16,185,129,0.18)] border border-white/10 dark:border-white/8 select-none"
         style={{ aspectRatio: "16/7", minHeight: 300, maxHeight: 620 }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
@@ -180,7 +180,7 @@ export default function FeaturedCourseSlider({
           >
             {/* Badge row */}
             <div className="flex items-center gap-3 mb-3 sm:mb-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-purple/80 text-white backdrop-blur-sm border border-purple/30 shadow-lg">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-primary/80 text-white backdrop-blur-sm border border-primary/30 shadow-lg">
                 {isVideo && <BsPlayCircle className="w-3 h-3" />}
                 {label}
               </span>
@@ -201,7 +201,7 @@ export default function FeaturedCourseSlider({
               </p>
             )}
 
-            <span className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-purple-200 group-hover/link:text-white group-hover/link:gap-3 transition-all duration-300">
+            <span className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-emerald-200 group-hover/link:text-white group-hover/link:gap-3 transition-all duration-300">
               বিস্তারিত দেখুন
               <BsChevronRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover/link:translate-x-1" />
             </span>
@@ -215,7 +215,7 @@ export default function FeaturedCourseSlider({
               type="button"
               onClick={(e) => { e.stopPropagation(); prev(); }}
               aria-label="Previous slide"
-              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple"
+              className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <BsChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -223,7 +223,7 @@ export default function FeaturedCourseSlider({
               type="button"
               onClick={(e) => { e.stopPropagation(); next(); }}
               aria-label="Next slide"
-              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple"
+              className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/30 backdrop-blur-md border border-white/15 text-white flex items-center justify-center hover:bg-black/55 hover:scale-110 active:scale-95 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <BsChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>

@@ -1,6 +1,5 @@
 "use client";
 
-import Nav from "@/components/Nav";
 import { HindSiliguri } from "@/helpers";
 import SEO from "@/components/SEO";
 import { useState, useContext, useEffect } from "react";
@@ -306,8 +305,6 @@ export default function CourseDetailsPage() {
           courseData?.image?.imageUploadedLink
         }
       />
-
-      <Nav />
       <Toaster />
 
       {/* Loading State */}

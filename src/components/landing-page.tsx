@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import LandingStyleCourseCard from "@/features/courses-page/components/LandingStyleCourseCard";
 import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
 import Footer from "@/components/footer";
-import Nav from "@/components/Nav";
 import { motion, AnimatePresence } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -195,60 +194,60 @@ const classCategories = [
     title: "অষ্টম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#dbeafe]",
+    bgClass: "bg-[#dbeafe] dark:bg-[#1e3a8a]/30",
     iconBgClass: "bg-[#3b82f6]",
-    titleClass: "text-[#2563eb]",
-    descClass: "text-[#1e3a8a]/70",
+    titleClass: "text-[#2563eb] dark:text-blue-300",
+    descClass: "text-[#1e3a8a]/70 dark:text-blue-200/60",
     icon: BookOpen
   },
   {
     title: "নবম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#dcfce7]",
+    bgClass: "bg-[#dcfce7] dark:bg-emerald-900/30",
     iconBgClass: "bg-[#10b981]",
-    titleClass: "text-[#059669]",
-    descClass: "text-[#064e3b]/70",
+    titleClass: "text-[#059669] dark:text-emerald-300",
+    descClass: "text-[#064e3b]/70 dark:text-emerald-200/60",
     icon: Calculator
   },
   {
     title: "দশম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#f3e8ff]",
+    bgClass: "bg-[#f3e8ff] dark:bg-purple-900/30",
     iconBgClass: "bg-[#a855f7]",
-    titleClass: "text-[#7e22ce]",
-    descClass: "text-[#4c1d95]/70",
+    titleClass: "text-[#7e22ce] dark:text-purple-300",
+    descClass: "text-[#4c1d95]/70 dark:text-purple-200/60",
     icon: GraduationCap
   },
   {
     title: "এসএসসি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#ffedd5]",
+    bgClass: "bg-[#ffedd5] dark:bg-orange-900/30",
     iconBgClass: "bg-[#f97316]",
-    titleClass: "text-[#ea580c]",
-    descClass: "text-[#7c2d12]/70",
+    titleClass: "text-[#ea580c] dark:text-orange-300",
+    descClass: "text-[#7c2d12]/70 dark:text-orange-200/60",
     icon: FlaskConical
   },
   {
     title: "এইচএসসি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#e0e7ff]",
+    bgClass: "bg-[#e0e7ff] dark:bg-indigo-900/30",
     iconBgClass: "bg-[#6366f1]",
-    titleClass: "text-[#4f46e5]",
-    descClass: "text-[#312e81]/70",
+    titleClass: "text-[#4f46e5] dark:text-indigo-300",
+    descClass: "text-[#312e81]/70 dark:text-indigo-200/60",
     icon: Laptop
   },
   {
     title: "এডমিশন",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
     href: "#",
-    bgClass: "bg-[#fce7f3]",
+    bgClass: "bg-[#fce7f3] dark:bg-pink-900/30",
     iconBgClass: "bg-[#ec4899]",
-    titleClass: "text-[#e11d48]",
-    descClass: "text-[#881337]/70",
+    titleClass: "text-[#e11d48] dark:text-pink-300",
+    descClass: "text-[#881337]/70 dark:text-pink-200/60",
     icon: Users
   }
 ];
@@ -405,12 +404,11 @@ export function LandingPage() {
   }, [emblaApi, onSelect]);
 
   return (
-    <div className="min-h-screen bg-emerald-50/30 font-sans text-slate-900 overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 relative z-0">
+    <div className="min-h-screen bg-page-bg font-sans text-foreground overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 dark:selection:bg-emerald-800 dark:selection:text-emerald-100 relative z-0">
       {/* Global subtle graph paper grid overlay */}
       <div className="fixed inset-0 z-[40] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-
-      {/* --- STICKY NAVBAR --- */}
-      <Nav mode="landing" />
+      {/* Dark mode ambient glow — top-center emerald radial, invisible in light */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none z-[39] hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.07) 0%, transparent 70%)' }}></div>
 
       {/* --- HERO CAROUSEL --- */}
       <section className="relative h-[100dvh] min-h-[700px] w-full bg-slate-950 overflow-hidden">
@@ -539,17 +537,17 @@ export function LandingPage() {
       </section>
 
       {/* --- CLASS CATEGORIES --- */}
-      <section className="py-24 bg-[#f4f7fe] relative border-b border-slate-100 overflow-hidden">
+      <section className="py-24 bg-section-b relative border-b border-border overflow-hidden">
         {/* Math Motif Background */}
         <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}>∫</div>
         <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-9px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDelay: "-5s", animationDuration: "16s" }}>π</div>
         <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "45deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-9s", animationDuration: "13s" }}>√</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-2xl mx-auto mb-16 relative z-[45]">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-[#00b5cc] font-heading">
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-teal font-heading">
               আমাদের ক্যাটাগরিসমূহ
             </h2>
-            <p className="text-slate-500 text-lg font-medium">
+            <p className="text-muted-foreground text-lg font-medium">
               তোমার সুবিধামতো বেছে নাও যেকোনো একটি ক্যাটাগরি এবং শুরু করো তোমার শেখার যাত্রা।
             </p>
           </div>
@@ -557,7 +555,7 @@ export function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {classCategories.map((category, i) => (
               <a key={i} href={category.href} className="group outline-none relative z-[45] block">
-                <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
+                <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:hover:shadow-primary/15 border border-transparent dark:border-white/5 dark:hover:border-white/10 relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
                   <div>
                     <div className={`size-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-sm ${category.iconBgClass}`}>
                       <category.icon className="size-7" />
@@ -578,14 +576,14 @@ export function LandingPage() {
       </section>
 
       {/* --- VALUE PROP SECTION --- */}
-      <section id="features" className="py-28 bg-white relative overflow-hidden">
+      <section id="features" className="py-28 bg-section-a relative overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-50 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
-        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-50/80 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
+        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-100/60 dark:text-emerald-900/30 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
+        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-100/50 dark:text-emerald-900/20 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20 relative z-[45]">
-            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">কেন MathPro বেছে নিবে?</h2>
-            <p className="text-slate-500 text-xl font-medium leading-relaxed">আমরা শুধু গণিত পড়াই না। আমরা এমন সিস্টেম তৈরি করি যা তোমাকে গণিতে দক্ষ করে তুলবে।</p>
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">কেন MathPro বেছে নিবে?</h2>
+            <p className="text-muted-foreground text-xl font-medium leading-relaxed">আমরা শুধু গণিত পড়াই না। আমরা এমন সিস্টেম তৈরি করি যা তোমাকে গণিতে দক্ষ করে তুলবে।</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
@@ -593,13 +591,13 @@ export function LandingPage() {
               <motion.div
                 key={i}
                 whileHover={{ y: -8 }}
-                className="p-8 md:p-10 rounded-[2rem] bg-[#fbfdfc] border border-emerald-100 shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-300 group flex flex-col items-start relative z-[45]"
+                className="p-8 md:p-10 rounded-[2rem] bg-card border border-border shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex flex-col items-start relative z-[45]"
               >
-                <div className="size-16 rounded-2xl bg-[#e6f7ef] text-[#059669] flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
+                <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="size-7 stroke-[2.5]" />
                 </div>
-                <h3 className="text-2xl font-extrabold mb-4 text-slate-900 font-heading tracking-tight">{feature.title}</h3>
-                <p className="text-slate-500 leading-relaxed font-medium text-[15px]">{feature.desc}</p>
+                <h3 className="text-2xl font-extrabold mb-4 text-heading font-heading tracking-tight">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed font-medium text-[15px]">{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -607,16 +605,16 @@ export function LandingPage() {
       </section>
 
       {/* --- FEATURED COURSES (Grouped) --- */}
-      <section id="courses" className="py-28 bg-[#f4f7fe] relative overflow-hidden">
+      <section id="courses" className="py-28 bg-section-b relative overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[11rem] text-slate-200/40 font-serif font-bold -rotate-12 select-none pointer-events-none">θ</div>
-        <div className="absolute top-2/3 right-0 md:right-10 text-[6rem] md:text-[11rem] text-slate-200/50 font-serif font-bold rotate-12 select-none pointer-events-none">Φ</div>
+        <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[11rem] text-muted/40 dark:text-muted/20 font-serif font-bold -rotate-12 select-none pointer-events-none">θ</div>
+        <div className="absolute top-2/3 right-0 md:right-10 text-[6rem] md:text-[11rem] text-muted/50 dark:text-muted/20 font-serif font-bold rotate-12 select-none pointer-events-none">Φ</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20 lg:mb-24 relative z-[45]">
-            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">
-              আমাদের জনপ্রিয় <span className="text-[#059669]">কোর্সসমূহ</span>
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">
+              আমাদের জনপ্রিয় <span className="text-primary">কোর্সসমূহ</span>
             </h2>
-            <p className="text-slate-500 text-xl font-medium leading-relaxed">
+            <p className="text-muted-foreground text-xl font-medium leading-relaxed">
               দেশের সেরা শিক্ষকদের সাথে তোমার স্বপ্ন পূরণের যাত্রা শুরু হোক এখান থেকেই।
             </p>
           </div>
@@ -626,7 +624,7 @@ export function LandingPage() {
               <div key={i} className="flex flex-col">
                 {/* Category Header & Tabs */}
                 <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-10 relative z-[45]">
-                  <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-[#1e293b]">
+                  <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-heading">
                     {group.category}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 lg:ml-6">
@@ -634,8 +632,8 @@ export function LandingPage() {
                       <button
                         key={idx}
                         className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${idx === 0
-                          ? 'bg-[#1e293b] text-white shadow-xl shadow-slate-900/10'
-                          : 'bg-white border border-[#e2e8f0] text-slate-500 hover:bg-slate-50 hover:text-slate-700 hover:border-slate-300'
+                          ? 'bg-foreground text-background shadow-xl'
+                          : 'bg-card border border-border text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
                           }`}
                       >
                         {tab}
@@ -678,9 +676,9 @@ export function LandingPage() {
       />
 
       {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
-      <section id="branches" className="py-32 bg-[#fbfdfc] overflow-hidden relative">
+      <section id="branches" className="py-32 bg-section-a overflow-hidden relative">
         {/* Math Motif Background */}
-        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-slate-100 font-serif font-black select-none pointer-events-none z-0 animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "16s" }}>Ω</div>
+        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-muted/20 font-serif font-black select-none pointer-events-none z-0 animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "16s" }}>Ω</div>
         <div className="container mx-auto px-6 lg:px-12 relative z-[45]">
           <div className="grid lg:grid-cols-2 gap-16 xl:gap-20 items-center max-w-[1400px] mx-auto">
 
@@ -719,7 +717,7 @@ export function LandingPage() {
                 LON_ 90.4125° E <br />
                 <span className="text-white mt-2 inline-block">SYS.ACTIVE</span>
               </div>
-              <div className="absolute bottom-8 right-8 font-geist-mono text-[11px] text-slate-500 tracking-[0.2em] uppercase text-right">
+              <div className="absolute bottom-8 right-8 font-geist-mono text-[11px] text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase text-right">
                 MATHPRO_NET_V2 <br />
                 O2O_CONNECT
               </div>
@@ -759,14 +757,14 @@ export function LandingPage() {
 
             {/* Content (Right Side) */}
             <div className="flex flex-col items-start lg:pl-4 relative z-[45]">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#f0fdf4] text-[#059669] border border-[#d1fae5] text-xs font-bold uppercase tracking-widest mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-widest mb-6">
                 <MapPin className="size-3.5 stroke-[2.5]" />
                 আমাদের শাখাসমূহ
               </div>
-              <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 leading-[1.15] text-slate-900 font-heading">
+              <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 leading-[1.15] text-heading font-heading">
                 অনলাইনে শেখো।<br />অফলাইনে যুক্ত হও।
               </h2>
-              <p className="text-slate-500 text-[1.15rem] mb-12 leading-relaxed font-medium">
+              <p className="text-muted-foreground text-[1.15rem] mb-12 leading-relaxed font-medium">
                 অনলাইনে সেরা অভিজ্ঞতার পাশাপাশি, ঢাকায় MathPro-এর অফলাইন শাখাও রয়েছে। মক এক্সাম দিতে, প্রিন্টেড শিট নিতে বা শিক্ষকদের সাথে সরাসরি কথা বলতে চলে এসো আমাদের শাখায়।
               </p>
 
@@ -775,15 +773,15 @@ export function LandingPage() {
                   { name: "মিরপুর ১০ সেন্টার", address: "বাড়ি ১২, রোড ৪, ব্লক সি, মিরপুর, ঢাকা", mapUrl: "https://maps.google.com/?q=Mirpur+10+Center,+Dhaka" },
                   { name: "উত্তরা সেক্টর ৭", address: "সেক্টর ৭, সোনারগাঁও জনপথ রোড, ঢাকা", mapUrl: "https://maps.google.com/?q=Uttara+Sector+7,+Dhaka" }
                 ].map((branch, i) => (
-                  <a key={i} href={branch.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] border border-slate-200 hover:border-emerald-300 transition-all duration-300 bg-white hover:bg-[#fbfdfc] group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-emerald-900/5 hover:-translate-y-1 relative z-[45]">
+                  <a key={i} href={branch.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] border border-border hover:border-emerald-400/50 dark:hover:border-emerald-500/40 transition-all duration-300 bg-card hover:bg-card/80 group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 hover:-translate-y-1 relative z-[45]">
                     <div>
-                      <h4 className="font-extrabold text-[22px] text-slate-900 mb-1.5 font-heading tracking-tight group-hover:text-emerald-600 transition-colors">{branch.name}</h4>
-                      <p className="text-slate-500 font-medium text-[15px] flex items-center gap-2">
+                      <h4 className="font-extrabold text-[22px] text-heading mb-1.5 font-heading tracking-tight group-hover:text-emerald-600 transition-colors">{branch.name}</h4>
+                      <p className="text-muted-foreground font-medium text-[15px] flex items-center gap-2">
                         <MapPin className="size-4 text-emerald-500" />
                         {branch.address}
                       </p>
                     </div>
-                    <div className="size-12 rounded-full bg-[#f1f5f9] text-slate-400 group-hover:text-white group-hover:bg-[#059669] flex items-center justify-center transition-all duration-300 shadow-sm group-hover:rotate-45 group-hover:scale-110">
+                    <div className="size-12 rounded-full bg-muted text-muted-foreground group-hover:text-white group-hover:bg-primary flex items-center justify-center transition-all duration-300 shadow-sm group-hover:rotate-45 group-hover:scale-110">
                       <ArrowUpRight className="size-6 stroke-[2.5]" />
                     </div>
                   </a>
@@ -796,7 +794,7 @@ export function LandingPage() {
       </section>
 
       {/* --- FAQ SECTION --- */}
-      <section className="py-28 bg-[#f4f7fe] relative overflow-hidden">
+      <section className="py-28 bg-section-b relative overflow-hidden">
         {/* Math Motif Background */}
         <div className="absolute top-10 md:top-20 right-0 md:right-20 text-[12rem] md:text-[20rem] text-[#3b82f6]/5 font-serif font-bold rotate-12 select-none pointer-events-none">λ</div>
         <div className="absolute -bottom-4  md:bottom-10 left-0 md:left-10 text-[9rem] md:text-[15rem] text-[#10b981]/5 font-serif font-bold -rotate-12 select-none pointer-events-none">∀</div>
@@ -805,25 +803,25 @@ export function LandingPage() {
 
             {/* FAQ Intro & Support Box (Left Column) */}
             <div className="lg:col-span-5 lg:sticky lg:top-32 relative z-[45]">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6">
                 <HelpCircle className="size-4" />
                 সচরাচর জিজ্ঞাসা
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-6 text-slate-900 font-heading">
-                তোমার সব<br /><span className="text-[#059669]">প্রশ্নের উত্তর</span>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-6 text-heading font-heading">
+                তোমার সব<br /><span className="text-primary">প্রশ্নের উত্তর</span>
               </h2>
-              <p className="text-slate-500 text-lg mb-10 leading-relaxed font-medium pr-4">
+              <p className="text-muted-foreground text-lg mb-10 leading-relaxed font-medium pr-4">
                 কোর্স, পেমেন্ট বা অন্যান্য বিষয় নিয়ে কোনো কনফিউশন আছে? নিচের তালিকা থেকে তোমার উত্তরটি জেনে নাও।
               </p>
 
-              <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                <div className="size-14 rounded-2xl bg-[#e6f7ef] text-[#059669] flex items-center justify-center mb-6 relative z-10">
+              <div className="bg-card p-8 rounded-3xl border border-border shadow-xl shadow-black/5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+                <div className="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 relative z-10">
                   <MessageCircle className="size-7" />
                 </div>
-                <h4 className="font-extrabold text-xl text-slate-900 mb-2 font-heading relative z-10">আরও কিছু জানার আছে?</h4>
-                <p className="text-slate-500 font-medium text-[15px] mb-8 relative z-10">আমাদের সাপোর্ট টিম সবসময় তোমার পাশে আছে। যেকোনো প্রয়োজনে মেসেজ দাও।</p>
-                <button className="w-full py-4 bg-slate-900 hover:bg-[#059669] text-white font-bold rounded-2xl transition-colors shadow-lg hover:shadow-emerald-900/20 relative z-10">
+                <h4 className="font-extrabold text-xl text-heading mb-2 font-heading relative z-10">আরও কিছু জানার আছে?</h4>
+                <p className="text-muted-foreground font-medium text-[15px] mb-8 relative z-10">আমাদের সাপোর্ট টিম সবসময় তোমার পাশে আছে। যেকোনো প্রয়োজনে মেসেজ দাও।</p>
+                <button className="w-full py-4 bg-foreground hover:bg-primary text-background font-bold rounded-2xl transition-colors shadow-lg hover:shadow-emerald-900/20 relative z-10">
                   সাপোর্টে মেসেজ দাও
                 </button>
               </div>
@@ -834,16 +832,16 @@ export function LandingPage() {
               {faqs.map((faq, idx) => (
                 <div
                   key={idx}
-                  className={`bg-white rounded-[1.5rem] border transition-all duration-300 overflow-hidden relative z-[45] ${openFaq === idx ? 'border-emerald-500 shadow-xl shadow-emerald-900/5' : 'border-slate-200 hover:border-emerald-300'}`}
+                  className={`bg-card rounded-[1.5rem] border transition-all duration-300 overflow-hidden relative z-[45] ${openFaq === idx ? 'border-emerald-500/60 dark:border-emerald-400/40 shadow-xl shadow-emerald-500/10 dark:shadow-emerald-400/10' : 'border-border hover:border-emerald-400/40 dark:hover:border-emerald-500/30'}`}
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
                     className="w-full flex items-center justify-between p-6 md:p-8 text-left bg-transparent outline-none group"
                   >
-                    <h4 className={`font-extrabold text-[1.1rem] md:text-xl font-heading pr-8 transition-colors ${openFaq === idx ? 'text-[#059669]' : 'text-slate-900 group-hover:text-[#059669]'}`}>
+                    <h4 className={`font-extrabold text-[1.1rem] md:text-xl font-heading pr-8 transition-colors ${openFaq === idx ? 'text-primary' : 'text-heading group-hover:text-primary'}`}>
                       {faq.question}
                     </h4>
-                    <div className={`shrink-0 size-12 rounded-full flex items-center justify-center transition-colors ${openFaq === idx ? 'bg-emerald-100 text-[#059669]' : 'bg-[#f1f5f9] text-slate-400 group-hover:bg-[#e6f7ef] group-hover:text-[#059669]'}`}>
+                    <div className={`shrink-0 size-12 rounded-full flex items-center justify-center transition-colors ${openFaq === idx ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'}`}>
                       {openFaq === idx ? <Minus className="size-6" /> : <Plus className="size-6" />}
                     </div>
                   </button>
@@ -855,7 +853,7 @@ export function LandingPage() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                       >
-                        <div className="px-6 md:px-8 pb-8 pt-0 text-slate-500 font-medium leading-relaxed text-[15px]">
+                        <div className="px-6 md:px-8 pb-8 pt-0 text-muted-foreground font-medium leading-relaxed text-[15px]">
                           {faq.answer}
                         </div>
                       </motion.div>

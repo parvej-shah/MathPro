@@ -111,8 +111,8 @@ function FAQAccordionItem({
     <div
       className={`rounded-2xl border overflow-hidden transition-all duration-300 ${
         isOpen
-          ? "bg-card border-primary/30 shadow-lg shadow-primary/8"
-          : "bg-card border-border hover:border-primary/20"
+          ? "bg-card border-primary/30 shadow-lg shadow-primary/8 dark:border-emerald-400/35 dark:shadow-emerald-400/10"
+          : "bg-card border-border hover:border-primary/20 dark:hover:border-emerald-500/25"
       }`}
     >
       <button
@@ -288,7 +288,7 @@ export default function FAQSection() {
               placeholder="প্রশ্ন খুঁজুন..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-14 pr-6 py-4 rounded-2xl bg-card border border-border text-heading placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-base"
+              className="w-full pl-14 pr-6 py-4 rounded-2xl bg-card border border-border text-heading placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/15 dark:focus:border-emerald-500/60 transition-all text-base"
             />
           </div>
 
@@ -302,8 +302,8 @@ export default function FAQSection() {
                     onClick={() => setSelectedCategory(value)}
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       active
-                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                        : "bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary"
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 dark:shadow-primary/25"
+                        : "bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary dark:hover:border-emerald-500/40 dark:hover:shadow-sm dark:hover:shadow-emerald-500/10"
                     }`}
                   >
                     <Icon className="size-4" />
@@ -316,13 +316,13 @@ export default function FAQSection() {
             <div className="flex gap-2">
               <button
                 onClick={expandAll}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary transition-all"
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary dark:hover:border-emerald-500/40 transition-all"
               >
                 সব খুলুন
               </button>
               <button
                 onClick={collapseAll}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary transition-all"
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary dark:hover:border-emerald-500/40 transition-all"
               >
                 সব বন্ধ
               </button>

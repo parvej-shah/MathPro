@@ -19,7 +19,7 @@ export default function StatsSection({
         title="Total Enrolled"
         value={totalCourses}
         icon={<BsRocket />}
-        colorClass="text-purple"
+        colorClass="text-primary"
       />
       <StatsCard
         title="Course Bundles"
@@ -31,7 +31,7 @@ export default function StatsSection({
         title="Individual Courses"
         value={totalIndividualCourses}
         icon={<BsBook />}
-        colorClass="text-orange-500"
+        colorClass="text-accent"
       />
     </div>
   );

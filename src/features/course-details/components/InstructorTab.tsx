@@ -1,15 +1,11 @@
-import { useContext } from 'react';
 import { BsChevronRight } from 'react-icons/bs';
 import { Instructor } from '@/features/course-details/_lib/types';
-import { UserContext } from '@/Contexts/UserContext';
 
 interface InstructorTabProps {
     instructors?: Instructor[];
 }
 
 export default function InstructorTab({ instructors }: InstructorTabProps) {
-    const [user] = useContext<any>(UserContext);
-
     return (
         <div className="py-12 relative">
             <svg
@@ -26,7 +22,7 @@ export default function InstructorTab({ instructors }: InstructorTabProps) {
                         rx="136.757"
                         ry="76.9931"
                         transform="rotate(-10.6934 268.669 580.032)"
-                        fill="#B153E0"
+                        fill="oklch(0.718 0.147 159.2)"
                     />
                 </g>
                 <defs>
@@ -60,16 +56,10 @@ export default function InstructorTab({ instructors }: InstructorTabProps) {
             {instructors && instructors.length > 0 ? (
                 instructors.map((instructor) => (
                     <div
-                        className="my-8 rounded-2xl cursor-pointer border border-purple/10 hover:border-purple/30 duration-150 ease-in-out z-10 overflow-hidden"
+                        className="my-8 rounded-2xl cursor-pointer border border-primary/10 hover:border-primary/30 duration-150 ease-in-out z-10 overflow-hidden bg-primary/5 dark:bg-primary/10"
                         key={instructor.name}
-                        style={{
-                            background: user.darkMode
-                                ? 'linear-gradient(90deg, rgba(88, 56, 110, 0.4) 0%, rgba(45, 28, 55, 0.3) 100%)'
-                                : 'linear-gradient(90deg, rgba(177, 83, 224, 0.15) 0%, rgba(177, 83, 224, 0.05) 100%)',
-                        }}
                     >
                         <div className="px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                            {/* Image Container - Rounded Rectangle */}
                             <div className="flex-shrink-0">
                                 {instructor.imageUploadedLink ? (
                                     <img
@@ -86,12 +76,11 @@ export default function InstructorTab({ instructors }: InstructorTabProps) {
                                 )}
                             </div>
 
-                            {/* Text Content */}
                             <div className="flex-grow text-center md:text-left">
-                                <h3 className="text-2xl lg:text-3xl font-semibold text-heading dark:text-white mb-3">
+                                <h3 className="text-2xl lg:text-3xl font-semibold text-foreground mb-3">
                                     {instructor.name}
                                 </h3>
-                                <div className="text-paragraph dark:text-foreground space-y-1">
+                                <div className="text-muted-foreground space-y-1">
                                     {instructor.credibility.split('\n').map((line, i) => (
                                         <p key={i} className="text-sm lg:text-base leading-relaxed">
                                             {line}
@@ -100,8 +89,7 @@ export default function InstructorTab({ instructors }: InstructorTabProps) {
                                 </div>
                             </div>
 
-                            {/* Arrow Icon */}
-                            <div className="hidden md:block flex-shrink-0 text-purple self-center">
+                            <div className="hidden md:block flex-shrink-0 text-primary self-center">
                                 <BsChevronRight size={24} />
                             </div>
                         </div>
@@ -109,7 +97,7 @@ export default function InstructorTab({ instructors }: InstructorTabProps) {
                 ))
             ) : (
                 <div className="text-center py-8">
-                    <p className="text-paragraph dark:text-darkParagraph">
+                    <p className="text-muted-foreground">
                         ইন্সট্রাক্টরের তথ্য শীঘ্রই আপডেট করা হবে
                     </p>
                 </div>

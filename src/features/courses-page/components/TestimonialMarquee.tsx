@@ -98,7 +98,7 @@ const staticTestimonials: Feedback[] = [
 
 function TestimonialCard({ feedback }: { feedback: Feedback }) {
   return (
-    <div className="flex-shrink-0 w-[300px] md:w-[340px] bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/8 transition-all duration-300">
+    <div className="flex-shrink-0 w-[300px] md:w-[340px] bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300">
       {/* Quote icon + stars */}
       <div className="flex items-center justify-between">
         <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -198,7 +198,7 @@ export default function TestimonialMarquee({
   const row2 = source.filter((_, i) => i % 2 === 1);
 
   return (
-    <section className="relative py-16 md:py-20 bg-section-a overflow-hidden">
+    <section className="relative py-16 md:py-20 bg-section-a overflow-hidden dark:border-t dark:border-white/5">
       {/* Math motif background */}
       <div
         aria-hidden

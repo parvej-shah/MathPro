@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import React from "react";
+import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { UserContextProvider } from "@/Contexts/UserContext";
@@ -20,10 +21,12 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <UserContextProvider>
-        <TooltipProvider>{children}</TooltipProvider>
-      </UserContextProvider>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <QueryClientProvider client={queryClient}>
+        <UserContextProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </UserContextProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

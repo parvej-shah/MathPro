@@ -34,12 +34,12 @@ const footerLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 text-slate-200 selection:bg-emerald-500 selection:text-white border-t border-slate-900">
+    <footer className="bg-slate-950 text-slate-200 selection:bg-emerald-500 selection:text-white border-t border-white/10">
       {/* Top Grid Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 border-b border-slate-900">
-        
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 border-b border-white/10">
+
         {/* Info Column */}
-        <div className="p-8 border-b md:border-b-0 md:border-r border-slate-900 lg:col-span-2 flex flex-col justify-between h-full min-h-[300px]">
+        <div className="p-8 border-b md:border-b-0 md:border-r border-white/10 lg:col-span-2 flex flex-col justify-between h-full min-h-[300px]">
           <div>
             <h3 className="text-sm font-bold tracking-tight uppercase mb-4 text-emerald-400">
               MATHPRO প্ল্যাটফর্ম:
@@ -52,7 +52,7 @@ export default function Footer() {
           <div className="mt-12">
             <a 
               href="#" 
-              className="inline-flex items-center gap-2 px-5 py-3 border border-slate-700 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors"
             >
               কোর্সগুলো দেখুন <ArrowUpRight className="w-4 h-4" />
             </a>
@@ -63,9 +63,9 @@ export default function Footer() {
         {footerLinks.map((group, i) => (
           <div 
             key={i} 
-            className="p-8 border-b md:border-b-0 md:border-r last:border-r-0 border-slate-900 flex flex-col"
+            className="p-8 border-b md:border-b-0 md:border-r last:border-r-0 border-white/10 flex flex-col"
           >
-            <h3 className="text-sm font-bold tracking-tight uppercase mb-8 pb-2 border-b border-slate-800 inline-block w-full text-emerald-400">
+            <h3 className="text-sm font-bold tracking-tight uppercase mb-8 pb-2 border-b border-white/10 inline-block w-full text-emerald-400">
               {group.title}:
             </h3>
             <ul className="space-y-4 flex-1">

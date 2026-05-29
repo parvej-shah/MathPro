@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { PlayCircle, Video, FileText } from "lucide-react";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 
 // ─── Deterministic gradient from title ───────────────────────────────────────
 
@@ -52,8 +52,6 @@ export default function LandingStyleCourseCard({
   originalPrice,
   tags = [],
   isLive,
-  hasRecorded = true,
-  hasExam = true,
 }: LandingStyleCourseCardProps) {
   const [imgError, setImgError] = useState(false);
   const gradient = useMemo(() => pickGradient(title), [title]);
@@ -69,7 +67,7 @@ export default function LandingStyleCourseCard({
   const showThumbnail = thumbnail && !imgError;
 
   return (
-    <div className="group bg-card rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-2 transition-all duration-300 flex flex-col">
+    <div className="group bg-card rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:shadow-primary/15 dark:hover:shadow-primary/20 dark:hover:border-emerald-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col">
 
       {/* ── Banner ──────────────────────────────────────────────────── */}
       <div className={`relative h-48 w-full overflow-hidden flex flex-col justify-center items-center text-center bg-gradient-to-tr ${gradient}`}>
@@ -127,11 +125,11 @@ export default function LandingStyleCourseCard({
         {/* Tags + price */}
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
           {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {tags.map((tag, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1.5 bg-muted text-muted-foreground rounded-lg text-xs font-extrabold uppercase tracking-widest border border-border"
+                  className="px-2 py-0.5 bg-muted text-muted-foreground rounded-md text-[10px] font-bold uppercase tracking-wider border border-border"
                 >
                   {tag}
                 </span>
@@ -163,47 +161,20 @@ export default function LandingStyleCourseCard({
 
         {/* ── CTA buttons ─────────────────────────────────────────── */}
         <div className="mt-auto flex gap-3 pt-5 border-t border-border">
-          {hasRecorded && (
-            <Link
-              href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-2xl bg-muted hover:bg-foreground text-muted-foreground hover:text-background text-xs font-extrabold transition-all duration-300 border border-border hover:border-foreground hover:shadow-lg hover:shadow-foreground/20 hover:-translate-y-0.5"
-            >
-              <div className="p-1.5 rounded-full bg-border/60 group-hover:bg-white/20 transition-colors">
-                <PlayCircle className="size-5" />
-              </div>
-              রেকর্ডেড
-            </Link>
-          )}
-
-          {isLive !== undefined && (
-            <Link
-              href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-2xl bg-destructive/8 hover:bg-destructive text-destructive hover:text-white text-xs font-extrabold transition-all duration-300 border border-destructive/20 hover:border-destructive hover:shadow-lg hover:shadow-destructive/30 hover:-translate-y-0.5 relative overflow-hidden"
-            >
-              {isLive && (
-                <span className="absolute top-2.5 right-2.5 flex size-2.5 items-center justify-center">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />
-                  <span className="relative inline-flex rounded-full size-2 bg-destructive" />
-                </span>
-              )}
-              <div className="p-1.5 rounded-full bg-destructive/15 transition-colors">
-                <Video className="size-5" />
-              </div>
-              লাইভ
-            </Link>
-          )}
-
-          {hasExam && (
-            <Link
-              href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-2 py-3.5 rounded-2xl bg-warning/10 hover:bg-warning text-warning hover:text-warning-foreground text-xs font-extrabold transition-all duration-300 border border-warning/30 hover:border-warning hover:shadow-lg hover:shadow-warning/30 hover:-translate-y-0.5"
-            >
-              <div className="p-1.5 rounded-full bg-warning/20 transition-colors">
-                <FileText className="size-5" />
-              </div>
-              পরীক্ষা
-            </Link>
-          )}
+          <Link
+            href={href}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-muted hover:bg-muted/70 text-foreground text-sm font-bold transition-all duration-300 border border-border hover:border-foreground/30 hover:shadow-sm"
+          >
+            বিস্তারিত দেখুন
+            <ArrowRight className="size-4" />
+          </Link>
+          <Link
+            href={href}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold transition-all duration-300 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 hover:-translate-y-0.5"
+          >
+            <ShoppingCart className="size-4" />
+            এখনই কিনুন
+          </Link>
         </div>
       </div>
     </div>

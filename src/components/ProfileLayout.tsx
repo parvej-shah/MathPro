@@ -5,7 +5,6 @@ type Props = { children: React.ReactNode };
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 import { BACKEND_URL, COURSE_ID } from "@/api.config";
-import Nav from "@/components/Nav";
 import { HindSiliguri, logout } from "@/helpers";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -19,7 +18,6 @@ export default function ProfileLayout({ children }: Props) {
       <div
         className={`  ${HindSiliguri.variable} overflow-x-hidden   font-hind`}
       >
-        <Nav></Nav>
         <Toaster />
         <div className="overflow-x-hidden bg-white py-16 dark:bg-[#000000]">
           <div className="z-20 mx-auto min-h-[80vh] w-[90%] py-12 lgXl:w-[90%]">

@@ -21,7 +21,7 @@ export default function TeacherSlider({ instructors }: TeacherSliderProps) {
   const visible = instructors.slice(page * CARDS_PER_PAGE, (page + 1) * CARDS_PER_PAGE);
 
   return (
-    <section className="relative py-16 bg-section-b overflow-hidden">
+    <section className="relative py-16 bg-section-b overflow-hidden dark:border-t dark:border-white/5">
       {/* Math motif background */}
       <div
         aria-hidden
@@ -49,7 +49,7 @@ export default function TeacherSlider({ instructors }: TeacherSliderProps) {
               <button
                 onClick={() => setPage((p) => Math.max(p - 1, 0))}
                 disabled={page === 0}
-                className="w-9 h-9 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-9 h-9 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary dark:hover:border-emerald-500/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Previous"
               >
                 <ChevronLeft className="size-4" />
@@ -60,7 +60,7 @@ export default function TeacherSlider({ instructors }: TeacherSliderProps) {
               <button
                 onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
                 disabled={page === totalPages - 1}
-                className="w-9 h-9 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                className="w-9 h-9 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary dark:hover:border-emerald-500/50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Next"
               >
                 <ChevronRight className="size-4" />
@@ -74,7 +74,7 @@ export default function TeacherSlider({ instructors }: TeacherSliderProps) {
           {visible.map((instructor) => (
             <div
               key={instructor.id}
-              className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-primary/8 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-primary/8 dark:hover:shadow-emerald-400/12 dark:hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {/* Photo */}
               <div className="relative h-52 w-full bg-muted overflow-hidden">

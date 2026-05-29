@@ -123,33 +123,33 @@
 
 .dark {
   /* Semantic content tokens — dark */
-  --teal: oklch(0.70 0.14 185);
-  --yellow: oklch(0.82 0.16 80);
-  --heading: oklch(0.97 0 0);
-  --paragraph: oklch(0.72 0 0);
-  --page-bg: oklch(0.145 0 0);
-  /* Dark mode zebra stripes */
-  --section-a: oklch(0.165 0.006 250);
-  --section-b: oklch(0.195 0.008 250);
+  --teal: oklch(0.72 0.15 185);
+  --yellow: oklch(0.84 0.17 80);
+  --heading: oklch(0.96 0.006 240);
+  --paragraph: oklch(0.72 0.008 240);
+  --page-bg: oklch(0.13 0.008 240);
+  /* Dark mode zebra stripes — slight emerald tint for depth */
+  --section-a: oklch(0.158 0.010 220);
+  --section-b: oklch(0.185 0.012 230);
 
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --background: oklch(0.13 0.008 240);
+  --foreground: oklch(0.96 0.006 240);
+  --card: oklch(0.195 0.010 230);
+  --card-foreground: oklch(0.96 0.006 240);
+  --popover: oklch(0.195 0.010 230);
+  --popover-foreground: oklch(0.96 0.006 240);
   --primary: oklch(0.718 0.147 159.2);
-  --primary-foreground: oklch(0.12 0.02 160);
+  --primary-foreground: oklch(0.10 0.03 160);
   /* secondary: muted amber tint on dark */
   --secondary: oklch(0.28 0.05 80);
   --secondary-foreground: oklch(0.88 0.06 85);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted: oklch(0.255 0.010 230);
+  --muted-foreground: oklch(0.68 0.010 230);
   /* accent: vivid orange unchanged */
   --accent: oklch(0.7 0.19 45);
   --accent-foreground: oklch(0.12 0.02 45);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.62 0.13 160);
   /* semantic tokens — slightly brighter for dark backgrounds */

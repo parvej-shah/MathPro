@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { isLoggedIn, logout } from "@/helpers";
+import ThemeToggle from "@/components/ThemeToggle";
 
 type NavMode = "landing" | "default";
 
@@ -42,78 +43,94 @@ export default function Nav({ mode = "default" }: NavProps) {
     );
   }, []);
 
-  const navTextClass = isScrolled ? "text-slate-600" : "text-white/90";
+  const navTextClass = isScrolled ? "text-foreground/80" : "text-white/90";
   const navHoverClass = isScrolled
-    ? "hover:text-emerald-600"
+    ? "hover:text-emerald-600 dark:hover:text-emerald-400"
     : "hover:text-emerald-400";
+  const coursesActive = pathname?.startsWith("/courses");
+  const dashboardActive = pathname?.startsWith("/dashboard");
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-[100] flex items-center justify-between px-6 lg:px-12 transition-all duration-300 ${
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
         isScrolled
-          ? "bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm py-4"
-          : "bg-transparent border-b border-white/10 py-6"
+          ? "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+          : "bg-transparent border-b border-white/10"
       }`}
     >
-      <Link href="/" className="flex items-center gap-2 md:gap-3 group/logo">
-        <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">
-          M
-        </div>
-        <span className="text-2xl md:text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400">
-          MATHPRO
-        </span>
-      </Link>
+      <div className={`px-4 sm:px-6 lg:px-12 ${isScrolled ? "py-3" : "py-5"}`}>
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/" className="flex items-center gap-2 md:gap-3 group/logo">
+            <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">
+              M
+            </div>
+            <span className="text-2xl md:text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400">
+              MATHPRO
+            </span>
+          </Link>
 
-      <div className={`hidden md:flex gap-10 text-lg font-bold transition-colors ${navTextClass}`}>
-        {mode === "landing" ? (
-          <>
-            <a href="#courses" className={`transition-colors ${navHoverClass}`}>কোর্সসমূহ</a>
-            <a href="#features" className={`transition-colors ${navHoverClass}`}>বৈশিষ্ট্য</a>
-            <a href="#branches" className={`transition-colors ${navHoverClass}`}>শাখাসমূহ</a>
-          </>
-        ) : (
-          <>
+          <div className={`hidden md:flex gap-8 text-lg font-bold transition-colors ${navTextClass}`}>
             <Link
               href="/courses"
-              className={`transition-colors ${navHoverClass} ${pathname?.startsWith("/courses") ? "text-emerald-600" : ""}`}
+              className={`transition-colors ${navHoverClass} ${coursesActive ? "text-emerald-600" : ""}`}
             >
               কোর্সসমূহ
             </Link>
             {loggedIn && (
               <Link
                 href="/dashboard"
-                className={`transition-colors ${navHoverClass} ${pathname?.startsWith("/dashboard") ? "text-emerald-600" : ""}`}
+                className={`transition-colors ${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}
               >
-                আমার কোর্স
+                ড্যাশবোর্ড
               </Link>
             )}
-          </>
-        )}
-      </div>
+            {mode === "landing" && (
+              <>
+                <a href="#features" className={`transition-colors ${navHoverClass}`}>বৈশিষ্ট্য</a>
+                <a href="#branches" className={`transition-colors ${navHoverClass}`}>শাখাসমূহ</a>
+              </>
+            )}
+          </div>
 
-      {loggedIn ? (
-        <button
-          onClick={logout}
-          className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
-            isScrolled
-              ? "bg-emerald-500 text-white hover:bg-emerald-600"
-              : "bg-white text-slate-900 hover:bg-emerald-50"
-          }`}
-        >
-          লগআউট
-        </button>
-      ) : (
-        <a
-          href={loginHref}
-          className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
-            isScrolled
-              ? "bg-emerald-500 text-white hover:bg-emerald-600"
-              : "bg-white text-slate-900 hover:bg-emerald-50"
-          }`}
-        >
-          লগইন
-        </a>
-      )}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            {loggedIn ? (
+              <button
+                onClick={logout}
+                className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
+                  isScrolled
+                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                    : "bg-white text-slate-900 hover:bg-emerald-50 dark:bg-white/90 dark:text-slate-900"
+                }`}
+              >
+                লগআউট
+              </button>
+            ) : (
+              <a
+                href={loginHref}
+                className={`px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
+                  isScrolled
+                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                    : "bg-white text-slate-900 hover:bg-emerald-50 dark:bg-white/90 dark:text-slate-900"
+                }`}
+              >
+                লগইন
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className={`md:hidden mt-3 flex items-center gap-4 text-sm font-semibold ${navTextClass}`}>
+          <Link href="/courses" className={`${navHoverClass} ${coursesActive ? "text-emerald-600" : ""}`}>
+            কোর্সসমূহ
+          </Link>
+          {loggedIn && (
+            <Link href="/dashboard" className={`${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}>
+              ড্যাশবোর্ড
+            </Link>
+          )}
+        </div>
+      </div>
     </nav>
   );
 }

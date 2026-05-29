@@ -13,9 +13,9 @@ export default function CourseHeader({
 
             {/* Prebooking Status Badge */}
             {isPrebookingMode && (
-                <div className="inline-flex items-center gap-2 bg-[#B2F100]/20 border border-[#B2F100]/60 px-4 py-2 rounded-full">
+                <div className="inline-flex items-center gap-2 bg-warning/20 border border-warning/60 px-4 py-2 rounded-full">
                     <svg
-                        className="w-4 h-4 text-[#B2F100]"
+                        className="w-4 h-4 text-warning"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                     >
