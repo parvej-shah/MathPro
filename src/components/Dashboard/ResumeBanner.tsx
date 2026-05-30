@@ -33,7 +33,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
 
     if (isLoading) {
         return (
-            <div className="w-full bg-gradient-to-r from-primary/10 to-teal/10 dark:from-primary/20 dark:to-teal/20 rounded-3xl p-6 md:p-8 mb-10 border border-primary/15 dark:border-primary/25 relative overflow-hidden animate-pulse">
+            <div className="w-full bg-linear-to-r from-primary/10 to-teal/10 dark:from-primary/20 dark:to-teal/20 rounded-3xl p-6 md:p-8 mb-10 border border-primary/15 dark:border-primary/25 relative overflow-hidden animate-pulse">
                 <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center relative z-10">
                     {/* Thumbnail Skeleton */}
                     <div className="w-full md:w-1/3 lg:w-1/4 shrink-0">
@@ -68,7 +68,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
 
     return (
         <div 
-            className="w-full bg-gradient-to-r from-primary/10 to-teal/10 dark:from-primary/20 dark:to-teal/20 rounded-3xl p-6 md:p-8 mb-10 border border-primary/15 dark:border-primary/25 relative overflow-hidden"
+            className="w-full bg-linear-to-r from-primary/10 to-teal/10 dark:from-primary/20 dark:to-teal/20 rounded-3xl p-6 md:p-8 mb-10 border border-primary/15 dark:border-primary/25 relative overflow-hidden"
         >
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 

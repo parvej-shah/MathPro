@@ -22,11 +22,11 @@ interface ExistingFeedback {
 }
 
 const CATEGORIES = [
-    { value: 'content', label: 'Content Quality' },
-    { value: 'instructor', label: 'Instructor' },
-    { value: 'platform', label: 'Platform Experience' },
-    { value: 'course', label: 'Overall Course' },
-    { value: 'other', label: 'Other' }
+    { value: 'content', label: 'কন্টেন্টের মান' },
+    { value: 'instructor', label: 'ইন্সট্রাক্টর' },
+    { value: 'platform', label: 'প্ল্যাটফর্ম অভিজ্ঞতা' },
+    { value: 'course', label: 'সামগ্রিক কোর্স' },
+    { value: 'other', label: 'অন্যান্য' }
 ];
 
 export const FeedbackCard: React.FC<FeedbackCardProps> = ({
@@ -292,7 +292,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     if (loading || checkingFeedback) {
         return (
             <div className="bg-card p-6 rounded-3xl shadow-sm border border-border animate-pulse relative overflow-hidden">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
                 <div className="space-y-4">
                     <div className="h-5 bg-muted rounded w-40" />
                     <div className="h-4 bg-muted rounded w-full" />
@@ -316,17 +316,17 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
             <>
             <div className="bg-background p-6 rounded-3xl shadow-lg border border-border relative overflow-hidden hover:shadow-xl transition-all duration-300">
                 {/* Decorative gradient background */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-green-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-green-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
                 
                 <div className="relative z-10">
                     {/* Header with actions */}
                     <div className="flex justify-between items-start mb-4">
                         <div>
                             <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-1">
-                                Your Feedback
+                                তোমার মতামত
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                                Submitted on {formatDate(existingFeedback.createdAt)}
+                                জমা দেওয়া হয়েছে {formatDate(existingFeedback.createdAt)}
                             </p>
                         </div>
                         <div className="flex gap-2">
@@ -351,7 +351,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                     {/* Rating Display */}
                     <div className="mb-4">
                         <p className="text-sm font-semibold text-foreground mb-2">
-                            Your Rating
+                            তোমার রেটিং
                         </p>
                         <div className="flex gap-2">
                             {[1, 2, 3, 4, 5].map((star) => (
@@ -369,7 +369,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                     {/* Category Display */}
                     <div className="mb-4">
                         <p className="text-sm font-semibold text-foreground mb-2">
-                            Category
+                            বিভাগ
                         </p>
                         <span className="inline-block bg-purple/10 text-purple px-3 py-1 rounded-full text-sm font-medium">
                             {getCategoryLabel(existingFeedback.category)}
@@ -380,7 +380,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                     {existingFeedback.comment && (
                         <div className="mb-4">
                             <p className="text-sm font-semibold text-foreground mb-2">
-                                Your Comment
+                                তোমার মন্তব্য
                             </p>
                             <div className="bg-muted/40 rounded-xl p-4 border border-border">
                                 <p className="text-foreground leading-relaxed">
@@ -393,7 +393,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                     {/* Thank you message */}
                     <div className="bg-success/10 border border-success/30 rounded-xl p-4">
                         <p className="text-success text-sm font-medium text-center">
-                            ✅ Thank you for your feedback! It helps us improve the course.
+                            ✅ মতামত দেওয়ার জন্য ধন্যবাদ! এটি কোর্স উন্নত করতে সাহায্য করে।
                         </p>
                     </div>
                 </div>
@@ -421,17 +421,17 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
         <>
         <div className="bg-background p-6 rounded-3xl shadow-lg border border-border relative overflow-hidden hover:shadow-xl transition-all duration-300">
             {/* Decorative gradient background */}
-            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple/5 to-blue-500/5 rounded-full blur-3xl"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-purple/5 to-blue-500/5 rounded-full blur-3xl"></div>
             
             <div className="relative z-10">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                     <div>
                         <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-1">
-                            {isEditing ? 'Edit Your Feedback' : 'Share Your Feedback'}
+                            {isEditing ? 'মতামত সম্পাদনা করো' : 'তোমার মতামত দাও'}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                            {isEditing ? 'Update your course feedback' : 'Help us improve this course for everyone'}
+                            {isEditing ? 'কোর্সের মতামত আপডেট করো' : 'এই কোর্সটি সবার জন্য উন্নত করতে সাহায্য করো'}
                         </p>
                     </div>
                     {isEditing && (
@@ -453,7 +453,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 {/* Star Rating */}
                 <div className="mb-6">
                     <p className="text-sm font-semibold text-foreground mb-3">
-                        Rate this course *
+                        কোর্সটি রেট করো *
                     </p>
                     <div className="flex gap-2 justify-center sm:justify-start">
                         {[1, 2, 3, 4, 5].map((star) => (
@@ -475,11 +475,11 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                     </div>
                     {selectedRating > 0 && (
                         <p className="text-xs text-muted-foreground mt-2 text-center sm:text-left">
-                            {selectedRating === 1 && "Poor"}
-                            {selectedRating === 2 && "Fair"}
-                            {selectedRating === 3 && "Good"}
-                            {selectedRating === 4 && "Very Good"}
-                            {selectedRating === 5 && "Excellent"}
+                            {selectedRating === 1 && "খুব খারাপ"}
+                            {selectedRating === 2 && "মোটামুটি"}
+                            {selectedRating === 3 && "ভালো"}
+                            {selectedRating === 4 && "খুব ভালো"}
+                            {selectedRating === 5 && "অসাধারণ"}
                         </p>
                     )}
                 </div>
@@ -487,7 +487,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 {/* Category Selection */}
                 <div className="mb-6">
                     <p className="text-sm font-semibold text-foreground mb-2">
-                        Feedback Category
+                        মতামতের বিভাগ
                     </p>
                     <div className="relative">
                         <select
@@ -528,14 +528,14 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 {/* Comment Box */}
                 <div className="mb-6">
                     <p className="text-sm font-semibold text-foreground mb-2">
-                        Your thoughts (optional)
+                        তোমার ভাবনা (ঐচ্ছিক)
                     </p>
                     <div className="relative">
                         <textarea
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                             disabled={submitting}
-                            placeholder="Share your experience with this course..."
+                            placeholder="এই কোর্স সম্পর্কে তোমার অভিজ্ঞতা শেয়ার করো..."
                             className="w-full px-4 py-3 rounded-xl border border-border bg-background dark:bg-muted/40 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-purple/50 focus:border-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:border-purple/30 dark:hover:border-purple/30"
                             rows={4}
                             maxLength={500}
@@ -543,7 +543,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                         {/* Character count with color coding */}
                         <div className="flex justify-between items-center mt-2">
                             <p className="text-xs text-muted-foreground">
-                                Share what you liked or what could be improved
+                                কী ভালো লেগেছে বা কী উন্নত করা যায় জানাও
                             </p>
                             <p className={`text-xs font-medium ${
                                 comment.length > 450 
@@ -562,16 +562,16 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 <button
                     onClick={isEditing ? handleUpdateFeedback : handleSubmitFeedback}
                     disabled={submitting || selectedRating === 0}
-                    className="w-full bg-gradient-to-r from-purple to-indigo-600 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-purple/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-purple/30 hover:scale-[1.02] active:scale-[0.98] group"
+                    className="w-full bg-linear-to-r from-purple to-indigo-600 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-purple/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-purple/30 hover:scale-[1.02] active:scale-[0.98] group"
                 >
                     {submitting ? (
                         <div className="flex items-center justify-center gap-3">
                             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                            <span>{isEditing ? 'Updating...' : 'Submitting...'}</span>
+                            <span>{isEditing ? 'আপডেট হচ্ছে...' : 'জমা হচ্ছে...'}</span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-center gap-2">
-                            <span>{isEditing ? 'Update Feedback' : 'Submit Feedback'}</span>
+                            <span>{isEditing ? 'মতামত আপডেট করো' : 'মতামত জমা দাও'}</span>
                             <svg 
                                 className="w-5 h-5 transition-transform group-hover:translate-x-1" 
                                 fill="none" 
@@ -592,13 +592,13 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 {/* Validation message */}
                 {selectedRating === 0 && (
                     <p className="text-xs text-destructive mt-2 text-center">
-                        Please select a rating to submit your feedback
+                        মতামত জমা দিতে একটি রেটিং বেছে নাও
                     </p>
                 )}
 
                 {/* Helper text */}
                 <p className="text-xs text-center text-muted-foreground mt-3">
-                    Your feedback helps us create better learning experiences
+                    তোমার মতামত আরও ভালো শেখার অভিজ্ঞতা তৈরি করতে সাহায্য করে
                 </p>
             </div>
         </div>

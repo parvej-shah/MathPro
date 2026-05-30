@@ -60,7 +60,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
       <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-bold text-xl text-foreground">
-            Instructor Updates
+            ইন্সট্রাক্টর আপডেট
           </h3>
         </div>
         <div className="space-y-4">
@@ -88,7 +88,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
       <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-bold text-xl text-foreground">
-            Instructor Updates
+            ইন্সট্রাক্টর আপডেট
           </h3>
         </div>
         <div className="h-[220px] text-center py-6 flex flex-col items-center justify-center">
@@ -96,7 +96,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
             <BsBell size={24} className="text-muted-foreground" />
           </div>
           <p className="text-muted-foreground text-sm">
-            No announcements yet
+            এখনো কোনো আপডেট নেই
           </p>
         </div>
       </div>
@@ -126,7 +126,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-warning font-bold uppercase text-xs tracking-wider mb-1">
-              Latest Update
+              সর্বশেষ আপডেট
             </h4>
             <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
               {featuredAnnouncement.title}
@@ -147,7 +147,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
                   onClick={() => toggleExpand(featuredAnnouncement.id)}
                   className="text-xs text-yellow-600 hover:text-yellow-700 dark:text-warning dark:hover:text-warning font-semibold transition-colors"
                 >
-                  {isFeaturedExpanded ? "Show less" : "Read more"}
+                  {isFeaturedExpanded ? "কম দেখো" : "আরও পড়ো"}
                 </button>
               )}
             </div>
@@ -160,7 +160,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
         <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-foreground">
-              Previous Updates
+              আগের আপডেট
             </h3>
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
               {remainingAnnouncements.length}
@@ -201,7 +201,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
                             onClick={() => toggleExpand(announcement.id)}
                             className="text-xs text-yellow-600 hover:text-yellow-700 dark:text-warning dark:hover:text-warning font-medium transition-colors"
                           >
-                            {isExpanded ? "Less" : "More"}
+                            {isExpanded ? "কম" : "আরও"}
                           </button>
                         )}
                       </div>
@@ -219,11 +219,11 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
             >
               {showAll ? (
                 <>
-                  Show Less <BsChevronUp />
+                  কম দেখো <BsChevronUp />
                 </>
               ) : (
                 <>
-                  Show {remainingAnnouncements.length - 2} More{" "}
+                  আরও {remainingAnnouncements.length - 2}টি দেখো{" "}
                   <BsChevronDown />
                 </>
               )}

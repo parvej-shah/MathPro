@@ -24,8 +24,8 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
     const longestStreak = streakData?.longestStreak ?? 0;
     if (loading) {
         return (
-            <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 p-6 rounded-3xl shadow-sm border border-orange-500/30 animate-pulse relative overflow-hidden">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-orange-400/90 to-transparent" />
+            <div className="bg-linear-to-br from-orange-500/10 to-red-500/10 p-6 rounded-3xl shadow-sm border border-orange-500/30 animate-pulse relative overflow-hidden">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-orange-400/90 to-transparent" />
                 <div className="flex items-center justify-between">
                     <div className="flex-1 space-y-3">
                         <div className="h-4 bg-orange-400/25 rounded w-32" />
@@ -39,7 +39,7 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
     }
 
     return (
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 p-6 rounded-3xl shadow-lg border border-orange-200 dark:border-orange-800 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+        <div className="bg-linear-to-br from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 p-6 rounded-3xl shadow-lg border border-orange-200 dark:border-orange-800 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
             {/* Decorative background elements */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-orange-400/10 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-red-400/10 rounded-full blur-2xl"></div>
@@ -53,7 +53,7 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
                         <div className="flex items-center gap-2 mb-2">
                             <BsFire className="text-orange-500 text-lg" />
                             <span className="text-orange-600 dark:text-orange-400 font-bold uppercase text-xs tracking-wider">
-                                Learning Streak
+                                শেখার ধারা
                             </span>
                         </div>
 
@@ -63,19 +63,19 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
                                     {currentStreak}
                                 </span>
                                 <span className="text-xl font-semibold text-orange-500 dark:text-orange-500">
-                                    days
+                                    দিন
                                 </span>
                             </div>
                         </div>
 
                         <p className="text-sm text-muted-foreground font-medium">
-                            Keep learning daily to build your streak! 🚀
+                            প্রতিদিন শিখলে ধারা ধরে রাখতে পারবে! 🚀
                         </p>
                     </div>
 
                     {/* Right side - Fire icon */}
                     <div className="relative">
-                        <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <div className="w-20 h-20 bg-linear-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
                             <BsFire className="text-4xl text-white" />
                         </div>
                         {/* Glow effect */}
@@ -86,8 +86,8 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
                 {/* Progress indicator */}
                 <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-800">
                     <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground font-medium">Longest Streak</span>
-                        <span className="text-orange-600 dark:text-orange-400 font-bold">{longestStreak} days</span>
+                        <span className="text-muted-foreground font-medium">সর্বোচ্চ ধারা</span>
+                        <span className="text-orange-600 dark:text-orange-400 font-bold">{longestStreak} দিন</span>
                     </div>
                 </div>
             </div>

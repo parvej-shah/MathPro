@@ -23,7 +23,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
         return (
             <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-8 bg-muted animate-pulse">
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-muted-foreground">Loading routine...</div>
+                    <div className="text-muted-foreground">রুটিন লোড হচ্ছে...</div>
                 </div>
             </div>
         );
@@ -62,7 +62,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="relative w-full h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-8 group shadow-xl border border-border"
         >
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10" />
             <img
                 src={routineImage}
                 alt={`${courseTitle} - Weekly Routine`}
@@ -72,10 +72,10 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
             <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 z-20 flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                 <div>
                     <h2 className="text-white text-3xl md:text-4xl font-bold mb-2">
-                        Module {currentModule} of {totalModules}
+                        Module {currentModule} / {totalModules}
                     </h2>
                     <p className="text-white/90 text-sm md:text-base max-w-xl">
-                        Stay on track with your learning schedule. Check your progress and upcoming lessons.
+                        তোমার শেখার রুটিন মেনে চলো। অগ্রগতি ও আসন্ন পাঠ দেখো।
                     </p>
                 </div>
 
@@ -85,7 +85,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
                         className="flex items-center gap-2 bg-primary/85 hover:bg-primary backdrop-blur-md text-primary-foreground px-5 py-3 rounded-full transition-all duration-300 border border-primary/40 shadow-lg shadow-primary/20"
                     >
                         <BsDownload className="text-lg" />
-                        <span className="font-medium">Download Routine</span>
+                        <span className="font-medium">রুটিন ডাউনলোড করো</span>
                     </button>
                 )}
             </div>

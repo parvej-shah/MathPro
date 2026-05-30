@@ -88,10 +88,10 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     </div>
                     <div>
                         <h4 className="text-muted-foreground font-bold uppercase text-xs tracking-wider mb-1">
-                            Live Classes
+                            লাইভ ক্লাস
                         </h4>
                         <p className="text-lg font-semibold text-foreground">
-                            No upcoming classes scheduled
+                            এখনো কোনো লাইভ ক্লাস নির্ধারিত নেই
                         </p>
                     </div>
                 </div>
@@ -108,10 +108,10 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     </div>
                     <div>
                         <h4 className="text-muted-foreground font-bold uppercase text-xs tracking-wider mb-1">
-                            Live Classes
+                            লাইভ ক্লাস
                         </h4>
                         <p className="text-lg font-semibold text-foreground">
-                            No upcoming classes scheduled
+                            এখনো কোনো লাইভ ক্লাস নির্ধারিত নেই
                         </p>
                     </div>
                 </div>
@@ -143,7 +143,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                         <h4 className={`${
                             isLive ? 'text-destructive' : 'text-primary'
                         } font-bold uppercase text-xs tracking-wider mb-1`}>
-                            {isLive ? '🔴 Live Now' : isPast ? 'Recent Live Class' : 'Upcoming Live Class'}
+                            {isLive ? '🔴 এখন লাইভ' : isPast ? 'সাম্প্রতিক লাইভ ক্লাস' : 'আসন্ন লাইভ ক্লাস'}
                         </h4>
                         <p className="text-lg md:text-xl font-bold text-foreground line-clamp-1">
                             {nextClass.title}
@@ -161,21 +161,21 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                             onClick={() => window.open('#', '_blank')}
                             className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-red-500/30"
                         >
-                            Join Live Class
+                            লাইভ ক্লাসে যোগ দাও
                         </button>
                     ) : hasRecording ? (
                         <button
                             onClick={() => window.open(nextClass.data?.recordedMeetingLink ?? '#', '_blank')}
                             className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/30"
                         >
-                            Watch Recording
+                            রেকর্ডিং দেখো
                         </button>
                     ) : (
                         <button
                             disabled
                             className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                         >
-                            {isPast ? 'Recording Coming Soon' : 'Not Started Yet'}
+                            {isPast ? 'রেকর্ডিং আসছে' : 'এখনো শুরু হয়নি'}
                         </button>
                     )}
                 </div>
@@ -186,7 +186,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                 <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-bold text-foreground">
-                            Other Live Classes
+                            অন্যান্য লাইভ ক্লাস
                         </h3>
                         <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
                             {remainingClasses.length}
@@ -241,21 +241,21 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                                     onClick={() => window.open('#', '_blank')}
                                                     className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-destructive text-white hover:bg-destructive/90 shadow-md"
                                                 >
-                                                    Join Now
+                                                    যোগ দাও
                                                 </button>
                                             ) : hasRecordingClass ? (
                                                 <button
                                                     onClick={() => window.open(liveClass.data?.recordedMeetingLink ?? '#', '_blank')}
                                                     className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-primary text-primary-foreground hover:opacity-90"
                                                 >
-                                                    Watch
+                                                    দেখো
                                                 </button>
                                             ) : (
                                                 <button
                                                     disabled
                                                     className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm bg-muted text-muted-foreground cursor-not-allowed"
                                                 >
-                                                    {isPastClass ? 'Soon' : 'Upcoming'}
+                                                    {isPastClass ? 'আসছে' : 'আসন্ন'}
                                                 </button>
                                             )}
                                         </div>
@@ -272,11 +272,11 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                         >
                             {showAll ? (
                                 <>
-                                    Show Less <BsChevronUp />
+                                    কম দেখো <BsChevronUp />
                                 </>
                             ) : (
                                 <>
-                                    Show {remainingClasses.length - 2} More <BsChevronDown />
+                                    আরও {remainingClasses.length - 2}টি দেখো <BsChevronDown />
                                 </>
                             )}
                         </button>

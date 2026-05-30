@@ -40,18 +40,17 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
           <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-foreground">
-            Recommended for You
+            তোমার জন্য সাজেশন
           </h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 md:mt-2">
-            Based on your current progress, here are the next steps for your
-            career.
+            তোমার বর্তমান অগ্রগতির ভিত্তিতে পরবর্তী পদক্ষেপ।
           </p>
         </div>
         <Link
           href="/courses"
           className="text-primary font-semibold hover:underline hidden sm:block text-sm md:text-base whitespace-nowrap"
         >
-          Explore All Courses
+          সব কোর্স দেখো
         </Link>
       </div>
 
@@ -63,7 +62,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                 key={course.id}
                 className="bg-background rounded-xl md:rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-300 group flex flex-col sm:flex-row h-full"
               >
-                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
+                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden shrink-0">
                   <img
                     src={course.thumbnail}
                     alt={course.title}
@@ -84,13 +83,13 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                   </div>
                   <div className="flex items-center justify-between mt-auto pt-3 md:pt-4 border-t border-border">
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-muted overflow-hidden shrink-0">
                         <img
                           src={`https://ui-avatars.com/api/?name=${course.instructor}&background=random`}
                           alt={course.instructor}
                         />
                       </div>
-                      <span className="text-xs font-medium text-foreground truncate max-w-[80px] sm:max-w-[100px]">
+                      <span className="text-xs font-medium text-foreground truncate max-w-20 sm:max-w-25">
                         {course.instructor}
                       </span>
                     </div>
@@ -123,8 +122,8 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
             >
             <Link href={`/course-details/${course.id}`}>
               <div className="bg-card rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-border hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group flex flex-col sm:flex-row h-full cursor-pointer">
-                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
-                  <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent z-10" />
+                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden shrink-0">
+                  <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/80 to-transparent z-10" />
                   <img
                     src={
                       course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
@@ -153,13 +152,13 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
 
                   <div className="flex items-center justify-between mt-auto pt-3 md:pt-4 border-t border-border">
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                      <div className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-muted overflow-hidden shrink-0">
                         <img
                           src={`https://ui-avatars.com/api/?name=${instructorName}&background=random`}
                           alt={instructorName}
                         />
                       </div>
-                      <span className="text-xs font-medium text-foreground truncate max-w-[80px] sm:max-w-[100px]">
+                      <span className="text-xs font-medium text-foreground truncate max-w-20 sm:max-w-25">
                         {instructorName}
                       </span>
                     </div>
@@ -187,7 +186,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
           href="/courses"
           className="text-primary font-semibold hover:underline text-sm"
         >
-          Explore All Courses
+          সব কোর্স দেখো
         </Link>
       </div>
     </div>

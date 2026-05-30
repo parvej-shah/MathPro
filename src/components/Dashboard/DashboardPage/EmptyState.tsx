@@ -15,8 +15,8 @@ export default function EmptyState({ hasFilters }: EmptyStateProps) {
       </h3>
       <p className="text-muted-foreground mb-8 max-w-md mx-auto">
         {hasFilters
-          ? "আপনার অনুসন্ধান বা ফিল্টার পরিবর্তন করে দেখুন।"
-          : "আজই আপনার শেখার যাত্রা শুরু করুন!"}
+          ? "তোমার অনুসন্ধান বা ফিল্টার পরিবর্তন করে দেখো।"
+          : "আজই তোমার শেখার যাত্রা শুরু করো!"}
       </p>
       {!hasFilters && (
         <Link href="/courses">

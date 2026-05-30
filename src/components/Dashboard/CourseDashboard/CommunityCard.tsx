@@ -57,7 +57,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
                             </div>
                         </div>
                         <p className="text-xs text-center text-muted-foreground mt-2">
-                            গ্রুপে জয়েন করার সময় এই কোড ব্যবহার করুন
+                            গ্রুপে যোগ দেওয়ার সময় এই কোড ব্যবহার করো
                         </p>
                     </div>
                 )}
@@ -68,7 +68,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
                     rel="noopener noreferrer"
                     className="block w-full bg-[#1877F2] text-white py-4 rounded-xl font-bold hover:bg-[#166fe5] transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transform hover:-translate-y-0.5"
                 >
-                    Join Private Group
+                    গ্রুপে যোগ দাও
                 </a>
             </div>
         </div>
