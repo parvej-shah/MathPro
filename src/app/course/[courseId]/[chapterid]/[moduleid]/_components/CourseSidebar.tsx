@@ -11,6 +11,8 @@ interface CourseSidebarProps {
   onSelectModule: (module: CourseModule) => void;
   /** True if the given chapter contains the active module. */
   isActiveChapter: (chapter: Chapter) => boolean;
+  /** Extra classes forwarded to the scroll container (e.g. for Sheet vs column contexts). */
+  className?: string;
 }
 
 /**
@@ -24,6 +26,7 @@ export default function CourseSidebar({
   activeModuleRef,
   onSelectModule,
   isActiveChapter,
+  className = "",
 }: CourseSidebarProps) {
   const isTaken = courseData?.isTaken || false;
   const liveChapters = (courseData?.chapters ?? []).filter(
@@ -33,7 +36,7 @@ export default function CourseSidebar({
   return (
     <div className="text-heading dark:text-darkHeading">
       <div
-        className="scrollbar-thumb-rounded-full scrollbar-track-rounded-full h-screen overflow-y-scroll py-6 px-4 border rounded-lg border-gray-300/20 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-rounded-[12px] scrollbar-track-gray-600"
+        className={`scrollbar-thumb-rounded-full scrollbar-track-rounded-full overflow-y-auto py-6 px-4 border rounded-lg border-gray-300/20 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-rounded-[12px] scrollbar-track-gray-600 ${className}`}
         role="navigation"
         aria-label="Course content"
       >

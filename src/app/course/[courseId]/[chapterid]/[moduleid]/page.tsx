@@ -1,7 +1,7 @@
 'use client';
 
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useCallback, useContext, useEffect, useRef } from "react";
+import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/Contexts/UserContext";
 import { Toaster, toast } from "react-hot-toast";
 import { useParams } from "next/navigation";
@@ -12,6 +12,7 @@ import DiscussionSection from "@/components/DiscussionSection";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import ModuleFeedback from "@/components/ModuleFeedback";
 import { ModulePageSkeleton } from "@/components/Skeletons";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import CourseSidebar from "./_components/CourseSidebar";
 import ModulePlayer from "./_components/ModulePlayer";
 import ModuleNavButtons from "./_components/ModuleNavButtons";
@@ -39,6 +40,7 @@ export default function CourseDetailsPage() {
   const chapterId = params?.chapterid as string | undefined;
   const moduleId = params?.moduleid as string | undefined;
 
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const activeModuleRef = useRef<HTMLButtonElement>(null);
 
   // ── Data ──────────────────────────────────────────────────────────────────
@@ -209,6 +211,7 @@ export default function CourseDetailsPage() {
     }
 
     setActiveModule(module);
+    setMobileSidebarOpen(false);
 
     if (typeof window !== "undefined" && courseId) {
       window.history.replaceState(
@@ -313,11 +316,11 @@ export default function CourseDetailsPage() {
         <ModulePageSkeleton />
       ) : (
         <>
-          {/* Floating compiler button */}
+          {/* Floating compiler button — right side so it's reachable on mobile */}
           <button
             style={{ zIndex: 999 }}
             onClick={() => { setUser({ ...user, openCompiler: true }); }}
-            className="fixed top-80 -left-2 bg-[#0B060D] bg-opacity-30 backdrop-blur-lg border border-gray-200/20 p-3 hover:bg-gray-300/20"
+            className="fixed top-1/2 -translate-y-1/2 right-0 bg-[#0B060D] bg-opacity-30 backdrop-blur-lg border border-gray-200/20 p-3 hover:bg-gray-300/20 rounded-l-lg"
           >
             <svg width={40} height={40} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
@@ -381,7 +384,7 @@ export default function CourseDetailsPage() {
               <div className="fixed inset-0 overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center">
                   <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                    <Dialog.Panel className="md:w-[50vw] lg:w-[40vw] text-darkHeading transform overflow-hidden rounded-2xl bg-gray-900/70 backdrop-blur-3xl border border-gray-300/30 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Panel className="w-[90vw] md:w-[50vw] lg:w-[40vw] text-darkHeading transform overflow-hidden rounded-2xl bg-gray-900/70 backdrop-blur-3xl border border-gray-300/30 text-left align-middle shadow-xl transition-all">
                       <Dialog.Title as="div" className="text-lg font-medium leading-6 p-2">
                         <div className="flex justify-end">
                           <button className="hover:bg-gray-300/20 p-2 mr-2 rounded" onClick={() => { setOpenDicussionDeleteDialogue(false); }}>
@@ -412,6 +415,51 @@ export default function CourseDetailsPage() {
           {/* Main layout */}
           <div className="py-16 bg-white dark:bg-[#0B060D] overflow-x-hidden">
             <div className="w-[90%] lgXl:w-[80%] mx-auto py-12 z-20">
+
+              {/* Mobile-only top bar: course title + sidebar sheet trigger */}
+              <div className="flex items-center justify-between mb-6 lg:hidden">
+                <h2 className="text-xl font-semibold text-heading dark:text-darkHeading line-clamp-1 flex-1 mr-3">
+                  {courseData?.title}
+                </h2>
+                <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+                  <SheetTrigger
+                    render={
+                      <button
+                        className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300/30 bg-gray-100/10 hover:bg-gray-200/20 text-heading dark:text-darkHeading text-sm font-medium"
+                        aria-label="Open course content"
+                      />
+                    }
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="8" y1="6" x2="21" y2="6" />
+                      <line x1="8" y1="12" x2="21" y2="12" />
+                      <line x1="8" y1="18" x2="21" y2="18" />
+                      <line x1="3" y1="6" x2="3.01" y2="6" />
+                      <line x1="3" y1="12" x2="3.01" y2="12" />
+                      <line x1="3" y1="18" x2="3.01" y2="18" />
+                    </svg>
+                    Contents
+                  </SheetTrigger>
+                  <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-white dark:bg-[#0B060D]">
+                    <SheetHeader className="px-4 pt-4 pb-2 border-b border-gray-300/20">
+                      <SheetTitle className="text-heading dark:text-darkHeading text-base">
+                        Course Contents
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-hidden">
+                      <CourseSidebar
+                        courseData={courseData}
+                        activeModuleId={activeModule?.id}
+                        activeModuleRef={activeModuleRef}
+                        onSelectModule={goToModule}
+                        isActiveChapter={isActiveChapter}
+                        className="h-full border-0 rounded-none"
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
+
               <div className="flex flex-col lg:flex-row gap-24 justify-between relative">
                 {/* Background glow */}
                 <svg viewBox="0 0 980 892" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute hidden -top-17.5 -left-50 h-full z-0">
@@ -428,8 +476,9 @@ export default function CourseDetailsPage() {
                 </svg>
 
                 {/* Content column */}
-                <div style={{ flex: 2 }} className="text-heading dark:text-darkHeading z-10">
-                  <h2 className="text-2xl lg:text-4xl font-semibold">{courseData?.title}</h2>
+                <div style={{ flex: 2 }} className="text-heading dark:text-darkHeading z-10 min-w-0">
+                  {/* Course title — desktop only (mobile shows it in the top bar above) */}
+                  <h2 className="hidden lg:block text-2xl lg:text-4xl font-semibold mb-0">{courseData?.title}</h2>
                   {!(courseData?.isTaken || false) && (
                     <div className="flex gap-8 items-center pb-6 border-b border-gray-400/50 dark:border-gray-300/10 relative" />
                   )}
@@ -511,14 +560,15 @@ export default function CourseDetailsPage() {
                   </div>
                 </div>
 
-                {/* Sidebar column */}
-                <div style={{ flex: 1 }} className="z-10 relative">
+                {/* Sidebar column — hidden on mobile, shown on lg+ */}
+                <div style={{ flex: 1 }} className="hidden lg:block z-10 relative">
                   <CourseSidebar
                     courseData={courseData}
                     activeModuleId={activeModule?.id}
                     activeModuleRef={activeModuleRef}
                     onSelectModule={goToModule}
                     isActiveChapter={isActiveChapter}
+                    className="max-h-[calc(100vh-8rem)] sticky top-8"
                   />
                 </div>
               </div>
