@@ -1,33 +1,24 @@
+'use client';
+
 import Nav from "@/components/Nav";
-import { HindSiliguri } from "@/helpers";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { BsChevronRight } from "react-icons/bs";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { UserContext } from "@/Contexts/UserContext";
 import axios from "axios";
-import { BACKEND_URL, COURSE_ID } from "@/api.config";
+import { BACKEND_URL } from "@/api.config";
 import {
-  calculateRemainingDays,
   countAssignmentsAndVideos,
   decryptString,
-  englishToBanglaNumbers,
 } from "@/helpers";
 import {
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
-  Theme,
 } from "@mui/material";
 import { Toaster, toast } from "react-hot-toast";
-import { pink } from "@mui/material/colors";
-import { withStyles } from "@mui/styles";
-import { RxButton } from "react-icons/rx";
-import FloatingCompiler from "@/components/FloatingCompiler";
-import Footer from "@/components/Footer";
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import { SyncLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,31 +34,6 @@ import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import { RichFieldRenderer } from "@/components/RichFieldRenderer";
 import ModuleFeedback from "@/components/ModuleFeedback";
 import { ModulePageSkeleton } from "@/components/Skeletons";
-
-const GreenRadio = withStyles({
-  root: {
-    color: "#fff",
-    "&$checked": {
-      color: "#fff",
-    },
-  },
-  checked: {},
-})((props) => <Radio color="default" {...props} />);
-
-const subdiscussions = [
-  {
-    type: "2",
-    name: "John doe",
-    content: "is this working",
-    timestamp: Date.now() / 1000,
-  },
-  {
-    type: "3",
-    name: "John dis",
-    content: "is not working",
-    timestamp: Date.now() / 1000,
-  },
-];
 
 function findObjectBySerial(data: any, targetSerial: any) {
   // Check if chapters exist in the data
@@ -110,16 +76,6 @@ function findObjectById(data: any, targetId: any) {
   return undefined;
 }
 
-function formatTime(timestamp: any) {
-  const date = new Date(timestamp * 1000);
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = date.toLocaleString("en-US", { month: "short" });
-
-  return `${hours}:${minutes}, ${day} ${month}`;
-}
-
 export default function CourseDetailsPage() {
   const cancelButtonRef = useRef(null);
 
@@ -135,10 +91,14 @@ export default function CourseDetailsPage() {
   const [activeModule, setActiveModule] = useState<any>({});
   const [quizScore, setQuizScore] = useState<any>(0);
   const [pageLoading, setPageLoading] = useState(true);
+  const [pageError, setPageError] = useState<boolean>(false);
 
   const [cfHandle, setCfHandle] = useState<any>("");
 
-  const router = useRouter();
+  const params = useParams();
+  const courseId = params?.courseId as string | undefined;
+  const chapterId = params?.chapterid as string | undefined;
+  const moduleId = params?.moduleid as string | undefined;
 
   // Streak tracking hook
   const { updateStreakAsync } = useUpdateStreak();
@@ -189,9 +149,9 @@ export default function CourseDetailsPage() {
 
   // Helper function to check if unlock chapter button should be shown
   const shouldShowUnlockChapterButton = () => {
-    if (!courseData?.chapters || !router.query.chapterid) return false;
+    if (!courseData?.chapters || !chapterId) return false;
 
-    const currentChapterId = parseInt(router.query.chapterid as string);
+    const currentChapterId = parseInt(chapterId);
     const currentChapter = courseData.chapters.find(
       (chapter: any) => chapter.id === currentChapterId,
     );
@@ -202,9 +162,9 @@ export default function CourseDetailsPage() {
 
   // Helper function to get all modules in the current chapter
   const getCurrentChapterModules = () => {
-    if (!courseData?.chapters || !router.query.chapterid) return [];
+    if (!courseData?.chapters || !chapterId) return [];
 
-    const currentChapterId = parseInt(router.query.chapterid as string);
+    const currentChapterId = parseInt(chapterId);
     const currentChapter = courseData.chapters.find(
       (chapter: any) => chapter.id === currentChapterId,
     );
@@ -248,8 +208,8 @@ export default function CourseDetailsPage() {
   };
 
   const isActiveChapter = (chapter: any) => {
-    for (module of chapter.modules) {
-      if (String(module.id) === String(activeModule?.id)) {
+    for (const mod of chapter.modules) {
+      if (String(mod.id) === String(activeModule?.id)) {
         return true;
       }
     }
@@ -512,14 +472,56 @@ export default function CourseDetailsPage() {
       });
   };
 
+  // Centralized in-course module switch. Updates active module via state (no full
+  // course refetch) and syncs the URL shallowly so it does NOT retrigger the
+  // course-fetch effect (which now keys on courseId only). Per-category side
+  // effects mirror the original sidebar/Next behavior.
+  const goToModule = (module: any) => {
+    if (!module) return;
+
+    // Persist last position (fire and forget).
+    saveLastAccessedModule(
+      courseId as string,
+      module.id,
+      module.chapter_id,
+    ).catch(() => {
+      // Silently handle errors - already logged in service
+    });
+
+    const category = module.data?.category;
+    const taken = courseData?.isTaken || false;
+
+    // ASSIGNMENT needs its evaluation fetched before showing.
+    if (category === "ASSIGNMENT" && taken) {
+      fetchEvalutedAssignment(module.id);
+    }
+    // VIDEO/PDF/TEXT auto-submit progress on open.
+    if (category === "VIDEO" || category === "PDF" || category === "TEXT") {
+      submitProgress(module.id, module.score);
+    }
+
+    setActiveModule(module);
+
+    // Shallow URL sync — keep the address bar correct without re-fetching the
+    // course. window.history avoids triggering useParams-driven effects.
+    if (typeof window !== "undefined" && courseId) {
+      window.history.replaceState(
+        null,
+        "",
+        `/course/${courseId}/${module.chapter_id}/${module.id}`,
+      );
+    }
+  };
+
   const fetchCourse = () => {
-    if (!router.query.courseId) return;
+    if (!courseId) return;
     const token = localStorage.getItem("token");
     if (!token) return;
 
     setPageLoading(true);
+    setPageError(false);
     axios
-      .get(BACKEND_URL + "/user/course/getfull/" + router.query.courseId, {
+      .get(BACKEND_URL + "/user/course/getfull/" + courseId, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -546,9 +548,9 @@ export default function CourseDetailsPage() {
         // res.data.chapters.forEach((chapter: any) => {
         //   chapter.modules.forEach((module: any) => {
         //     if (
-        //       module.id === parseInt(router.query.moduleid as string) &&
+        //       module.id === parseInt(moduleId as string) &&
         //       module.chapter_id ===
-        //       parseInt(router.query.chapterid as string) &&
+        //       parseInt(chapterId as string) &&
         //       module.serial <= res.data.maxModuleSerialProgress + 1  // <-- PROGRESS CHECK REMOVED
         //     ) {
         //       targetModule = module;
@@ -592,13 +594,9 @@ export default function CourseDetailsPage() {
 
           const selectedModule = await selectOptimalModule({
             courseData: res.data,
-            courseId: router.query.courseId as string,
-            requestedModuleId: router.query.moduleid
-              ? parseInt(router.query.moduleid as string)
-              : undefined,
-            requestedChapterId: router.query.chapterid
-              ? parseInt(router.query.chapterid as string)
-              : undefined,
+            courseId: courseId as string,
+            requestedModuleId: moduleId ? parseInt(moduleId) : undefined,
+            requestedChapterId: chapterId ? parseInt(chapterId) : undefined,
           });
 
           // Find the actual module object
@@ -618,7 +616,7 @@ export default function CourseDetailsPage() {
             setActiveModule(targetModule);
             // Save to backend for future visits (fire and forget - don't block UI)
             saveLastAccessedModule(
-              router.query.courseId as string,
+              courseId as string,
               targetModule.id,
               targetModule.chapter_id,
             ).catch((err) => {
@@ -641,7 +639,7 @@ export default function CourseDetailsPage() {
               const firstModule = firstChapter.modules[0];
               setActiveModule(firstModule);
               saveLastAccessedModule(
-                router.query.courseId as string,
+                courseId as string,
                 firstModule.id,
                 firstModule.chapter_id,
               ).catch((err) => {
@@ -696,6 +694,7 @@ export default function CourseDetailsPage() {
       })
       .catch((err) => {
         setPageLoading(false);
+        setPageError(true);
       });
   };
 
@@ -745,11 +744,8 @@ export default function CourseDetailsPage() {
         )
         .then((res) => {
           // Update streak after successful progress submission
-          if (
-            router.query.courseId &&
-            typeof router.query.courseId === "string"
-          ) {
-            updateStreakAsync(router.query.courseId)
+          if (courseId) {
+            updateStreakAsync(courseId)
               .then((streakData) => {
                 // Only show notifications once per day
                 if (shouldShowStreakNotification()) {
@@ -785,7 +781,7 @@ export default function CourseDetailsPage() {
 
           axios
             .get(
-              BACKEND_URL + "/user/course/getfull/" + router.query.courseId,
+              BACKEND_URL + "/user/course/getfull/" + courseId,
               {
                 headers: {
                   Authorization: `Bearer ${token}`,
@@ -1025,21 +1021,14 @@ export default function CourseDetailsPage() {
   };
 
   useEffect(() => {
-    // Only fetch when router is ready and all required params are available
-    if (
-      router.isReady &&
-      router.query.courseId &&
-      router.query.chapterid &&
-      router.query.moduleid
-    ) {
+    // Fetch the full course only when the course itself changes. Module/chapter
+    // selection within a loaded course is handled by goToModule (state + shallow
+    // URL sync), so switching modules no longer refetches the whole course.
+    if (courseId) {
       fetchCourse();
     }
-  }, [
-    router.isReady,
-    router.query.courseId,
-    router.query.chapterid,
-    router.query.moduleid,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId]);
 
   useEffect(() => {
     // Development logging when activeModule changes
@@ -1123,22 +1112,62 @@ export default function CourseDetailsPage() {
           return newTime;
         });
       }, 1000);
-
-      return () => {
-        if (timerIntervalRef.current) {
-          clearInterval(timerIntervalRef.current);
-        }
-      };
     }
+
+    // Always clear any running interval when this effect re-runs or the
+    // component unmounts, regardless of which branch above executed. This
+    // guarantees the countdown can never leak across module changes.
+    return () => {
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
+    };
   }, [timerActive, activeModule?.id]);
 
+  if (pageError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-page-bg px-4">
+        <Toaster />
+        <div className="text-center max-w-md">
+          <div className="mb-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-destructive/15">
+              <svg
+                className="h-8 w-8 text-destructive"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-heading mb-4">
+            Failed to Load Course
+          </h2>
+          <p className="text-paragraph mb-6">
+            We couldn&apos;t load this course. Please check your internet
+            connection and try again.
+          </p>
+          <button
+            onClick={() => fetchCourse()}
+            className="w-full bg-primary text-primary-foreground px-6 py-3 rounded-lg hover:opacity-90 transition-opacity"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`  ${HindSiliguri.variable} font-hind   overflow-x-hidden`}>
-      <Nav></Nav>
+    <div className="overflow-x-hidden">
       <Toaster />
-
-      <FloatingCompiler />
-
       {/* Show skeleton loader while page is loading */}
       {pageLoading ? (
         <ModulePageSkeleton />
@@ -1158,37 +1187,37 @@ export default function CourseDetailsPage() {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g
                 id="SVGRepo_tracerCarrier"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></g>
               <g id="SVGRepo_iconCarrier">
                 {" "}
                 <path
                   d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15"
                   stroke="#fff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
                 ></path>{" "}
                 <path
                   d="M13.2942 7.17041L12.0001 12L10.706 16.8297"
                   stroke="#fff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
                 ></path>{" "}
                 <path
                   d="M8.49994 9L8.32837 9.17157C6.99504 10.5049 6.32837 11.1716 6.32837 12C6.32837 12.8284 6.99504 13.4951 8.32837 14.8284L8.49994 15"
                   stroke="#fff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
                 ></path>{" "}
                 <path
                   d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"
                   stroke="#fff"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
                 ></path>{" "}
               </g>
             </svg>
@@ -1241,11 +1270,11 @@ export default function CourseDetailsPage() {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="#000000"
                       >
-                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                        <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                         <g
                           id="SVGRepo_tracerCarrier"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         ></g>
                         <g id="SVGRepo_iconCarrier">
                           {" "}
@@ -1254,9 +1283,9 @@ export default function CourseDetailsPage() {
                           <g
                             id="Page-1"
                             stroke="none"
-                            stroke-width="1"
+                            strokeWidth="1"
                             fill="none"
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                           >
                             {" "}
                             <g
@@ -1295,7 +1324,7 @@ export default function CourseDetailsPage() {
                   </Dialog.Title>
                   <div className="mt-2 max-h-[50vh]  overflow-y-scroll">
                     {discussions?.map((elem: any) => (
-                      <div className="my-4" key={Math.random()}>
+                      <div className="my-4" key={elem.id}>
                         <p className="text-white text-2xl">{elem.name}</p>
                         <p className="text-white ">{elem.content}</p>
                       </div>
@@ -1362,9 +1391,9 @@ export default function CourseDetailsPage() {
                           <path
                             d="M13 1.25L1 13.25M1 1.25L13 13.25"
                             stroke="#FBEEEC"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                       </button>
@@ -2201,12 +2230,20 @@ export default function CourseDetailsPage() {
                         setActiveModule(prevModule);
                         // Save to backend (fire and forget)
                         saveLastAccessedModule(
-                          router.query.courseId as string,
+                          courseId as string,
                           prevModule.id,
                           prevModule.chapter_id,
                         ).catch((err) => {
                           // Silently handle errors - already logged in service
                         });
+                        // Shallow URL sync (no course refetch).
+                        if (typeof window !== "undefined" && courseId) {
+                          window.history.replaceState(
+                            null,
+                            "",
+                            `/course/${courseId}/${prevModule.chapter_id}/${prevModule.id}`,
+                          );
+                        }
                       }
                     }}
                     className="py-2 mt-5 px-6 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80  rounded font-semibold text-white text-lg "
@@ -2240,46 +2277,16 @@ export default function CourseDetailsPage() {
                         nextModule &&
                         (nextModule.is_free || courseData?.isTaken || false)
                       ) {
-                        // Save to backend (fire and forget)
-                        saveLastAccessedModule(
-                          router.query.courseId as string,
-                          nextModule.id,
-                          nextModule.chapter_id,
-                        ).catch((err) => {
-                          // Silently handle errors - already logged in service
-                        });
-
-                        if (
-                          nextModule.data?.category === "ASSIGNMENT" &&
-                          (courseData?.isTaken || false)
-                        ) {
-                          fetchEvalutedAssignment(nextModule.id);
-                          setActiveModule(nextModule);
-                        }
-                        if (
-                          nextModule.data?.category === "CODE" &&
-                          (courseData?.isTaken || false)
-                        ) {
-                          setActiveModule(nextModule);
-                        }
-
-                        if (nextModule.data?.category === "VIDEO") {
-                          setActiveModule(nextModule);
-                          submitProgress(nextModule.id, nextModule.score);
-                        }
-                        if (
-                          nextModule.data?.category === "QUIZ" &&
-                          (courseData?.isTaken || false)
-                        ) {
-                          setActiveModule(nextModule);
-                        }
-                        if (nextModule.data?.category === "PDF") {
-                          setActiveModule(nextModule);
-                          submitProgress(nextModule.id, nextModule.score);
-                        }
-                        if (nextModule.data?.category === "TEXT") {
-                          setActiveModule(nextModule);
-                          submitProgress(nextModule.id, nextModule.score);
+                        const cat = nextModule.data?.category;
+                        const taken = courseData?.isTaken || false;
+                        // ASSIGNMENT / CODE / QUIZ require the course to be taken;
+                        // VIDEO / PDF / TEXT are reachable when free or taken.
+                        const gated =
+                          cat === "ASSIGNMENT" ||
+                          cat === "CODE" ||
+                          cat === "QUIZ";
+                        if (!gated || taken) {
+                          goToModule(nextModule);
                         }
                       }
                     }}
@@ -2333,7 +2340,7 @@ export default function CourseDetailsPage() {
                     if (elem.is_live) {
                       return (
                         <div
-                          key={Math.random()}
+                          key={elem.id}
                           className={
                             "collapse collapse-plus dark:bg-gray-200/5 bg-gray-400/20 border-gray-400/50 backdrop-blur-lg border dark:border-gray-200/20 mb-6"
                           }
@@ -2586,7 +2593,7 @@ export default function CourseDetailsPage() {
                             <div className="pt-6"></div>
                             {elem.modules.map((module: any) => (
                               <div
-                                key={Math.random()}
+                                key={module.id}
                                 className="flex gap-4 items-center mb-4 "
                                 ref={
                                   module.id === activeModule?.id
@@ -2594,67 +2601,18 @@ export default function CourseDetailsPage() {
                                     : nonActiveModuleRef
                                 }
                                 onClick={() => {
-                                  // REMOVED: Progress-based access restriction (unrestricted-module-access feature)
-                                  // Previous behavior: Checked if module.serial <= maxModuleSerialProgress + 1
-                                  // Now only checks if course is taken or module is free
-
-                                  if (
-                                    elem.is_free ||
-                                    courseData?.isTaken ||
-                                    false
-                                  ) {
-                                    // Save last accessed module to backend (fire and forget)
-                                    saveLastAccessedModule(
-                                      router.query.courseId as string,
-                                      module.id,
-                                      module.chapter_id,
-                                    ).catch((err) => {
-                                      // Silently handle errors - already logged in service
-                                    });
-
-                                    if (
-                                      module.data?.category === "ASSIGNMENT" &&
-                                      (courseData?.isTaken || false)
-                                    ) {
-                                      fetchEvalutedAssignment(module.id);
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
-                                    }
-                                    if (
-                                      module.data?.category === "CODE" &&
-                                      (courseData?.isTaken || false)
-                                    ) {
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
-                                    }
-
-                                    if (module.data?.category === "VIDEO") {
-                                      submitProgress(module.id, module.score);
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
-                                    }
-                                    if (
-                                      module.data?.category === "QUIZ" &&
-                                      (courseData?.isTaken || false)
-                                    ) {
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
-                                    }
-                                    if (module.data?.category === "PDF") {
-                                      submitProgress(module.id, module.score);
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
-                                    }
-                                    if (module.data?.category === "TEXT") {
-                                      submitProgress(module.id, module.score);
-                                      router.push(
-                                        `/course/${router.query.courseId}/${module.chapter_id}/${module.id}`,
-                                      );
+                                  // Unrestricted access: openable when the chapter is
+                                  // free or the course is taken. ASSIGNMENT/CODE/QUIZ
+                                  // additionally require the course to be taken.
+                                  if (elem.is_free || courseData?.isTaken || false) {
+                                    const cat = module.data?.category;
+                                    const taken = courseData?.isTaken || false;
+                                    const gated =
+                                      cat === "ASSIGNMENT" ||
+                                      cat === "CODE" ||
+                                      cat === "QUIZ";
+                                    if (!gated || taken) {
+                                      goToModule(module);
                                     }
                                   }
                                 }}
@@ -2894,8 +2852,6 @@ export default function CourseDetailsPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
         </>
       )}
     </div>
