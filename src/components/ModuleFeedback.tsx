@@ -605,4 +605,4 @@ const ModuleFeedback: React.FC<ModuleFeedbackProps> = ({
   );
 };
 
-export default ModuleFeedback;
+export default React.memo(ModuleFeedback);

@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/Contexts/UserContext";
 import { Toaster, toast } from "react-hot-toast";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { saveLastAccessedModule } from "@/utils/moduleAccessUtils";
@@ -35,6 +35,7 @@ function findObjectBySerial(data: Course, targetSerial: number): CourseModule | 
 
 export default function CourseDetailsPage() {
   const [user, setUser] = useContext<any>(UserContext);
+  const router = useRouter();
   const params = useParams();
   const courseId = params?.courseId as string | undefined;
   const chapterId = params?.chapterid as string | undefined;
@@ -241,6 +242,15 @@ export default function CourseDetailsPage() {
   useEffect(() => {
     activeModuleRef?.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "start" });
   }, [activeModule?.id]);
+
+  // Prefetch next module URL so navigation feels instant
+  useEffect(() => {
+    if (!courseId || !courseData || !activeModule) return;
+    const nextModule = findObjectBySerial(courseData, (activeModule.serial ?? 0) + 1);
+    if (nextModule) {
+      router.prefetch(`/course/${courseId}/${nextModule.chapter_id}/${nextModule.id}`);
+    }
+  }, [activeModule?.id, courseId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Unlock chapter ────────────────────────────────────────────────────────
   const shouldShowUnlockChapterButton = useCallback((): boolean => {

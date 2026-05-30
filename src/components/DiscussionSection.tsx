@@ -573,4 +573,4 @@ const DiscussionSection: React.FC<DiscussionSectionProps> = ({
   );
 };
 
-export default DiscussionSection;
+export default React.memo(DiscussionSection);

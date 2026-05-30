@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import {
   FormControl,
@@ -45,7 +46,7 @@ interface ModulePlayerProps {
   user: { darkMode?: boolean };
 }
 
-export default function ModulePlayer({
+const ModulePlayer = memo(function ModulePlayer({
   activeModule,
   courseData,
   assignmentEvaluted,
@@ -559,4 +560,6 @@ export default function ModulePlayer({
         ))}
     </div>
   );
-}
+});
+
+export default ModulePlayer;
