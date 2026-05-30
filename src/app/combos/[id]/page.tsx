@@ -619,7 +619,7 @@ export default function ComboDetailsPage() {
       <Footer />
       <WhatsAppWidget
         phoneNumber={siteConfig.contact.phone.replace("+", "")}
-        message="হ্যালো! Combo নিয়ে জানতে চাই"
+        welcomeMessage="হ্যালো! Combo নিয়ে জানতে চাই"
       />
     </div>
   );
