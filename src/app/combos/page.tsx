@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import axios from "axios";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -21,6 +22,15 @@ import SEO from "@/components/SEO";
 import Footer from "@/components/footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
+import { FAQSection } from "@/features/courses-page/components";
+
+const TestimonialMarquee = dynamic(
+  () =>
+    import("@/features/courses-page/components/TestimonialMarquee").then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false },
+);
 
 interface BundleCourse {
   id: number;
@@ -171,16 +181,59 @@ function CombosLoading() {
   return (
     <div className="font-sans overflow-x-hidden">
       <SEO title="Course Combos - MathPro" description="MathPro কোর্স Combo লোড হচ্ছে।" />
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-primary/10 dark:bg-primary/15 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-125 h-125 rounded-full bg-primary/8 dark:bg-primary/12 blur-[100px]" />
+        <div className="absolute bottom-0 left-1/4 w-100 h-100 rounded-full bg-primary/5 dark:bg-primary/10 blur-[100px]" />
+      </div>
+      <div
+        aria-hidden
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] pointer-events-none z-[39] hidden dark:block"
+        style={{
+          background:
+            "radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="fixed inset-0 z-40 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
       <main className="relative min-h-screen overflow-hidden bg-section-a pt-20">
-        <div className="mx-auto w-[90%] max-w-360 px-5 pb-16 pt-10 sm:px-6 lg:px-12">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="space-y-4">
-              <div className="h-9 w-52 animate-pulse rounded-full border border-primary/20 bg-primary/10" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
+          <div
+            className="absolute top-32 -left-10 md:left-4 text-[10rem] md:text-[18rem] text-primary/10 font-serif font-black leading-none animate-motif-float"
+            style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-14px", ["--motif-dr" as string]: "2deg", animationDelay: "0s", animationDuration: "13s" }}
+          >
+            ∫
+          </div>
+          <div
+            className="absolute top-[58%] -right-14 hidden text-[12rem] font-black leading-none text-primary/5 md:right-6 md:block md:text-[15rem] xl:right-16 font-serif animate-motif-float"
+            style={{ ["--motif-rot" as string]: "-18deg", ["--motif-tx" as string]: "-8px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDelay: "-6s", animationDuration: "14s" }}
+          >
+            √
+          </div>
+          <div
+            className="absolute top-[90%] right-10 md:right-20 text-[7rem] md:text-[12rem] text-primary/10 font-serif font-black leading-none animate-motif-float"
+            style={{ ["--motif-rot" as string]: "-6deg", ["--motif-tx" as string]: "-9px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDelay: "-9s", animationDuration: "16s" }}
+          >
+            ∞
+          </div>
+        </div>
+
+        <section className="relative z-10 px-5 pb-14 pt-10 sm:px-6 lg:px-12">
+          <div className="mx-auto grid max-w-360 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+            <div>
+              <div className="mb-5 h-10 w-52 animate-pulse rounded-full border border-primary/20 bg-primary/10" />
               <div className="h-14 w-full max-w-[42rem] animate-pulse rounded-xl bg-muted/70" />
-              <div className="h-14 w-[88%] max-w-[36rem] animate-pulse rounded-xl bg-muted/70" />
-              <div className="h-5 w-[92%] max-w-[34rem] animate-pulse rounded-lg bg-muted/70" />
-              <div className="h-5 w-[70%] max-w-[28rem] animate-pulse rounded-lg bg-muted/70" />
-              <div className="mt-5 flex gap-3">
+              <div className="mt-3 h-14 w-[88%] max-w-[36rem] animate-pulse rounded-xl bg-muted/70" />
+              <div className="mt-5 h-5 w-[92%] max-w-[34rem] animate-pulse rounded-lg bg-muted/70" />
+              <div className="mt-2 h-5 w-[70%] max-w-[28rem] animate-pulse rounded-lg bg-muted/70" />
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <div className="h-12 w-44 animate-pulse rounded-xl bg-primary/30" />
                 <div className="h-12 w-40 animate-pulse rounded-xl border border-border bg-card/70" />
               </div>
@@ -207,34 +260,83 @@ function CombosLoading() {
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="mt-14 space-y-4">
-            <div className="h-4 w-32 animate-pulse rounded bg-primary/30" />
-            <div className="h-12 w-full max-w-[38rem] animate-pulse rounded-xl bg-muted/70" />
-            <div className="h-5 w-full max-w-[28rem] animate-pulse rounded-lg bg-muted/70" />
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {[0, 1, 2].map((item) => (
-              <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
-                <div className="h-40 animate-pulse bg-linear-to-br from-primary/35 to-teal/35" />
-                <div className="space-y-4 p-5">
-                  <div className="h-6 w-3/4 animate-pulse rounded-lg bg-muted/70" />
-                  <div className="space-y-2">
-                    <div className="h-4 w-full animate-pulse rounded bg-muted/70" />
-                    <div className="h-4 w-[90%] animate-pulse rounded bg-muted/70" />
-                    <div className="h-4 w-[82%] animate-pulse rounded bg-muted/70" />
+        <section className="relative z-10 overflow-hidden px-5 py-14 sm:px-6 lg:px-12">
+          <div className="relative z-10 mx-auto max-w-360">
+            <div className="mb-8 max-w-3xl space-y-4">
+              <div className="h-4 w-24 animate-pulse rounded bg-primary/30" />
+              <div className="h-12 w-full max-w-[38rem] animate-pulse rounded-xl bg-muted/70" />
+              <div className="h-5 w-full max-w-[28rem] animate-pulse rounded-lg bg-muted/70" />
+            </div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
+                  <div className="h-40 animate-pulse bg-linear-to-br from-primary/35 to-teal/35" />
+                  <div className="space-y-4 p-5">
+                    <div className="h-6 w-3/4 animate-pulse rounded-lg bg-muted/70" />
+                    <div className="space-y-2">
+                      <div className="h-4 w-full animate-pulse rounded bg-muted/70" />
+                      <div className="h-4 w-[90%] animate-pulse rounded bg-muted/70" />
+                      <div className="h-4 w-[82%] animate-pulse rounded bg-muted/70" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="h-14 animate-pulse rounded-xl bg-muted/70" />
+                      <div className="h-14 animate-pulse rounded-xl bg-muted/70" />
+                    </div>
+                    <div className="h-12 animate-pulse rounded-xl bg-primary/30" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="h-14 animate-pulse rounded-xl bg-muted/70" />
-                    <div className="h-14 animate-pulse rounded-xl bg-muted/70" />
-                  </div>
-                  <div className="h-12 animate-pulse rounded-xl bg-primary/30" />
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section className="relative z-10 bg-section-b px-5 py-16 sm:px-6 lg:px-12">
+          <div className="mx-auto grid max-w-360 gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="space-y-3">
+              <div className="h-4 w-24 animate-pulse rounded bg-primary/30" />
+              <div className="h-12 w-full max-w-md animate-pulse rounded-xl bg-muted/70" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[0, 1, 2, 3].map((item) => (
+                <div key={item} className="rounded-2xl border border-border bg-card p-5">
+                  <div className="h-5 w-full animate-pulse rounded bg-muted/70" />
+                  <div className="mt-2 h-5 w-[85%] animate-pulse rounded bg-muted/70" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="relative z-10 px-5 py-16 sm:px-6 lg:px-12">
+          <div className="mx-auto max-w-360 overflow-hidden rounded-3xl border border-primary/20 bg-linear-to-r from-primary/10 to-teal/10 p-6 shadow-xl md:p-10">
+            <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+              <div className="space-y-4">
+                <div className="h-12 w-full max-w-xl animate-pulse rounded-xl bg-muted/70" />
+                <div className="h-5 w-full max-w-2xl animate-pulse rounded bg-muted/70" />
+                <div className="h-5 w-[80%] max-w-2xl animate-pulse rounded bg-muted/70" />
+              </div>
+              <div className="h-12 w-44 animate-pulse rounded-xl bg-foreground/20" />
+            </div>
+          </div>
+        </section>
+
+        <section className="relative z-10 bg-section-a py-16">
+          <div className="mx-auto w-[90%] max-w-360 space-y-6">
+            <div className="h-8 w-72 animate-pulse rounded-xl bg-muted/70" />
+            <div className="flex gap-5 overflow-hidden">
+              <div className="h-40 w-80 shrink-0 animate-pulse rounded-2xl border border-border bg-card" />
+              <div className="h-40 w-80 shrink-0 animate-pulse rounded-2xl border border-border bg-card" />
+            </div>
+            <div className="h-8 w-64 animate-pulse rounded-xl bg-muted/70" />
+            <div className="space-y-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="h-18 animate-pulse rounded-2xl border border-border bg-card" />
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
@@ -532,6 +634,9 @@ export default function CombosPage() {
             </div>
           </div>
         </section>
+
+        <TestimonialMarquee />
+        <FAQSection />
       </main>
 
       <Footer />

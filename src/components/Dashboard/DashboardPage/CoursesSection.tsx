@@ -48,7 +48,7 @@ export default function CoursesSection({
         <div>
           {hasBundles && (
             <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-              <BsBook className="text-teal" /> Individual Courses
+              <BsBook className="text-teal" /> একক কোর্স
             </h2>
           )}
           <motion.div
@@ -73,14 +73,14 @@ export default function CoursesSection({
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <BsGift className="text-primary" />
-              {expandedBundleId ? 'Bundle Contents' : 'My Bundles'}
+              {expandedBundleId ? 'Combo-র কোর্সসমূহ' : 'আমার Combo'}
             </h2>
             {expandedBundleId && (
               <button
                 onClick={onBackToBundles}
                 className="text-sm font-semibold text-primary hover:opacity-80 flex items-center gap-1"
               >
-                <BsArrowRight className="rotate-180" /> Back to Bundles
+                <BsArrowRight className="rotate-180" /> Combo-তে ফিরে যাও
               </button>
             )}
           </div>

@@ -16,19 +16,19 @@ export default function StatsSection({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       <StatsCard
-        title="Total Enrolled"
+        title="মোট ভর্তি"
         value={totalCourses}
         icon={<BsRocket />}
         colorClass="text-primary"
       />
       <StatsCard
-        title="Course Bundles"
+        title="কোর্স Combo"
         value={totalBundles}
         icon={<BsCollection />}
         colorClass="text-teal"
       />
       <StatsCard
-        title="Individual Courses"
+        title="একক কোর্স"
         value={totalIndividualCourses}
         icon={<BsBook />}
         colorClass="text-accent"

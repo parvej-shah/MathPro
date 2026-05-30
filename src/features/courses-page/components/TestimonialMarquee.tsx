@@ -214,10 +214,10 @@ export default function TestimonialMarquee({
           শিক্ষার্থীদের মতামত
         </p>
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-heading leading-tight mb-4">
-          তাদের অভিজ্ঞতা, আপনার অনুপ্রেরণা
+          তাদের অভিজ্ঞতা, তোমার অনুপ্রেরণা
         </h2>
         <p className="text-base text-paragraph max-w-xl mx-auto">
-          হাজারো শিক্ষার্থীর সাফল্যের গল্প — তাদের কথায় জানুন MathPro কীভাবে
+          হাজারো শিক্ষার্থীর সাফল্যের গল্প — তাদের কথায় জেনে নাও MathPro কীভাবে
           পরিবর্তন এনেছে।
         </p>
       </div>

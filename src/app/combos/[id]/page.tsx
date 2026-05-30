@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -19,23 +20,48 @@ import SEO from "@/components/SEO";
 import Footer from "@/components/footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
+import { FAQSection, PremiumCourseCard } from "@/features/courses-page/components";
+import type { Course } from "@/features/courses-page/_lib/types";
+
+const TestimonialMarquee = dynamic(
+  () =>
+    import("@/features/courses-page/components/TestimonialMarquee").then((mod) => ({
+      default: mod.default,
+    })),
+  { ssr: false },
+);
 
 interface ComboCourse {
   id: number;
   title: string;
   price: number;
+  x_price?: number;
+  language?: string;
+  enrolled?: number;
   short_description?: string;
   url?: string;
+  is_live?: boolean;
   chips?: {
     course_thumbnail_link?: string;
     thumbnails?: {
       course_thumbnail_link_16_9?: string;
+      trailer_video_thumb_16_9?: string;
+      facebook_community_thumb_16_9?: string;
     };
     sections?: {
       chapter?: { label: string; value: string };
       video?: { label: string; value: string };
+      contest?: { label: string; value: string };
+      liveClass?: { label: string; value: string };
+      codingProblem?: { label: string; value: string };
+      archiveClass?: { label: string; value: string };
     };
+    enrollment?: Course["chips"]["enrollment"];
+    deadline?: string;
+    total_seats?: string;
   };
+  instructor_list?: Course["instructor_list"];
+  feedback_list?: Course["feedback_list"];
 }
 
 interface Combo {
@@ -89,12 +115,28 @@ function calculateDiscount(price: number, original: number) {
   return Math.round(((original - price) / original) * 100);
 }
 
-function getCourseThumb(course: ComboCourse) {
-  return (
-    course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
-    course.chips?.course_thumbnail_link ||
-    null
-  );
+function toCourseGridItem(course: ComboCourse): Course {
+  return {
+    id: course.id,
+    title: course.title,
+    x_price: course.x_price || course.price,
+    price: course.price,
+    language: course.language || "bn",
+    enrolled: course.enrolled || 0,
+    short_description: course.short_description || "",
+    chips: {
+      deadline: course.chips?.deadline,
+      total_seats: course.chips?.total_seats,
+      course_thumbnail_link: course.chips?.course_thumbnail_link,
+      thumbnails: course.chips?.thumbnails,
+      sections: course.chips?.sections,
+      enrollment: course.chips?.enrollment,
+    },
+    instructor_list: course.instructor_list || { instructors: [] },
+    is_live: Boolean(course.is_live || course.chips?.sections?.liveClass),
+    url: course.url || String(course.id),
+    feedback_list: course.feedback_list,
+  };
 }
 
 function ComboBackgroundLayers() {
@@ -163,27 +205,121 @@ function ComboDetailsSkeleton() {
       <main className="relative min-h-screen overflow-hidden bg-section-a pt-20">
         <ComboBackgroundLayers />
         <ComboMotifField />
-        <div className="relative z-10 mx-auto w-[90%] max-w-360 px-5 pb-16 pt-10 sm:px-6 lg:px-12">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="space-y-4">
-              <div className="h-8 w-40 animate-pulse rounded-full bg-primary/20" />
-              <div className="h-14 w-full animate-pulse rounded-xl bg-muted/70" />
-              <div className="h-5 w-[85%] animate-pulse rounded-lg bg-muted/70" />
-              <div className="h-5 w-[70%] animate-pulse rounded-lg bg-muted/70" />
-              <div className="h-12 w-48 animate-pulse rounded-xl bg-primary/25" />
+        <section className="relative z-10 px-5 pb-12 pt-10 sm:px-6 lg:px-12">
+          <div className="mx-auto grid w-[90%] max-w-360 gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="rounded-3xl border border-border bg-card/80 p-6 shadow-xl backdrop-blur-md md:p-8">
+              <div className="mb-4 h-10 w-36 animate-pulse rounded-full bg-primary/20" />
+              <div className="h-14 w-full max-w-[38rem] animate-pulse rounded-xl bg-muted/70" />
+              <div className="mt-3 h-14 w-[90%] max-w-[32rem] animate-pulse rounded-xl bg-muted/70" />
+              <div className="mt-6 space-y-2.5">
+                <div className="h-5 w-full animate-pulse rounded bg-muted/70" />
+                <div className="h-5 w-[92%] animate-pulse rounded bg-muted/70" />
+                <div className="h-5 w-[80%] animate-pulse rounded bg-muted/70" />
+              </div>
+              <div className="mt-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                <div className="mb-3 h-5 w-40 animate-pulse rounded bg-muted/70" />
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[0, 1, 2, 3].map((item) => (
+                    <div key={item} className="h-5 animate-pulse rounded bg-muted/70" />
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-border bg-background/85 p-4">
+                  <div className="h-4 w-20 animate-pulse rounded bg-muted/70" />
+                  <div className="mt-2 h-9 w-20 animate-pulse rounded-lg bg-muted/70" />
+                </div>
+                <div className="rounded-2xl border border-border bg-background/85 p-4">
+                  <div className="h-4 w-24 animate-pulse rounded bg-muted/70" />
+                  <div className="mt-2 h-9 w-28 animate-pulse rounded-lg bg-primary/25" />
+                </div>
+              </div>
             </div>
-            <div className="h-72 animate-pulse rounded-3xl border border-border bg-card" />
+            <div className="rounded-3xl border border-border bg-card p-5 shadow-xl">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="h-5 w-32 animate-pulse rounded bg-primary/20" />
+                <div className="size-11 animate-pulse rounded-xl bg-primary/20" />
+              </div>
+              <div className="mb-4 aspect-video w-full animate-pulse rounded-2xl border border-border bg-muted/70" />
+              <div className="grid gap-3">
+                <div className="rounded-xl border border-border bg-background/80 p-4">
+                  <div className="h-10 w-40 animate-pulse rounded-lg bg-muted/70" />
+                  <div className="mt-2 h-5 w-24 animate-pulse rounded bg-muted/70" />
+                </div>
+                <div className="h-13 w-full animate-pulse rounded-xl bg-primary/30" />
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div className="mt-10 space-y-3">
-            <div className="h-10 w-60 animate-pulse rounded-xl bg-muted/70" />
-            <div className="grid gap-3">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="h-14 animate-pulse rounded-xl border border-border bg-card" />
+        <section className="relative z-10 overflow-hidden bg-section-b px-5 py-14 sm:px-6 lg:px-12">
+          <div className="mx-auto w-[90%] max-w-360">
+            <div className="mb-12 rounded-3xl border border-border bg-card/70 p-5 shadow-xl backdrop-blur-md md:p-8">
+              <div className="mb-6 text-center">
+                <div className="mx-auto h-4 w-20 animate-pulse rounded bg-primary/20" />
+                <div className="mx-auto mt-3 h-11 w-full max-w-md animate-pulse rounded-xl bg-muted/70" />
+                <div className="mx-auto mt-3 h-5 w-full max-w-sm animate-pulse rounded bg-muted/70" />
+              </div>
+              <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
+                <div className="rounded-2xl border border-border bg-background/70 p-4">
+                  <div className="mb-3 h-5 w-24 animate-pulse rounded bg-muted/70" />
+                  <div className="space-y-2">
+                    {[0, 1, 2, 3].map((item) => (
+                      <div key={item} className="h-11 animate-pulse rounded-xl border border-border bg-card" />
+                    ))}
+                  </div>
+                  <div className="mt-3 h-11 animate-pulse rounded-xl border border-destructive/20 bg-destructive/10" />
+                </div>
+                <div className="mx-auto h-16 w-16 animate-pulse rounded-full border border-primary/30 bg-primary/15 lg:h-20 lg:w-20" />
+                <div className="rounded-2xl border border-primary/30 bg-linear-to-br from-primary/10 to-teal/10 p-4 shadow-lg">
+                  <div className="mb-3 h-7 w-28 animate-pulse rounded-full bg-primary/20" />
+                  <div className="h-6 w-64 animate-pulse rounded bg-muted/70" />
+                  <div className="mt-3 h-4 w-20 animate-pulse rounded bg-muted/70" />
+                  <div className="mt-2 h-11 w-40 animate-pulse rounded-lg bg-muted/70" />
+                  <div className="mt-4 h-28 animate-pulse rounded-xl border border-success/25 bg-success/15" />
+                  <div className="mt-4 h-5 w-32 animate-pulse rounded bg-muted/70" />
+                </div>
+              </div>
+            </div>
+            <div className="mb-6 space-y-2">
+              <div className="h-4 w-32 animate-pulse rounded bg-primary/20" />
+              <div className="h-12 w-full max-w-2xl animate-pulse rounded-xl bg-muted/70" />
+            </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="overflow-hidden rounded-3xl border border-border bg-card shadow-lg">
+                  <div className="h-40 animate-pulse bg-linear-to-br from-primary/30 to-teal/30" />
+                  <div className="space-y-3 p-5">
+                    <div className="h-5 w-28 animate-pulse rounded-full bg-primary/20" />
+                    <div className="h-8 w-full animate-pulse rounded-lg bg-muted/70" />
+                    <div className="h-5 w-[90%] animate-pulse rounded bg-muted/70" />
+                    <div className="h-5 w-[80%] animate-pulse rounded bg-muted/70" />
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <div className="h-12 animate-pulse rounded-xl bg-muted/70" />
+                      <div className="h-12 animate-pulse rounded-xl bg-primary/30" />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
-        </div>
+        </section>
+
+        <section className="relative z-10 bg-section-a py-16">
+          <div className="mx-auto w-[90%] max-w-360 space-y-6">
+            <div className="h-8 w-72 animate-pulse rounded-xl bg-muted/70" />
+            <div className="flex gap-5 overflow-hidden">
+              <div className="h-40 w-80 shrink-0 animate-pulse rounded-2xl border border-border bg-card" />
+              <div className="h-40 w-80 shrink-0 animate-pulse rounded-2xl border border-border bg-card" />
+            </div>
+            <div className="h-8 w-64 animate-pulse rounded-xl bg-muted/70" />
+            <div className="space-y-3">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="h-18 animate-pulse rounded-2xl border border-border bg-card" />
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
@@ -234,6 +370,11 @@ export default function ComboDetailsPage() {
       discount,
     };
   }, [combo]);
+
+  const includedCourses = useMemo(
+    () => (combo?.courses || []).map(toCourseGridItem),
+    [combo?.courses],
+  );
 
   if (isLoading) {
     return <ComboDetailsSkeleton />;
@@ -303,6 +444,24 @@ export default function ComboDetailsPage() {
                 <p className="mt-4 text-base font-medium leading-relaxed text-muted-foreground md:text-lg">
                   {combo.short_description}
                 </p>
+              )}
+
+              {combo.courses?.length > 0 && (
+                <div className="mt-6 rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                  <p className="mb-3 text-sm font-extrabold text-foreground">
+                    এই Combo-তে যা আছে
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {combo.courses.map((course) => (
+                      <div key={course.id} className="flex items-start gap-2.5">
+                        <BookOpenCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span className="text-sm font-semibold leading-snug text-muted-foreground">
+                          {course.title}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -445,75 +604,16 @@ export default function ComboDetailsPage() {
               </h2>
             </div>
 
-            <div className="grid gap-3">
-              {(combo.courses || []).map((course, index) => (
-                <div
-                  key={course.id}
-                  className="overflow-hidden rounded-2xl border border-border bg-card"
-                >
-                  <div className="grid gap-4 md:grid-cols-[280px_1fr]">
-                    <div className="relative min-h-44 border-b border-border md:min-h-full md:border-b-0 md:border-r">
-                      {getCourseThumb(course) ? (
-                        <Image
-                          src={getCourseThumb(course) as string}
-                          alt={course.title}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center bg-muted text-muted-foreground">
-                          <BookOpenCheck className="size-8" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <div className="flex items-start gap-2.5">
-                        <BookOpenCheck className="mt-0.5 size-5 shrink-0 text-primary" />
-                        <div className="min-w-0">
-                          <p className="font-extrabold text-foreground">
-                            {toBanglaNumber(index + 1)}. {course.title}
-                          </p>
-                          {course.short_description && (
-                            <p className="mt-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                              {course.short_description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {course.chips?.sections?.chapter?.value && (
-                          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-                            {course.chips.sections.chapter.value}
-                          </span>
-                        )}
-                        {course.chips?.sections?.video?.value && (
-                          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-muted-foreground">
-                            {course.chips.sections.video.value}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-lg font-extrabold text-primary">
-                          {formatPrice(course.price || 0)}
-                        </p>
-                        <Link
-                          href={`/courses/${course.url || course.id}`}
-                          className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-bold text-primary"
-                        >
-                          কোর্স দেখো
-                          <ArrowRight className="size-4" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {includedCourses.map((course) => (
+                <PremiumCourseCard key={course.id} course={course} />
               ))}
             </div>
           </div>
         </section>
+
+        <TestimonialMarquee />
+        <FAQSection />
       </main>
 
       <Footer />

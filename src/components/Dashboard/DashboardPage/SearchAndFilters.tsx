@@ -32,7 +32,7 @@ export default function SearchAndFilters({
         <BsSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
         <input
           type="text"
-          placeholder="Search your courses..."
+          placeholder="আপনার কোর্স খুঁজুন..."
           className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-muted text-foreground border border-input focus:ring-2 focus:ring-ring text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -46,10 +46,10 @@ export default function SearchAndFilters({
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
-          <option value="All">All Types</option>
-          <option value="Individual">Individual Courses</option>
+          <option value="All">সব ধরন</option>
+          <option value="Individual">একক কোর্স</option>
           {availableBundles.length > 0 && (
-            <optgroup label="My Bundles">
+            <optgroup label="আমার Combo">
               {availableBundles.map(bundle => (
                 <option key={bundle.id} value={bundle.title}>
                   {bundle.title}
@@ -64,10 +64,10 @@ export default function SearchAndFilters({
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value as any)}
         >
-          <option value="All">All Status</option>
-          <option value="Ongoing">Ongoing</option>
-          <option value="Completed">Completed</option>
-          <option value="Not Started">Not Started</option>
+          <option value="All">সব অবস্থা</option>
+          <option value="Ongoing">চলছে</option>
+          <option value="Completed">শেষ করেছো</option>
+          <option value="Not Started">শুরু করোনি</option>
         </select>
 
         <select
@@ -75,9 +75,9 @@ export default function SearchAndFilters({
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as any)}
         >
-          <option value="Recent">Recently Accessed</option>
-          <option value="Progress">Progress (High to Low)</option>
-          <option value="Alphabetical">Alphabetical (A-Z)</option>
+          <option value="Recent">সম্প্রতি দেখা</option>
+          <option value="Progress">অগ্রগতি (বেশি থেকে কম)</option>
+          <option value="Alphabetical">বর্ণক্রম অনুযায়ী</option>
         </select>
       </div>
     </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Script from "next/script";
 import { Search, ChevronDown, ThumbsUp, ThumbsDown, Sparkles, BookOpen, Pencil, CreditCard, Headphones, GraduationCap, FileQuestion } from "lucide-react";
 
 interface FAQItem {
@@ -285,7 +286,7 @@ export default function FAQSection() {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="প্রশ্ন খুঁজুন..."
+              placeholder="প্রশ্ন খুঁজো..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-14 pr-6 py-4 rounded-2xl bg-card border border-border text-heading placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/15 dark:focus:border-emerald-500/60 transition-all text-base"
@@ -318,13 +319,13 @@ export default function FAQSection() {
                 onClick={expandAll}
                 className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary dark:hover:border-emerald-500/40 transition-all"
               >
-                সব খুলুন
+                সব খুলো
               </button>
               <button
                 onClick={collapseAll}
                 className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-card text-muted-foreground border border-border hover:border-primary/30 hover:text-primary dark:hover:border-emerald-500/40 transition-all"
               >
-                সব বন্ধ
+                সব বন্ধ করো
               </button>
             </div>
           </div>
@@ -357,15 +358,17 @@ export default function FAQSection() {
                 }}
                 className="mt-4 text-primary font-semibold hover:underline underline-offset-4"
               >
-                সব প্রশ্ন দেখুন
+                সব প্রশ্ন দেখো
               </button>
             </div>
           )}
         </div>
 
         {/* SEO Schema Markup */}
-        <script
+        <Script
+          id="mathpro-faq-schema"
           type="application/ld+json"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",

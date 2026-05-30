@@ -5,6 +5,24 @@ import { useRouter } from 'next/navigation';
 import { BsPlayFill, BsArrowRight } from 'react-icons/bs';
 import { EnrolledCourse } from './DashboardPage/types';
 
+function getRelativeBanglaTime(dateStr?: string): string {
+    if (!dateStr) return 'সম্প্রতি';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'এইমাত্র';
+    if (mins < 60) return `${mins} মিনিট আগে`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} ঘণ্টা আগে`;
+    const days = Math.floor(hours / 24);
+    if (days === 1) return 'গতকাল';
+    if (days < 7) return `${days} দিন আগে`;
+    const weeks = Math.floor(days / 7);
+    if (weeks < 5) return `${weeks} সপ্তাহ আগে`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months} মাস আগে`;
+    return `${Math.floor(months / 12)} বছর আগে`;
+}
+
 interface ResumeBannerProps {
     course?: EnrolledCourse;
     isLoading?: boolean;
@@ -18,12 +36,12 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
             <div className="w-full bg-gradient-to-r from-primary/10 to-teal/10 dark:from-primary/20 dark:to-teal/20 rounded-3xl p-6 md:p-8 mb-10 border border-primary/15 dark:border-primary/25 relative overflow-hidden animate-pulse">
                 <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center relative z-10">
                     {/* Thumbnail Skeleton */}
-                    <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+                    <div className="w-full md:w-1/3 lg:w-1/4 shrink-0">
                         <div className="relative aspect-video rounded-xl bg-muted"></div>
                     </div>
 
                     {/* Content Skeleton */}
-                    <div className="flex-grow w-full text-center md:text-left">
+                    <div className="grow w-full text-center md:text-left">
                         <div className="h-6 w-48 bg-muted rounded-full mb-4 mx-auto md:mx-0"></div>
                         <div className="h-8 w-3/4 bg-muted rounded mb-4 mx-auto md:mx-0"></div>
 
@@ -56,7 +74,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
 
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center relative z-10">
                 {/* Thumbnail */}
-                <div className="w-full md:w-1/3 lg:w-1/4 flex-shrink-0">
+                <div className="w-full md:w-1/3 lg:w-1/4 shrink-0">
                     <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg group">
                         <img
                             src={course.thumbnail}
@@ -72,9 +90,9 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex-grow text-center md:text-left">
+                <div className="grow text-center md:text-left">
                     <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-3 uppercase tracking-wider">
-                        Pick up where you left off
+                        যেখানে ছেড়েছিলে সেখান থেকে শুরু করো
                     </div>
                     <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
                         {course.title}
@@ -84,7 +102,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
                         <div className="w-full md:w-64">
                             <div className="flex justify-between text-xs mb-1">
                                 <span className="text-foreground font-medium">
-                                    {course.completedLessons} / {course.totalLessons} Lessons
+                                    {course.completedLessons} / {course.totalLessons} পাঠ
                                 </span>
                                 <span className="text-primary font-bold">{course.progress}%</span>
                             </div>
@@ -97,7 +115,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
                         </div>
                         <div className="hidden md:block h-8 w-px bg-muted"></div>
                         <div className="text-sm text-muted-foreground">
-                            Last accessed: <span className="font-medium text-foreground">Recently</span>
+                            সর্বশেষ দেখা: <span className="font-medium text-foreground">{getRelativeBanglaTime(course.lastAccessed)}</span>
                         </div>
                     </div>
 
@@ -105,7 +123,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
                         onClick={() => router.push(`/dashboard/${course.id}`)}
                         className="bg-primary text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary/30 flex items-center gap-2 mx-auto md:mx-0 hover:-translate-y-0.5"
                     >
-                        Resume Learning
+                        শেখা চালিয়ে যাও
                         <BsArrowRight />
                     </button>
                 </div>

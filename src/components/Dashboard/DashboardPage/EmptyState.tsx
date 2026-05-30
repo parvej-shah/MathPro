@@ -11,17 +11,17 @@ export default function EmptyState({ hasFilters }: EmptyStateProps) {
     <div className="text-center py-20 bg-card rounded-2xl border border-dashed border-border">
       <BsBook className="text-6xl text-muted-foreground mx-auto mb-6" />
       <h3 className="text-2xl font-bold text-foreground mb-4">
-        No courses found
+        কোনো কোর্স পাওয়া যায়নি
       </h3>
       <p className="text-muted-foreground mb-8 max-w-md mx-auto">
         {hasFilters
-          ? "Try adjusting your search or filters."
-          : "Start your learning journey today!"}
+          ? "আপনার অনুসন্ধান বা ফিল্টার পরিবর্তন করে দেখুন।"
+          : "আজই আপনার শেখার যাত্রা শুরু করুন!"}
       </p>
       {!hasFilters && (
         <Link href="/courses">
           <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-all">
-            Browse Courses
+            কোর্স দেখো
           </button>
         </Link>
       )}
