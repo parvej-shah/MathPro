@@ -28,6 +28,7 @@ export interface CourseModule {
   score: number;
   chapter_id: number;
   is_free?: boolean;
+  is_live?: boolean;
   description?: string;
   data?: ModuleData;
   [key: string]: unknown;
@@ -44,6 +45,7 @@ export interface Chapter {
 }
 
 export interface Course {
+  title?: string;
   isTaken?: boolean;
   maxModuleSerialProgress?: number;
   chapters: Chapter[];

@@ -1,0 +1,202 @@
+"use client";
+
+import { useState, useRef, useEffect, useCallback } from "react";
+import type { CourseModule } from "../_components/types";
+
+interface StoredTimer {
+  startTime: number;
+  totalTime: number;
+  submitted: boolean;
+  quizScore?: number;
+  quizAnswer?: Record<number, string>;
+  quizVerdict?: boolean[];
+}
+
+interface RestoredSubmission {
+  quizScore: number;
+  quizAnswer: Record<number, string>;
+  quizVerdict: boolean[];
+}
+
+interface UseQuizTimerReturn {
+  timeRemaining: number;
+  timerActive: boolean;
+  timerExpired: boolean;
+  formatTime: (seconds: number) => string;
+  getTimerColor: (remaining: number, total: number) => string;
+  clearQuizTimer: () => void;
+  markSubmitted: (moduleId: number, startTime: number, totalTime: number, score: number, answers: Record<number, string>, verdict: boolean[]) => void;
+  /** Non-null when the quiz was previously submitted and the page reloaded. */
+  restoredSubmission: RestoredSubmission | null;
+  /** Call after a retake to reset timer state and reinitialize. */
+  resetTimer: (moduleId: number, totalQuestions: number) => void;
+}
+
+function timerKey(moduleId: number) {
+  return `quiz_timer_${moduleId}`;
+}
+
+function readTimer(moduleId: number): StoredTimer | null {
+  try {
+    const raw = localStorage.getItem(timerKey(moduleId));
+    return raw ? (JSON.parse(raw) as StoredTimer) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeTimer(moduleId: number, data: StoredTimer) {
+  try {
+    localStorage.setItem(timerKey(moduleId), JSON.stringify(data));
+  } catch {
+    // localStorage may be unavailable (SSR / privacy mode)
+  }
+}
+
+function removeTimer(moduleId: number) {
+  try {
+    localStorage.removeItem(timerKey(moduleId));
+  } catch {
+    // ignore
+  }
+}
+
+export function useQuizTimer(
+  activeModule: CourseModule | null,
+  onExpire: () => void,
+): UseQuizTimerReturn {
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
+  const [timerExpired, setTimerExpired] = useState(false);
+  const [restoredSubmission, setRestoredSubmission] = useState<RestoredSubmission | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearQuizTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setTimerActive(false);
+  }, []);
+
+  const markSubmitted = useCallback((
+    moduleId: number,
+    startTime: number,
+    totalTime: number,
+    score: number,
+    answers: Record<number, string>,
+    verdict: boolean[],
+  ) => {
+    writeTimer(moduleId, { startTime, totalTime, submitted: true, quizScore: score, quizAnswer: answers, quizVerdict: verdict });
+  }, []);
+
+  const initTimer = useCallback((moduleId: number, totalQuestions: number) => {
+    const totalTime = totalQuestions * 60;
+    const existing = readTimer(moduleId);
+
+    if (existing) {
+      if (existing.submitted) {
+        // Quiz was already submitted — restore results, don't show timer
+        setTimerExpired(false);
+        setTimerActive(false);
+        setRestoredSubmission({
+          quizScore: existing.quizScore ?? 0,
+          quizAnswer: existing.quizAnswer ?? {},
+          quizVerdict: existing.quizVerdict ?? [],
+        });
+        return;
+      }
+
+      const elapsed = Math.floor(Date.now() / 1000) - existing.startTime;
+      const remaining = existing.totalTime - elapsed;
+
+      if (remaining <= 0) {
+        setTimeRemaining(0);
+        setTimerExpired(true);
+        setTimerActive(false);
+        writeTimer(moduleId, { ...existing, submitted: true });
+        onExpire();
+      } else {
+        setTimeRemaining(remaining);
+        setTimerActive(true);
+        setTimerExpired(false);
+        setRestoredSubmission(null);
+      }
+    } else {
+      const startTime = Math.floor(Date.now() / 1000);
+      writeTimer(moduleId, { startTime, totalTime, submitted: false });
+      setTimeRemaining(totalTime);
+      setTimerActive(true);
+      setTimerExpired(false);
+      setRestoredSubmission(null);
+    }
+  }, [onExpire]);
+
+  const resetTimer = useCallback((moduleId: number, totalQuestions: number) => {
+    removeTimer(moduleId);
+    setRestoredSubmission(null);
+    setTimerExpired(false);
+    setTimerActive(false);
+    setTimeRemaining(0);
+    initTimer(moduleId, totalQuestions);
+  }, [initTimer]);
+
+  // Initialize / tear down timer when the active module changes
+  useEffect(() => {
+    if (activeModule?.data?.category === "QUIZ" && activeModule.data?.quiz) {
+      initTimer(activeModule.id, (activeModule.data.quiz as unknown[]).length);
+    } else {
+      clearQuizTimer();
+    }
+    return () => { clearQuizTimer(); };
+  }, [activeModule?.id, activeModule?.data?.category]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Countdown tick
+  useEffect(() => {
+    if (!timerActive || timeRemaining <= 0) return;
+
+    timerRef.current = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearQuizTimer();
+          setTimerExpired(true);
+          onExpire();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [timerActive, activeModule?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const formatTime = useCallback((seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  }, []);
+
+  const getTimerColor = useCallback((remaining: number, total: number): string => {
+    const pct = total > 0 ? (remaining / total) * 100 : 0;
+    if (pct > 50) return "#10b981";
+    if (pct > 20) return "#f59e0b";
+    return "#ef4444";
+  }, []);
+
+  return {
+    timeRemaining,
+    timerActive,
+    timerExpired,
+    formatTime,
+    getTimerColor,
+    clearQuizTimer,
+    markSubmitted,
+    restoredSubmission,
+    resetTimer,
+  };
+}
