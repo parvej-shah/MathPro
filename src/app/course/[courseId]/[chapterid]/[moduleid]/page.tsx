@@ -518,7 +518,6 @@ export default function CourseDetailsPage() {
                     getTimerColor={getTimerColor}
                     submitQuiz={submitQuiz}
                     retakeQuiz={retakeQuiz}
-                    user={user}
                   />
 
                   {activeModule?.description && activeModule.description.length > 0 &&

@@ -2,12 +2,6 @@
 
 import { memo } from "react";
 import Link from "next/link";
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
 import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import ModuleUpcoming from "@/components/ModuleUpcoming";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
@@ -42,8 +36,6 @@ interface ModulePlayerProps {
   getTimerColor: (remaining: number, total: number) => string;
   submitQuiz: () => void;
   retakeQuiz: () => void;
-  // user context (for darkMode flag used in MUI Radio colour)
-  user: { darkMode?: boolean };
 }
 
 const ModulePlayer = memo(function ModulePlayer({
@@ -68,7 +60,6 @@ const ModulePlayer = memo(function ModulePlayer({
   getTimerColor,
   submitQuiz,
   retakeQuiz,
-  user,
 }: ModulePlayerProps) {
   const category = activeModule?.data?.category;
   const totalTime = ((activeModule?.data?.quiz as any[])?.length ?? 0) * 60;
@@ -471,48 +462,37 @@ const ModulePlayer = memo(function ModulePlayer({
                   plainContent={quiz.question}
                   className="text-black dark:text-white forced-white font-bold"
                 />
-                <div>
-                  <FormControl>
-                    <RadioGroup
-                      value={quizAnswer[index] || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        if (!showQuizAnswer) {
-                          setQuizAnswer((prev) => ({ ...prev, [index]: e.target.value }));
-                        }
-                      }}
-                    >
-                      {quiz.options?.map((elem: any, optIndex: number) => {
-                        const optionContent = quiz.options_html?.[optIndex] || elem;
-                        const isSelected = elem === quizAnswer[index];
-                        const radioColor =
-                          showQuizAnswer && isSelected
-                            ? quizVerdict[index] ? "limegreen" : "red"
-                            : "#B153E0";
-                        return (
-                          <FormControlLabel
-                            key={`option-${index}-${optIndex}`}
-                            value={elem}
-                            sx={{
-                              color:
-                                showQuizAnswer && isSelected
-                                  ? quizVerdict[index] ? "limegreen" : "red"
-                                  : "",
-                            }}
-                            control={
-                              <Radio
-                                sx={{
-                                  color: radioColor,
-                                  "&.Mui-checked": { color: radioColor },
-                                  "&.Mui-disabled": { color: "red" },
-                                }}
-                              />
+                <div className="flex flex-col gap-2 mt-3">
+                  {quiz.options?.map((elem: any, optIndex: number) => {
+                    const optionContent = quiz.options_html?.[optIndex] || elem;
+                    const isSelected = elem === quizAnswer[index];
+                    const isCorrect = showQuizAnswer && isSelected && quizVerdict[index];
+                    const isWrong = showQuizAnswer && isSelected && !quizVerdict[index];
+                    const accentColor = isCorrect ? "limegreen" : isWrong ? "red" : "#B153E0";
+                    return (
+                      <label
+                        key={`option-${index}-${optIndex}`}
+                        className="flex items-center gap-3 cursor-pointer"
+                        style={{ color: showQuizAnswer && isSelected ? accentColor : undefined }}
+                      >
+                        <input
+                          type="radio"
+                          name={`quiz-${index}`}
+                          value={elem}
+                          checked={isSelected}
+                          disabled={showQuizAnswer}
+                          onChange={() => {
+                            if (!showQuizAnswer) {
+                              setQuizAnswer((prev) => ({ ...prev, [index]: elem }));
                             }
-                            label={<SafeHtmlRenderer content={optionContent} />}
-                          />
-                        );
-                      })}
-                    </RadioGroup>
-                  </FormControl>
+                          }}
+                          style={{ accentColor }}
+                          className="shrink-0 w-4 h-4"
+                        />
+                        <SafeHtmlRenderer content={optionContent} />
+                      </label>
+                    );
+                  })}
                 </div>
                 {showQuizAnswer && (
                   <div>
