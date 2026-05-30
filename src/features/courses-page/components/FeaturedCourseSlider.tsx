@@ -108,10 +108,10 @@ export default function FeaturedCourseSlider({
     ? getBundleThumbnail(data as Bundle)
     : getCourseThumbnail(data as Course);
   const href = isBundle
-    ? (data as Bundle).url || `/bundle/${data.id}`
+    ? (data as Bundle).url || `/combos/${data.id}`
     : `/course-details/${data.id}`;
   const desc = truncateText((data as Course | Bundle).short_description || "", 150);
-  const label = isBundle ? "বান্ডেল" : "কোর্স";
+  const label = isBundle ? "Combo" : "কোর্স";
   const isVideo = isBundle && !!(data as Bundle).intro_video;
 
   // Progress bar key forces remount on slide change
@@ -202,7 +202,7 @@ export default function FeaturedCourseSlider({
             )}
 
             <span className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-emerald-200 group-hover/link:text-white group-hover/link:gap-3 transition-all duration-300">
-              বিস্তারিত দেখুন
+              বিস্তারিত দেখো
               <BsChevronRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover/link:translate-x-1" />
             </span>
           </Link>

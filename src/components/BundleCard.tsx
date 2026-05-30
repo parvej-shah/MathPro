@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { BsChevronRight, BsBook, BsGift } from 'react-icons/bs';
 import { FaRupeeSign } from 'react-icons/fa';
 
@@ -37,7 +36,6 @@ export default function BundleCard({
   bundle, 
   showPurchaseButton = true, 
   compact = false,
-  onPurchaseClick,
   duplicateWarning
 }: BundleCardProps) {
   const formatPrice = (price: number) => {
@@ -63,17 +61,17 @@ export default function BundleCard({
   return (
     <div className={`bg-background rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group border border-border ${compact ? 'h-auto' : ''}`}>
       {/* Bundle Header */}
-      <div className="relative bg-gradient-to-br from-purple to-teal p-4">
-        <div className="absolute top-4 right-4 bg-yellow text-white px-3 py-1 rounded-full text-sm font-bold">
+      <div className="relative bg-linear-to-br from-primary to-teal p-4">
+        <div className="absolute top-4 right-4 bg-warning text-warning-foreground px-3 py-1 rounded-full text-sm font-bold">
           {discount}% ছাড়
         </div>
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <BsGift className="text-white text-lg" />
+          <div className="w-10 h-10 bg-primary-foreground/20 rounded-full flex items-center justify-center">
+            <BsGift className="text-primary-foreground text-lg" />
           </div>
           <div>
-            <h4 className="text-white font-bold">Bundle Deal</h4>
-            <p className="text-white/80 text-sm">{bundle.course_count}টি কোর্স একসাথে</p>
+            <h4 className="text-primary-foreground font-bold">Combo Deal</h4>
+            <p className="text-primary-foreground/80 text-sm">{bundle.course_count}টি কোর্স একসাথে</p>
           </div>
         </div>
       </div>
@@ -81,29 +79,24 @@ export default function BundleCard({
       {/* Bundle Content */}
       <div className="p-4">
         {/* Bundle Title */}
-        <h3 className={`font-bold text-heading dark:text-darkHeading mb-3 line-clamp-2 group-hover:text-purple transition-colors ${compact ? 'text-lg' : 'text-xl'}`}>
+        <h3 className={`font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors ${compact ? 'text-lg' : 'text-xl'}`}>
           {bundle.title}
         </h3>
 
         {/* Courses Preview */}
         <div className="mb-4">
-          <p className="text-sm text-paragraph dark:text-darkParagraph mb-2">
-            এই Bundle এ যা যা আছে:
+          <p className="text-sm text-muted-foreground mb-2">
+            এই Combo-তে যা যা আছে:
           </p>
-          <div className="space-y-1 max-h-20 overflow-y-auto">
-            {bundle.courses.slice(0, compact ? 2 : 3).map((course) => (
+          <div className="space-y-1">
+            {bundle.courses.map((course) => (
               <div key={course.id} className="flex items-center gap-2 text-sm">
                 <BsBook className="text-teal text-xs flex-shrink-0" />
-                <span className="text-paragraph dark:text-darkParagraph line-clamp-1">
+                <span className="text-muted-foreground">
                   {course.title}
                 </span>
               </div>
             ))}
-            {bundle.courses.length > (compact ? 2 : 3) && (
-              <div className="text-sm text-purple font-medium">
-                + আরো {bundle.courses.length - (compact ? 2 : 3)}টি কোর্স
-              </div>
-            )}
           </div>
         </div>
 
@@ -111,14 +104,14 @@ export default function BundleCard({
         <div className={`grid gap-4 mb-4 ${compact ? 'grid-cols-1' : 'grid-cols-2'}`}>
           <div className="flex items-center gap-2 text-sm">
             <BsBook className="text-teal" />
-            <span className="text-paragraph dark:text-darkParagraph">
+            <span className="text-muted-foreground">
               {bundle.course_count}টি কোর্স
             </span>
           </div>
           
           <div className="flex items-center gap-2 text-sm">
-            <FaRupeeSign className="text-yellow" />
-            <span className="text-paragraph dark:text-darkParagraph">
+            <FaRupeeSign className="text-warning" />
+            <span className="text-muted-foreground">
               {formatPrice(savings)} সাশ্রয়
             </span>
           </div>
@@ -128,7 +121,7 @@ export default function BundleCard({
         <div className="mb-4">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
-              <span className={`font-bold text-heading dark:text-darkHeading ${compact ? 'text-lg' : 'text-2xl'}`}>
+              <span className={`font-bold text-foreground ${compact ? 'text-lg' : 'text-2xl'}`}>
                 {formatPrice(bundle.price)}
               </span>
               <span className={`text-muted-foreground line-through ${compact ? 'text-sm' : 'text-lg'}`}>
@@ -137,24 +130,24 @@ export default function BundleCard({
             </div>
           </div>
           <p className="text-success font-semibold text-sm">
-            আপনি সাশ্রয় করবেন {formatPrice(savings)}
+            তুমি সাশ্রয় করবে {formatPrice(savings)}
           </p>
         </div>
 
         {/* Duplicate Warning */}
         {duplicateWarning?.hasDuplicates && (
-          <div className="mb-3 p-3 bg-yellow/10 border border-yellow/30 rounded-lg">
-            <p className="text-xs text-paragraph dark:text-darkParagraph">
-              ⚠️ আপনার {duplicateWarning.duplicateCount}টি কোর্স আছে
+          <div className="mb-3 p-3 bg-warning/10 border border-warning/30 rounded-lg">
+            <p className="text-xs text-muted-foreground">
+              তোমার {duplicateWarning.duplicateCount}টি কোর্স আগে থেকেই আছে
             </p>
           </div>
         )}
 
         {/* Action Button */}
         {showPurchaseButton && (
-          <Link href={`/bundle/${bundle.id}`}>
-            <button className="w-full bg-gradient-to-r from-purple to-teal text-white py-3 px-4 rounded-lg font-semibold hover:from-teal hover:to-purple transition-all duration-300 flex items-center justify-center gap-2 group">
-              Bundle দেখুন
+          <Link href={`/combos/${bundle.id}`}>
+            <button className="w-full bg-linear-to-r from-primary to-teal text-primary-foreground py-3 px-4 rounded-lg font-semibold hover:from-teal hover:to-primary transition-all duration-300 flex items-center justify-center gap-2 group">
+              Combo দেখো
               <BsChevronRight className="group-hover:translate-x-1 transition-transform" />
             </button>
           </Link>

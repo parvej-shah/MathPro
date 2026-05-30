@@ -18,6 +18,16 @@ MathPro is a Bengali-first online learning platform (LMS) targeting **JSC, SSC, 
 
 All CTAs, labels, badges, and status text must be written in Bengali. English is acceptable only for technical UI chrome (e.g., form field placeholders, nav icons).
 
+Copy should speak to students as juniors, not seniors. Prefer friendly informal wording such as **"তুমি"**, **"দেখো"**, **"কেনো"**, **"নাও"**, and **"করো"**. Avoid respectful/formal wording such as **"আপনি"**, **"দেখুন"**, **"কিনুন"**, **"নিন"**, and **"করুন"** in student-facing marketing UI.
+
+---
+
+## Product Terminology
+
+- Public-facing marketing and UI copy must use **"Combo" / "কোর্স Combo"** for multi-course offers.
+- Avoid using **"Bundle"** in user-facing headings, badges, CTAs, and empty states for the `/combos` experience.
+- Backend/API/internal types can remain `bundle` where needed for compatibility, but displayed text must stay combo-first.
+
 ---
 
 ## Tech Stack
@@ -160,6 +170,19 @@ Fixed bottom buy bar (z-50)
 | কোর্স সম্পর্কে | "এই কোর্সে তুমি পাচ্ছো" pill grid → description → testimonials → FAQs |
 
 The "what you get" (`you_get`) feature list lives inside the "কোর্স সম্পর্কে" tab, **not** the sidebar — keeps the purchase card focused on conversion.
+
+---
+
+## Page Architecture — `/combos`
+
+The `/combos` page is a conversion page for multi-course offers, not a plain product grid.
+
+- Use the same ambient background system as `/courses`: `bg-section-a` / `bg-section-b`, fixed `primary`/`teal` glows, subtle graph-paper texture, and large math motifs.
+- The first viewport must explain what a **Combo** is, why it saves money, and who it helps.
+- Combo cards must show every included course directly on the card. Do not hide course lists behind an inner scrollbar or "+ more" summary.
+- Keep trust/value signals near the grid: total course coverage, savings, discount, live/recorded access, and exam-focused planning.
+- Public CTAs should use Bengali action language such as "Combo বিস্তারিত দেখো", "Combo গুলো দেখো", and "সকল কোর্স দেখো".
+- The page should rely on the layout-level navbar. Do not render a second page-level `Nav`.
 
 ---
 

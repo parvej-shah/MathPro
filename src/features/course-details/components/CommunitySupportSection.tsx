@@ -25,7 +25,7 @@ export default function CommunitySupportSection({
   if (!socials) return null;
 
   return (
-    <div className="pt-12 border-t border-border/20 mt-12">
+    <div className="w-[94%] sm:w-[92%] lg:w-[90%] max-w-360 mx-auto pt-12 border-t border-border/20 mt-12">
       <div className="text-center mb-8">
         <h2 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
           এখনো <span className="text-primary">প্রশ্ন</span> রয়েছে?
@@ -49,7 +49,7 @@ export default function CommunitySupportSection({
                   className="object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                <div className="w-full h-full bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center">
                   <Image
                     src="/codervai_community_crop.png"
                     alt="CODER VAI Community"
@@ -106,7 +106,7 @@ export default function CommunitySupportSection({
           {socials.whatsapp && (
             <Link href={socials.whatsapp} target="_blank">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-success flex items-center justify-center shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="currentColor"
@@ -132,7 +132,7 @@ export default function CommunitySupportSection({
           {socials.messenger && (
             <Link href={socials.messenger} target="_blank">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-info/10 border border-info/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-info flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-info flex items-center justify-center shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="currentColor"
@@ -158,7 +158,7 @@ export default function CommunitySupportSection({
           {socials.facebook_page && (
             <Link href={socials.facebook_page} target="_blank">
               <div className="flex items-center gap-3 p-3 rounded-lg bg-info/10 border border-info/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-info flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-info flex items-center justify-center shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="currentColor"
@@ -184,7 +184,7 @@ export default function CommunitySupportSection({
           {socials.phone && (
             <Link href={socials.phone}>
               <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/10 border border-primary/30 hover:shadow-md transition-shadow cursor-pointer mb-3">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"
@@ -222,7 +222,7 @@ export default function CommunitySupportSection({
               }
             >
               <div className="flex items-center gap-3 p-3 rounded-lg bg-teal/10 border border-teal/30 hover:shadow-md transition-shadow cursor-pointer">
-                <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-teal flex items-center justify-center shrink-0">
                   <svg
                     className="w-6 h-6 text-white"
                     fill="none"

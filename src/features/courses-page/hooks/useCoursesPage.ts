@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { useQuery } from "@tanstack/react-query";
@@ -97,7 +97,18 @@ export function useCoursesPage() {
     retry: 2,
   });
 
-  const bundles: Bundle[] = useMemo(() => bundlesData || [], [bundlesData]);
+  const bundles: Bundle[] = useMemo(() => {
+    const rawBundles = bundlesData || [];
+    return rawBundles.map((bundle) => {
+      const normalizedUrl = bundle.url?.startsWith("/bundle/")
+        ? bundle.url.replace("/bundle/", "/combos/")
+        : bundle.url;
+      return {
+        ...bundle,
+        url: normalizedUrl,
+      };
+    });
+  }, [bundlesData]);
 
   const loading = coursesLoading || instructorsLoading || bundlesLoading;
   const error =
@@ -218,7 +229,7 @@ export function useCoursesPage() {
 
     return [
       { id: "all", label: "সব কোর্স", count: total },
-      { id: "bundles", label: "বান্ডেল", count: bundles.length },
+      { id: "bundles", label: "Combo", count: bundles.length },
       { id: "live", label: "লাইভ কোর্স", count: totalLive },
       { id: "upcoming", label: "আপকামিং", count: totalUpcoming },
     ];

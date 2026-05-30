@@ -30,7 +30,6 @@ import {
   CourseDetailsTab,
   CountdownTimer,
   EnrollmentInfo,
-  CommunitySupportSection,
   PriceBillboard,
 } from "@/features/course-details/components";
 import CheckoutModal from "@/components/CheckoutModal";
@@ -44,6 +43,12 @@ import { englishToBanglaNumbers } from "@/helpers";
 import { useLmsPreference } from "@/hooks/useLmsPreference";
 import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
 import Footer from "@/components/footer";
+import dynamic from "next/dynamic";
+
+const TestimonialMarquee = dynamic(
+  () => import("@/features/courses-page/components/TestimonialMarquee"),
+  { ssr: false },
+);
 
 export default function CourseDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -306,6 +311,25 @@ export default function CourseDetailsPage() {
         }
       />
       <Toaster />
+
+      {/* Ambient gradient blobs */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+        <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-primary/10 dark:bg-primary/15 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 w-125 h-125 rounded-full bg-primary/8 dark:bg-primary/12 blur-[100px]" />
+        <div className="absolute bottom-0 left-1/4 w-100 h-100 rounded-full bg-primary/5 dark:bg-primary/10 blur-[100px]" />
+      </div>
+      {/* Dark mode ambient top glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-125 pointer-events-none z-39 hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)' }} />
+      {/* Graph paper grid overlay */}
+      <div
+        aria-hidden
+        className="fixed inset-0 z-39 pointer-events-none"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
 
       {/* Loading State */}
       {(loading || !courseId) && <CourseDetailsSkeleton />}
@@ -725,14 +749,9 @@ export default function CourseDetailsPage() {
               />
             )}
 
-            {/* Community & Support Section */}
-            <CommunitySupportSection
-              socials={courseData?.chips?.socials}
-              facebookCommunityThumb={
-                courseData?.chips?.thumbnails?.facebook_community_thumb_16_9
-              }
-            />
           </div>
+
+          <TestimonialMarquee feedbacks={courseData?.feedback_list?.feedbacks} />
 
           <Footer />
 

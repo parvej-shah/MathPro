@@ -26,10 +26,7 @@ export default function Nav({ mode = "default" }: NavProps) {
   const [isScrolled, setIsScrolled] = useState(mode !== "landing");
   const [loggedIn, setLoggedIn] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const loginHref =
-    typeof window === "undefined"
-      ? "https://www.mathpro.com/auth/login"
-      : `https://www.mathpro.com/auth/login?redirect=${encodeURIComponent(window.location.href)}`;
+  const [loginHref, setLoginHref] = useState("https://www.mathpro.com/auth/login");
 
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
@@ -40,6 +37,12 @@ export default function Nav({ mode = "default" }: NavProps) {
       window.removeEventListener("storage", sync);
       window.removeEventListener("tokenUpdated", sync as EventListener);
     };
+  }, []);
+
+  useEffect(() => {
+    setLoginHref(
+      `https://www.mathpro.com/auth/login?redirect=${encodeURIComponent(window.location.href)}`,
+    );
   }, []);
 
   useEffect(() => {

@@ -31,7 +31,7 @@ export default function PremiumBundleCard({ bundle }: PremiumBundleCardProps) {
       title={bundle.title}
       description={bundle.short_description}
       thumbnail={thumbnail}
-      href={bundle.url || `/bundle/${bundle.id}`}
+      href={bundle.url || `/combos/${bundle.id}`}
       price={bundle.price}
       tags={tags}
       isLive={bundle.is_live}
