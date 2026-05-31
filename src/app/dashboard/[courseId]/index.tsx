@@ -300,7 +300,7 @@ export default function CourseDashboardPage() {
 
         if (!isLoggedIn()) {
             const currentDomain = window.location.href;
-            window.location.href = `https://www.codervai.com/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
+            window.location.href = `/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
             return;
         }
     }, [router.isReady, router]);

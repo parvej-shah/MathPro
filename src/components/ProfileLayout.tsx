@@ -8,7 +8,6 @@ import { BACKEND_URL, COURSE_ID } from "@/api.config";
 import { HindSiliguri, logout } from "@/helpers";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import Footer from "@/components/footer";
 import { usePathname } from "next/navigation";
 
 export default function ProfileLayout({ children }: Props) {
@@ -403,7 +402,6 @@ export default function ProfileLayout({ children }: Props) {
             </div>
           </div>
         </div>
-        <Footer />
       </div>
     </ProtectedRoute>
   );

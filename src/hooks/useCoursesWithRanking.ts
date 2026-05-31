@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { BACKEND_URL } from '../api.config';
-import { getAuthToken, getUserIdFromToken, isLoggedIn } from '../helpers';
+import { getAuthToken, isLoggedIn } from '../helpers';
 
 interface CourseWithRanking {
   id: number;

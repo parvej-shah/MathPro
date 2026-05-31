@@ -76,8 +76,8 @@ export const siteConfig = {
 
   // Legal
   legal: {
-    terms: "https://mathpro.com/terms-and-conditions",
-    privacy: "https://mathpro.com/privacy-policy",
-    refund: "https://mathpro.com/refund-policy",
+    terms: "https://mathpro.org/terms-and-conditions",
+    privacy: "https://mathpro.org/privacy-policy",
+    refund: "https://mathpro.org/refund-policy",
   },
 };

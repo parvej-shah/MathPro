@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
-import Footer from "@/components/footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
 import { FAQSection } from "@/features/courses-page/components";
@@ -338,7 +337,6 @@ function CombosLoading() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }
@@ -402,7 +400,6 @@ export default function CombosPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -638,8 +635,6 @@ export default function CombosPage() {
         <TestimonialMarquee />
         <FAQSection />
       </main>
-
-      <Footer />
       <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />
     </div>
   );

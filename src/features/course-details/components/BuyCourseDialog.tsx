@@ -49,7 +49,7 @@ export default function BuyCourseDialog({
                 <a
                   target="_blank"
                   className="text-info font-bold"
-                  href="https://www.codervai.com/terms-and-conditions"
+                  href="https://www.mathpro.org/terms-and-conditions"
                 >
                   TERMS AND CONDITIONS
                 </a>{" "}
@@ -57,7 +57,7 @@ export default function BuyCourseDialog({
                 <a
                   target="_blank"
                   className="text-info font-bold"
-                  href="https://www.codervai.com/privacy-policy"
+                  href="https://www.mathpro.org/privacy-policy"
                 >
                   PRIVACY POLICY
                 </a>
@@ -65,7 +65,7 @@ export default function BuyCourseDialog({
                 <a
                   target="_blank"
                   className="text-info font-bold"
-                  href="https://www.codervai.com/refund-policy"
+                  href="https://www.mathpro.org/refund-policy"
                 >
                   REFUND POLICY
                 </a>

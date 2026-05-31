@@ -14,7 +14,7 @@ export default function TestComponent({}: Props) {
         {jwtDecode<any>(localStorage.getItem("token") || "").name}
       </Link>
       <a
-        href={`https://www.codervai.com/auth/register?redirect=${encodeURIComponent(window.location.href)}`}
+        href={`/auth/register?redirect=${encodeURIComponent(window.location.href)}`}
         className=" md:px-8 px-4 py-2 rounded-lg bg-white bg-opacity-30 backdrop-blur-xl hover:text-white ease-in-out duration-150 text-sm md:text-base"
       >
         শুরু করুন

@@ -37,18 +37,26 @@ function applyThemeClass(theme: ResolvedTheme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "system";
+  const [theme, setThemeState] = useState<Theme>("system");
+  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    return saved === "light" || saved === "dark" || saved === "system"
-      ? saved
-      : "system";
-  });
-  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(() =>
-    resolveSystemTheme(),
-  );
-  const resolvedTheme: ResolvedTheme =
-    theme === "system" ? systemTheme : theme;
+    const initial =
+      saved === "light" || saved === "dark" || saved === "system"
+        ? saved
+        : "system";
+    setThemeState(initial);
+    setSystemTheme(resolveSystemTheme());
+    setMounted(true);
+  }, []);
+
+  const resolvedTheme: ResolvedTheme = mounted
+    ? theme === "system"
+      ? systemTheme
+      : theme
+    : "light";
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");

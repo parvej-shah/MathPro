@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import LandingStyleCourseCard from "@/features/courses-page/components/LandingStyleCourseCard";
 import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
-import Footer from "@/components/footer";
 import { motion, AnimatePresence } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
@@ -883,8 +882,6 @@ export function LandingPage() {
           </button>
         </div>
       </section>
-
-      <Footer />
 
     </div>
   );

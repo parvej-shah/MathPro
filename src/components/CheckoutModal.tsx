@@ -457,12 +457,12 @@ export default function CheckoutModal({
                     </div>
                     <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
                       আমি{" "}
-                      <a href="https://www.codervai.com/terms-and-conditions" target="_blank" rel="noopener noreferrer"
+                      <a href="https://www.mathpro.org/terms-and-conditions" target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
                         শর্তাবলী
                       </a>{" "}
                       এবং{" "}
-                      <a href="https://www.codervai.com/privacy-policy" target="_blank" rel="noopener noreferrer"
+                      <a href="https://www.mathpro.org/privacy-policy" target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
                         গোপনীয়তা নীতি
                       </a>{" "}

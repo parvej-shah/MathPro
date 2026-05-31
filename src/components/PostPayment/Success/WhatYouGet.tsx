@@ -21,7 +21,7 @@ const WhatYouGet: React.FC<WhatYouGetProps> = ({ youGetItems = [] }) => {
             key={index}
             className="bg-background rounded-2xl p-8 text-center border border-border shadow-sm hover:shadow-md transition-all duration-300 group"
           >
-            <div className="w-16 h-16 mx-auto bg-purple text-white rounded-2xl flex items-center justify-center mb-6 text-2xl shadow-lg shadow-purple/20 group-hover:scale-110 transition-transform duration-300">
+            <div className="w-16 h-16 mx-auto bg-primary text-white rounded-2xl flex items-center justify-center mb-6 text-2xl shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform duration-300">
               <svg
                 width="24"
                 height="24"

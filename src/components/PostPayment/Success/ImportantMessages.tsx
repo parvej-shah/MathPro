@@ -9,7 +9,7 @@ const ImportantMessages: React.FC<ImportantMessagesProps> = ({ messages }) => {
 
     return (
         <div className="animate-slideUp stagger-1 max-w-4xl mx-auto w-full">
-            <div className="bg-purple dark:bg-purple/90 rounded-2xl p-8 lg:p-10 shadow-lg">
+            <div className="bg-linear-to-br from-primary to-teal rounded-2xl p-8 lg:p-10 shadow-lg">
                 <h2 className="text-2xl lg:text-3xl font-bold text-center text-white mb-8">
                     Important Messages
                 </h2>
@@ -20,7 +20,7 @@ const ImportantMessages: React.FC<ImportantMessagesProps> = ({ messages }) => {
                             key={index}
                             className="flex items-center gap-4 bg-white/15 backdrop-blur-sm border border-white/20 p-5 rounded-xl hover:bg-white/25 transition-colors"
                         >
-                            <div className="flex-shrink-0 w-10 h-10 bg-white text-purple rounded-lg flex items-center justify-center font-bold text-lg">
+                            <div className="flex-shrink-0 w-10 h-10 bg-white/20 text-white rounded-lg flex items-center justify-center font-bold text-lg">
                                 {index + 1}
                             </div>
                             <p className="text-base lg:text-lg text-white font-medium leading-relaxed">

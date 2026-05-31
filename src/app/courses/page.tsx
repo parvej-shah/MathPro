@@ -1,7 +1,6 @@
 "use client";
 
 import SEO from "@/components/SEO";
-import Footer from "@/components/footer";
 import { Toaster } from "react-hot-toast";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
@@ -61,7 +60,6 @@ export default function CoursesPage() {
       <div className="font-hind overflow-x-hidden">
         <SEO title={pageTitle} description={pageDescription} />
         <CoursesLoadingSkeleton />
-        <Footer />
       </div>
     );
   }
@@ -81,7 +79,6 @@ export default function CoursesPage() {
             </button>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -194,8 +191,6 @@ export default function CoursesPage() {
           <FAQSection />
         </div>
       </main>
-
-      <Footer />
       <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />
     </div>
   );

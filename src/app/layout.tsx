@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anek_Bangla, Geist_Mono, Manrope } from "next/font/google";
 import AppNavbar from "@/components/AppNavbar";
+import Footer from "@/components/footer";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -40,6 +41,7 @@ export default function RootLayout({
         <Providers>
           <AppNavbar />
           {children}
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -2,6 +2,8 @@ import { Anek_Bangla } from "next/font/google";
 import { jwtDecode } from 'jwt-decode';
 import CryptoJS from "crypto-js";
 
+const AUTH_COOKIE_DOMAIN = ".mathpro.org";
+
 export const HindSiliguri = Anek_Bangla({
   subsets: ["bengali"],
   weight: ["400", "500", "600", "700", "800"],
@@ -41,7 +43,7 @@ function getCookie(name: string) {
   return null;
 }
 
-/** Set cookie with domain for cross-subdomain auth (e.g. .codervai.com). */
+/** Set cookie with domain for cross-subdomain auth (e.g. .mathpro.org). */
 export function setCookieWithDomain(
   name: string,
   value: string,
@@ -50,6 +52,15 @@ export function setCookieWithDomain(
 ) {
   if (typeof document === "undefined") return;
   const secure = typeof window !== "undefined" && window.location?.protocol === "https:" ? "; secure" : "";
+  const isLocalhost =
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+  if (isLocalhost) {
+    document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secure}`;
+    return;
+  }
+
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; domain=${domain}; max-age=${maxAgeSeconds}; SameSite=Lax${secure}`;
 }
 
@@ -90,7 +101,7 @@ export const extractTokenFromUrl = (): string | null => {
 
       if (hasValidStructure && isNotExpired) {
         localStorage.setItem("token", token);
-        setCookieWithDomain("token", token, ".codervai.com");
+        setCookieWithDomain("token", token, AUTH_COOKIE_DOMAIN);
 
         const url = new URL(window.location.href);
         url.searchParams.delete("token");
@@ -157,12 +168,12 @@ function deleteCookieWithDomain(name: string, domain: string) {
 
 export const createLoginRedirectUrl = () => {
   const currentDomain = window.location.href;
-  return `https://www.codervai.com/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
+  return `/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
 };
 
 export const createRegisterRedirectUrl = () => {
   const currentDomain = window.location.href;
-  return `https://www.codervai.com/auth/register?redirect=${encodeURIComponent(currentDomain)}`;
+  return `/auth/register?redirect=${encodeURIComponent(currentDomain)}`;
 };
 
 /**
@@ -201,7 +212,7 @@ export const getAuthToken = (): string | null => {
 export const logout = () => {
   localStorage.removeItem("token");
   deleteCookie("token");
-  deleteCookieWithDomain("token", ".codervai.com");
+  deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
   window.location.reload();
 };
 

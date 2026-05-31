@@ -69,7 +69,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ data }) => {
                         <span className="text-muted-foreground font-medium">
                             সর্বমোট পেমেন্ট
                         </span>
-                        <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple to-teal">
+                        <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-teal">
                             {formatPrice(data.amount || data.price)}
                         </span>
                     </div>
@@ -82,9 +82,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ data }) => {
                             </p>
                             <div
                                 onClick={copyAccessCode}
-                                className="group flex items-center justify-between bg-muted/40/50 border border-border rounded-xl p-4 cursor-pointer hover:border-purple/50 transition-all duration-300 relative overflow-hidden"
+                                className="group flex items-center justify-between bg-muted/40 border border-border rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all duration-300 relative overflow-hidden"
                             >
-                                <div className="absolute inset-0 bg-purple/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <code className="text-lg lg:text-xl font-mono font-bold text-foreground tracking-wide relative z-10">
                                     {data.transaction_id}
                                 </code>
@@ -92,7 +92,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ data }) => {
                                     {copied ? (
                                         <FaCheck className="text-success" />
                                     ) : (
-                                        <FaCopy className="text-purple" />
+                                        <FaCopy className="text-primary" />
                                     )}
                                 </div>
                             </div>

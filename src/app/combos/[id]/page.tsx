@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
-import Footer from "@/components/footer";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
 import { FAQSection, PremiumCourseCard } from "@/features/courses-page/components";
@@ -321,7 +320,6 @@ function ComboDetailsSkeleton() {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 }
@@ -408,7 +406,6 @@ export default function ComboDetailsPage() {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -514,7 +511,7 @@ export default function ComboDetailsPage() {
                 </div>
 
                 <a
-                  href="https://www.mathpro.com/auth/login"
+                  href="/auth/login"
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-teal px-6 py-3.5 text-base font-extrabold text-primary-foreground shadow-xl shadow-primary/20"
                 >
                   Combo নাও
@@ -615,8 +612,6 @@ export default function ComboDetailsPage() {
         <TestimonialMarquee />
         <FAQSection />
       </main>
-
-      <Footer />
       <WhatsAppWidget
         phoneNumber={siteConfig.contact.phone.replace("+", "")}
         welcomeMessage="হ্যালো! Combo নিয়ে জানতে চাই"

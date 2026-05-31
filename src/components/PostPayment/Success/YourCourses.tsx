@@ -14,7 +14,7 @@ const YourCourses: React.FC<YourCoursesProps> = ({ courses }) => {
   return (
     <div className="animate-slideUp stagger-4">
       <h2 className="text-3xl lg:text-4xl font-bold text-center text-foreground mb-12">
-        আপনার কোর্সসমূহ
+        তোমার কোর্সসমূহ
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {courses.map((course) => (
@@ -46,18 +46,18 @@ const YourCourses: React.FC<YourCoursesProps> = ({ courses }) => {
               </div>
 
               {/* Content */}
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-purple transition-colors">
+              <div className="p-6 flex flex-col grow">
+                <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors">
                   {course.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-6 line-clamp-2 flex-grow">
+                <p className="text-muted-foreground text-sm mb-6 line-clamp-2 grow">
                   {course.short_description || "No description available"}
                 </p>
 
                 {/* Stats */}
                 <div className="flex items-center gap-4 text-sm text-muted-foreground border-t border-border pt-4 mt-auto">
                   <div className="flex items-center gap-2">
-                    <FaBookOpen className="text-purple" />
+                    <FaBookOpen className="text-primary" />
                     <span>
                       {course.chips?.sections?.chapter?.value || "0"} Chapters
                     </span>

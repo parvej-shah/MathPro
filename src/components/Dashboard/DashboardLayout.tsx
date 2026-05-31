@@ -1,5 +1,4 @@
 import React from "react";
-import Footer from "@/components/footer";
 import { HindSiliguri } from "@/helpers";
 import { Toaster } from "react-hot-toast";
 
@@ -11,8 +10,6 @@ export default function DashboardLayout({ children }: Props) {
             <Toaster />
 
             <div className="flex-grow bg-page-bg">{children}</div>
-
-            <Footer />
         </div>
     );
 }

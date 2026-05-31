@@ -42,7 +42,6 @@ import { TabState, PrebookingData } from "@/features/course-details/_lib/types";
 import { englishToBanglaNumbers } from "@/helpers";
 import { useLmsPreference } from "@/hooks/useLmsPreference";
 import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
-import Footer from "@/components/footer";
 import dynamic from "next/dynamic";
 
 const TestimonialMarquee = dynamic(
@@ -231,7 +230,7 @@ export default function CourseDetailsPage() {
   const handleBuyCourse = () => {
     if (isLoggedIn() === false) {
       const currentDomain = window.location.href;
-      window.location.href = `https://www.mathpro.com/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
     } else {
       // Open checkout modal instead of directly buying
       setOpenCheckoutModal(true);
@@ -752,8 +751,6 @@ export default function CourseDetailsPage() {
           </div>
 
           <TestimonialMarquee feedbacks={courseData?.feedback_list?.feedbacks} />
-
-          <Footer />
 
           <WhatsAppWidget
             phoneNumber={

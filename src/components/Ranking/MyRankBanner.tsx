@@ -1,9 +1,16 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { RankingUser } from '@/hooks/useRanking';
+"use client";
+
+import React from "react";
+import { motion } from "framer-motion";
+import { RankingUser } from "@/hooks/useRanking";
 
 interface MyRankBannerProps {
   myData: RankingUser;
+}
+
+function toBanglaNumber(value: number | string) {
+  const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+  return value.toString().replace(/\d/g, (digit) => banglaDigits[Number(digit)]);
 }
 
 const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
@@ -17,12 +24,12 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
       <motion.div
         whileHover={{ scale: 1.02, y: -2 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="bg-gradient-to-r from-primary/15 via-primary/10 to-teal/15 backdrop-blur-lg border border-primary/25 rounded-2xl p-4 sm:p-6 shadow-2xl relative overflow-hidden"
+        className="bg-linear-to-r from-primary/15 via-card/90 to-accent/10 backdrop-blur-lg border border-primary/25 rounded-2xl p-4 sm:p-6 shadow-2xl shadow-primary/10 relative overflow-hidden"
       >
         {/* Background decoration */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-teal/5 rounded-2xl"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-primary/5 to-accent/5 rounded-2xl"></div>
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 w-24 h-24 bg-teal/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/10 rounded-full blur-2xl"></div>
         
         <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -49,7 +56,7 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
                 transition={{ delay: 0.4 }}
                 className="text-muted-foreground font-semibold text-sm mb-1"
               >
-                Your Current Rank
+                তোমার বর্তমান র‍্যাঙ্ক
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
@@ -57,15 +64,15 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
                 transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
                 className="text-foreground text-3xl font-bold flex items-center gap-2"
               >
-                <span className="text-primary">#{myData.rank}</span>
+                <span className="text-primary">#{toBanglaNumber(myData.rank)}</span>
                 {parseInt(myData.rank) <= 3 && (
                   <motion.svg 
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: 0.6, type: "spring", stiffness: 300 }}
                     className={`w-6 h-6 ${
-                      parseInt(myData.rank) === 1 ? 'text-yellow-400' : 
-                      parseInt(myData.rank) === 2 ? 'text-gray-400' : 'text-orange-400'
+                      parseInt(myData.rank) === 1 ? 'text-warning' :
+                      parseInt(myData.rank) === 2 ? 'text-muted-foreground' : 'text-accent'
                     }`} 
                     fill="currentColor" 
                     viewBox="0 0 20 20"
@@ -84,14 +91,14 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
               transition={{ delay: 0.6 }}
               className="text-center"
             >
-              <div className="text-muted-foreground text-sm mb-1">Your Score</div>
+              <div className="text-muted-foreground text-sm mb-1">তোমার স্কোর</div>
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
                 className="text-2xl font-bold text-primary"
               >
-                {myData.score}
+                {toBanglaNumber(myData.score)}
               </motion.div>
             </motion.div>
             
@@ -121,7 +128,7 @@ const MyRankBanner: React.FC<MyRankBannerProps> = ({ myData }) => {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.9, duration: 0.8 }}
-          className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-primary to-teal rounded-full"
+          className="absolute bottom-0 left-0 h-1 bg-linear-to-r from-primary to-accent rounded-full"
           style={{ width: '100%' }}
         />
       </motion.div>
