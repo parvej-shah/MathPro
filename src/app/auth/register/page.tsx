@@ -1,12 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import bcrypt from "bcryptjs-react";
 import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn, setCookieWithDomain } from "@/helpers";
+import AuthShell from "../_components/AuthShell";
 
 type RegisterState = {
   name: string;
@@ -32,20 +33,16 @@ const initialState: RegisterState = {
   interestedTopic: "",
 };
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [form, setForm] = useState<RegisterState>(initialState);
   const [otp, setOtp] = useState("");
   const [otpHash, setOtpHash] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [redirectUrl, setRedirectUrl] = useState("/dashboard");
-
-  useEffect(() => {
-    const redirect = new URLSearchParams(window.location.search).get("redirect");
-    setRedirectUrl(redirect || "/dashboard");
-  }, []);
+  const redirectUrl = useMemo(() => searchParams.get("redirect") || "/dashboard", [searchParams]);
   const loginHref = useMemo(
     () => `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`,
     [redirectUrl],
@@ -101,62 +98,140 @@ export default function RegisterPage() {
       localStorage.setItem("token", token);
       setCookieWithDomain("token", token, ".mathpro.org");
       router.replace(redirectUrl);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || err?.response?.data?.data || "Registration failed.");
+    } catch (err: unknown) {
+      const errorResponse = axios.isAxiosError<{ error?: string; data?: string }>(err)
+        ? err.response?.data
+        : undefined;
+      setError(errorResponse?.error || errorResponse?.data || "রেজিস্ট্রেশন করা যায়নি। আবার চেষ্টা করো।");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-page-bg text-foreground flex items-center justify-center px-4 py-14">
-      <section className="w-full max-w-xl rounded-2xl border border-border bg-card p-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-5">Register</h1>
-        <form className="space-y-3" onSubmit={submitForm}>
-          <input className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-          <input className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Phone" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} required />
-          <input type="email" className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} required />
-          <input type="password" className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Password" value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} required />
-          <input type="password" className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Confirm password" value={form.confirmPass} onChange={(e) => setForm((p) => ({ ...p, confirmPass: e.target.value }))} required />
-          <input className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Current Institution" value={form.currentInstitution} onChange={(e) => setForm((p) => ({ ...p, currentInstitution: e.target.value }))} required />
-          <input className="w-full rounded-lg border border-input bg-background px-3 py-2" placeholder="Department (optional)" value={form.department} onChange={(e) => setForm((p) => ({ ...p, department: e.target.value }))} />
-          <select className="w-full rounded-lg border border-input bg-background px-3 py-2" value={form.currentAcademicLevel} onChange={(e) => setForm((p) => ({ ...p, currentAcademicLevel: e.target.value }))} required>
-            <option value="">Current Academic Level</option>
+    <AuthShell
+      title="শেখা শুরু করো"
+      description="কয়েকটি তথ্য দিলেই তোমার কোর্স, কুইজ আর প্রগ্রেস ট্র্যাকিংয়ের জন্য অ্যাকাউন্ট প্রস্তুত হবে।"
+    >
+      <form className="space-y-3" onSubmit={submitForm}>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <input
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="তোমার নাম"
+            value={form.name}
+            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            required
+          />
+          <input
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="ফোন নম্বর"
+            value={form.phone}
+            onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+            required
+          />
+        </div>
+        <input
+          type="email"
+          className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+          placeholder="ইমেইল"
+          value={form.email}
+          onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+          required
+        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <input
+            type="password"
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="পাসওয়ার্ড"
+            value={form.password}
+            onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+            required
+          />
+          <input
+            type="password"
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="পাসওয়ার্ড আবার লেখো"
+            value={form.confirmPass}
+            onChange={(e) => setForm((p) => ({ ...p, confirmPass: e.target.value }))}
+            required
+          />
+        </div>
+        <input
+          className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+          placeholder="বর্তমান শিক্ষা প্রতিষ্ঠান"
+          value={form.currentInstitution}
+          onChange={(e) => setForm((p) => ({ ...p, currentInstitution: e.target.value }))}
+          required
+        />
+        <input
+          className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+          placeholder="ডিপার্টমেন্ট (ঐচ্ছিক)"
+          value={form.department}
+          onChange={(e) => setForm((p) => ({ ...p, department: e.target.value }))}
+        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <select
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25"
+            value={form.currentAcademicLevel}
+            onChange={(e) => setForm((p) => ({ ...p, currentAcademicLevel: e.target.value }))}
+            required
+          >
+            <option value="">ক্লাস/লেভেল বেছে নাও</option>
             <option value="SSC">SSC</option>
             <option value="HSC">HSC</option>
             <option value="UNIVERSITY">University</option>
             <option value="OTHERS">Others</option>
           </select>
-          <select className="w-full rounded-lg border border-input bg-background px-3 py-2" value={form.interestedTopic} onChange={(e) => setForm((p) => ({ ...p, interestedTopic: e.target.value }))}>
-            <option value="">Interested Topic (optional)</option>
+          <select
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25"
+            value={form.interestedTopic}
+            onChange={(e) => setForm((p) => ({ ...p, interestedTopic: e.target.value }))}
+          >
+            <option value="">যে বিষয়ে আগ্রহী</option>
             <option value="WEB">Web</option>
             <option value="Android">Android</option>
             <option value="COMPETITIVEPROGRAMMING">Competitive Programming</option>
           </select>
+        </div>
 
-          {showOtp ? (
-            <input
-              className="w-full rounded-lg border border-input bg-background px-3 py-2"
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-          ) : null}
+        {showOtp ? (
+          <input
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="OTP কোড লেখো"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            required
+          />
+        ) : null}
 
-          {error ? <p className="text-sm text-red-500">{error}</p> : null}
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-emerald-600 text-white py-2.5 font-semibold disabled:opacity-70">
-            {loading ? "Please wait..." : showOtp ? "Verify & Register" : "Send OTP"}
-          </button>
-        </form>
+        {error ? (
+          <p className="rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-linear-to-r from-primary to-primary/85 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 disabled:translate-y-0 disabled:opacity-70"
+        >
+          {loading ? "একটু অপেক্ষা করো..." : showOtp ? "ভেরিফাই করে শুরু করো" : "OTP পাঠাও"}
+        </button>
+      </form>
 
-        <p className="mt-4 text-sm">
-          Already have an account?{" "}
-          <Link href={loginHref} className="text-emerald-600 hover:underline">
-            Login
-          </Link>
-        </p>
-      </section>
-    </main>
+      <p className="mt-5 text-sm font-semibold text-muted-foreground">
+        আগে থেকেই অ্যাকাউন্ট আছে?{" "}
+        <Link href={loginHref} className="text-primary transition hover:text-primary/80">
+          লগইন করো
+        </Link>
+      </p>
+    </AuthShell>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }
