@@ -163,13 +163,7 @@ function RegisterPageContent() {
           onChange={(e) => setForm((p) => ({ ...p, currentInstitution: e.target.value }))}
           required
         />
-        <input
-          className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-          placeholder="ডিপার্টমেন্ট (ঐচ্ছিক)"
-          value={form.department}
-          onChange={(e) => setForm((p) => ({ ...p, department: e.target.value }))}
-        />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3">
           <select
             className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25"
             value={form.currentAcademicLevel}
@@ -177,20 +171,9 @@ function RegisterPageContent() {
             required
           >
             <option value="">ক্লাস/লেভেল বেছে নাও</option>
-            <option value="SSC">SSC</option>
-            <option value="HSC">HSC</option>
-            <option value="UNIVERSITY">University</option>
-            <option value="OTHERS">Others</option>
-          </select>
-          <select
-            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/25"
-            value={form.interestedTopic}
-            onChange={(e) => setForm((p) => ({ ...p, interestedTopic: e.target.value }))}
-          >
-            <option value="">যে বিষয়ে আগ্রহী</option>
-            <option value="WEB">Web</option>
-            <option value="Android">Android</option>
-            <option value="COMPETITIVEPROGRAMMING">Competitive Programming</option>
+            <option value="JSC">জেএসসি</option>
+            <option value="SSC">এসএসসি</option>
+            <option value="HSC">এইচএসসি</option>
           </select>
         </div>
 

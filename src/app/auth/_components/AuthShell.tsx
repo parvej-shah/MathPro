@@ -80,8 +80,8 @@ export default function AuthShell({ title, description, children }: AuthShellPro
         ))}
       </div>
 
-      <section className="relative z-10 mx-auto grid min-h-screen w-[92%] max-w-7xl grid-cols-1 items-center gap-8 py-8 md:w-[88%] lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-12">
-        <div className="hidden min-h-[650px] items-center justify-center lg:flex">
+      <section className="relative z-10 mx-auto grid min-h-screen w-[92%] max-w-7xl grid-cols-1 items-start gap-8 pb-10 pt-28 md:w-[88%] lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:pb-14 lg:pt-32">
+        <div className="hidden min-h-[650px] items-center justify-center lg:flex lg:pt-8">
           <div className="relative flex min-h-[650px] w-full items-center justify-center">
             <div aria-hidden className="absolute inset-x-4 bottom-16 h-28 rounded-full bg-primary/12 blur-3xl" />
             <div aria-hidden className="absolute left-4 top-20 h-96 w-36 -rotate-12 rounded-full bg-primary/10 blur-3xl" />
@@ -91,7 +91,7 @@ export default function AuthShell({ title, description, children }: AuthShellPro
           </div>
         </div>
 
-        <div className="mx-auto w-full max-w-xl">
+        <div className="mx-auto w-full max-w-xl lg:pt-4">
           <div className="rounded-3xl border border-border/70 bg-card/88 p-5 shadow-2xl shadow-primary/10 backdrop-blur-xl sm:p-7">
             <div className="mb-6">
               <div className="mb-4 flex items-center gap-3">
