@@ -67,7 +67,7 @@ const ModulePlayer = memo(function ModulePlayer({
   return (
     <div className="mt-8">
       {/* Module Title */}
-      <h3 className="text-xl lg:text-2xl font-semibold text-heading dark:text-darkHeading mb-6">
+      <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-6">
         {activeModule?.title}
       </h3>
 
@@ -85,13 +85,17 @@ const ModulePlayer = memo(function ModulePlayer({
         (activeModule.data.videoUrl as string).trim() === "" ? (
           <ModuleUpcoming />
         ) : (
-          <iframe
-            className="rounded-xl w-full min-h-[260px] md:min-h-[400px] lg:min-h-[500px]"
-            src={activeModule.data.videoUrl as string}
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-          />
+          <div className="flex justify-center">
+            <div className="w-full aspect-video max-h-[65vh] rounded-xl overflow-hidden bg-black">
+              <iframe
+                className="w-full h-full"
+                src={activeModule.data.videoUrl as string}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
         ))}
 
       {/* ── PDF ───────────────────────────────────────────────── */}
@@ -102,7 +106,7 @@ const ModulePlayer = memo(function ModulePlayer({
         ) : (
           <iframe
             src={`https://docs.google.com/viewer?url=${activeModule.data.pdf_link as string}&embedded=true`}
-            className="w-full h-[70vh]"
+            className="w-full h-[65vh] rounded-xl border border-border/40"
           />
         ))}
 
@@ -116,12 +120,12 @@ const ModulePlayer = memo(function ModulePlayer({
             <p className="text-lg mb-2">
               Assignment Status:{" "}
               {assignmentEvaluted.length === 0 && (
-                <span className="font-semibold text-xl text-red-600">
+                <span className="font-semibold text-xl text-destructive">
                   INCOMPLETE
                 </span>
               )}
               {assignmentEvaluted.length > 0 && (
-                <span className="font-semibold text-xl text-green-300">
+                <span className="font-semibold text-xl text-success">
                   {assignmentEvaluted[0]?.status}
                 </span>
               )}
@@ -133,8 +137,8 @@ const ModulePlayer = memo(function ModulePlayer({
                   <span
                     className={`font-semibold text-xl ${
                       assignmentEvaluted[0]?.evaluation?.verdict === "PASSED"
-                        ? "text-green-300"
-                        : "text-red-300"
+                        ? "text-success"
+                        : "text-destructive"
                     }`}
                   >
                     {assignmentEvaluted[0]?.evaluation?.verdict}
@@ -145,14 +149,14 @@ const ModulePlayer = memo(function ModulePlayer({
               Feedback:{" "}
               {assignmentEvaluted.length > 0 &&
                 assignmentEvaluted[0]?.status === "EVALUATED" && (
-                  <span className="text-black dark:text-white">
+                  <span className="text-foreground">
                     {assignmentEvaluted[0]?.evaluation?.feedback}
                   </span>
                 )}
             </p>
             <form
               onSubmit={submitAssignment}
-              className="lg:px-8 px-6 py-6 text-heading dark:text-darkHeading bg-gray-100/5 backdrop-blur-xl rounded-xl mx-auto flex flex-col items-center gap-4"
+              className="lg:px-8 px-6 py-6 text-foreground bg-muted/20 backdrop-blur-xl rounded-xl mx-auto flex flex-col items-center gap-4"
             >
               <div className="w-full">
                 <p className="text-lg font-semibold mb-1">Github URL</p>
@@ -187,7 +191,7 @@ const ModulePlayer = memo(function ModulePlayer({
               <div className="mt-4">
                 <button
                   type="submit"
-                  className="py-2 px-8 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+                  className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
                 >
                   Submit Assignment
                 </button>
@@ -203,11 +207,11 @@ const ModulePlayer = memo(function ModulePlayer({
             Coding Status:{" "}
             {(activeModule?.serial ?? 0) >=
             (courseData?.maxModuleSerialProgress ?? 0) + 1 ? (
-              <span className="font-semibold text-xl text-red-600">
+              <span className="font-semibold text-xl text-destructive">
                 INCOMPLETE
               </span>
             ) : (
-              <span className="font-semibold text-xl text-green-300">
+              <span className="font-semibold text-xl text-success">
                 COMPLETED
               </span>
             )}
@@ -215,7 +219,7 @@ const ModulePlayer = memo(function ModulePlayer({
           <div className="mt-6">
             <Link
               href={`/problem/${activeModule.id}`}
-              className="py-2 px-8 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+              className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
             >
               Go to Problem Page
             </Link>
@@ -230,11 +234,11 @@ const ModulePlayer = memo(function ModulePlayer({
             Coding Status:{" "}
             {(activeModule?.serial ?? 0) >=
             (courseData?.maxModuleSerialProgress ?? 0) + 1 ? (
-              <span className="font-semibold text-xl text-red-600">
+              <span className="font-semibold text-xl text-destructive">
                 INCOMPLETE
               </span>
             ) : (
-              <span className="font-semibold text-xl text-green-300">
+              <span className="font-semibold text-xl text-success">
                 COMPLETED
               </span>
             )}
@@ -253,7 +257,7 @@ const ModulePlayer = memo(function ModulePlayer({
             <a
               href={activeModule?.data?.cf_url as string}
               target="_blank"
-              className="py-2 px-8 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+              className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
             >
               Go to Codeforces Problem
             </a>
@@ -261,7 +265,7 @@ const ModulePlayer = memo(function ModulePlayer({
           <div className="mt-12">
             <button
               onClick={checkCFStatus}
-              className="py-2 px-8 bg-green-700 hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+              className="py-2 px-8 bg-success hover:bg-success/85 ease-in-out duration-150 focus:ring ring-success/30 rounded-lg font-semibold text-white text-lg"
             >
               Verify
             </button>
@@ -330,7 +334,7 @@ const ModulePlayer = memo(function ModulePlayer({
                   <div className="text-right">
                     <p className="text-sm text-gray-500 font-medium mb-1">Questions</p>
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-600/30 to-pink-600/30 flex items-center justify-center border border-purple-500/30">
+                      <div className="w-10 h-10 rounded-lg bg-linear-to-br from-teal/30 to-primary/20 flex items-center justify-center border border-teal/30">
                         <p className="text-2xl font-bold text-white">
                           {(activeModule?.data?.quiz as any[])?.length}
                         </p>
@@ -381,11 +385,11 @@ const ModulePlayer = memo(function ModulePlayer({
           {timerExpired && !showQuizAnswer && (
             <div className="mb-8 p-6 rounded-lg border-2 border-red-500 bg-red-900/20 backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p className="text-2xl font-bold text-red-500">Time&apos;s Up!</p>
+                  <p className="text-2xl font-bold text-destructive">Time&apos;s Up!</p>
                   <p className="text-sm text-gray-300">Your quiz has been automatically submitted</p>
                 </div>
               </div>
@@ -394,17 +398,17 @@ const ModulePlayer = memo(function ModulePlayer({
 
           {/* Score card (returning user) */}
           {showQuizAnswer && !justSubmitted && (
-            <div className="mb-8 overflow-hidden rounded-xl border border-[#B153E0]/30 bg-[#532e62]/10 backdrop-blur-sm">
+            <div className="mb-8 overflow-hidden rounded-xl border border-primary/30 bg-primary/10 backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center justify-between p-8 gap-8">
                 <div className="flex items-center gap-8">
                   <div className="relative w-32 h-32">
                     <svg className="w-full h-full transform -rotate-90">
                       <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="none" className="text-gray-700/30" />
                       <circle
-                        cx="64" cy="64" r="58" stroke="#B153E0" strokeWidth="8" fill="none"
+                        cx="64" cy="64" r="58" stroke="oklch(0.718 0.147 159.2)" strokeWidth="8" fill="none"
                         strokeDasharray={`${2 * Math.PI * 58}`}
                         strokeDashoffset={`${2 * Math.PI * 58 * (1 - (quizVerdict.filter(Boolean).length || 0) / ((activeModule?.data?.quiz as any[])?.length || 1))}`}
-                        className="transition-all duration-1000 ease-out drop-shadow-[0_0_10px_rgba(177,83,224,0.5)]"
+                        className="transition-all duration-1000 ease-out drop-shadow-[0_0_10px_oklch(0.718_0.147_159.2/0.5)]"
                         strokeLinecap="round"
                       />
                     </svg>
@@ -421,7 +425,7 @@ const ModulePlayer = memo(function ModulePlayer({
                     <h3 className="text-2xl font-bold text-white mb-1">Quiz Completed</h3>
                     <div className="flex items-baseline gap-2">
                       <span className="text-gray-400">Score:</span>
-                      <span className="text-xl font-bold text-[#B153E0]">{quizVerdict.filter(Boolean).length || 0}</span>
+                      <span className="text-xl font-bold text-primary">{quizVerdict.filter(Boolean).length || 0}</span>
                       <span className="text-gray-500">/ {(activeModule?.data?.quiz as any[])?.length}</span>
                     </div>
                     <p className="text-sm text-gray-400 mt-2 max-w-[200px]">
@@ -435,7 +439,7 @@ const ModulePlayer = memo(function ModulePlayer({
                 <div className="flex flex-col items-end gap-4">
                   <button
                     onClick={retakeQuiz}
-                    className="group flex items-center gap-2 px-8 py-3 bg-[#B153E0] hover:bg-[#9a45c4] rounded-lg font-semibold text-white transition-all duration-200 shadow-lg shadow-purple-900/20"
+                    className="group flex items-center gap-2 px-8 py-3 bg-primary hover:bg-primary/85 rounded-lg font-semibold text-primary-foreground transition-all duration-200 shadow-lg shadow-primary/20"
                   >
                     <svg
                       className="w-5 h-5 transform group-hover:rotate-180 transition-transform duration-500"
@@ -455,12 +459,12 @@ const ModulePlayer = memo(function ModulePlayer({
             (activeModule?.data?.quiz as any[])?.map((quiz: any, index: number) => (
               <div
                 key={`quiz-question-${index}`}
-                className="my-6 bg-[#B153E0]/10 border border-[#B153E0] dark:bg-gray-300/10 rounded p-6"
+                className="my-6 bg-primary/10 border border-primary/40 dark:bg-muted/10 rounded-lg p-6"
               >
                 <RichFieldRenderer
                   htmlContent={quiz.question_html}
                   plainContent={quiz.question}
-                  className="text-black dark:text-white forced-white font-bold"
+                  className="text-foreground forced-white font-bold"
                 />
                 <div className="flex flex-col gap-2 mt-3">
                   {quiz.options?.map((elem: any, optIndex: number) => {
@@ -468,7 +472,7 @@ const ModulePlayer = memo(function ModulePlayer({
                     const isSelected = elem === quizAnswer[index];
                     const isCorrect = showQuizAnswer && isSelected && quizVerdict[index];
                     const isWrong = showQuizAnswer && isSelected && !quizVerdict[index];
-                    const accentColor = isCorrect ? "limegreen" : isWrong ? "red" : "#B153E0";
+                    const accentColor = isCorrect ? "oklch(0.65 0.15 145)" : isWrong ? "oklch(0.577 0.245 27)" : "oklch(0.718 0.147 159.2)";
                     return (
                       <label
                         key={`option-${index}-${optIndex}`}
@@ -496,8 +500,8 @@ const ModulePlayer = memo(function ModulePlayer({
                 </div>
                 {showQuizAnswer && (
                   <div>
-                    <p className="text-heading dark:text-darkHeading text-xl mt-2">Answer:</p>
-                    <p className="text-green-400">
+                    <p className="text-foreground text-xl mt-2">Answer:</p>
+                    <p className="text-success">
                       {decryptString(
                         quiz.answer || quiz.correct_answer,
                         process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ,
@@ -507,7 +511,7 @@ const ModulePlayer = memo(function ModulePlayer({
                       <RichFieldRenderer
                         htmlContent={quiz.explanation_html ? decryptString(quiz.explanation_html, process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ) : undefined}
                         plainContent={quiz.explanation ? decryptString(quiz.explanation, process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ) : undefined}
-                        className="text-paragraph dark:text-darkParagraph mt-2"
+                        className="text-muted-foreground mt-2"
                       />
                     )}
                   </div>
@@ -520,7 +524,7 @@ const ModulePlayer = memo(function ModulePlayer({
               onClick={submitQuiz}
               type="submit"
               disabled={showQuizAnswer}
-              className="py-2 mt-5 px-8 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+              className="py-2 mt-5 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
             >
               Submit Answer
             </button>
@@ -535,7 +539,7 @@ const ModulePlayer = memo(function ModulePlayer({
         ) : (
           <SafeHtmlRenderer
             content={activeModule.description}
-            className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-lg text-paragraph dark:text-darkParagraph dark:border-gray-300/10"
+            className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-lg text-muted-foreground dark:border-border/10"
           />
         ))}
     </div>

@@ -8,7 +8,6 @@ export const UserContextProvider = (props: any) => {
   const [user, setUser] = useState({
     isLoggedIn: false,
     loading: false,
-    openCompiler:false,
     darkMode:true
   });
 

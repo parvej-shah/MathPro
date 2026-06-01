@@ -20,9 +20,9 @@ const CATEGORY_LABEL: Record<string, string> = {
   PDF: "Pdf:",
 };
 
-/** Icon color: brand purple when accessible, grey when locked. */
+/** Icon color: brand emerald when accessible, grey when locked. */
 function iconFill(accessible: boolean) {
-  return accessible ? "#B153E0" : "#565656";
+  return accessible ? "oklch(0.718 0.147 159.2)" : "oklch(0.46 0.025 238)";
 }
 
 function CategoryIcon({
@@ -142,16 +142,24 @@ const ModuleListItem = memo(
         onClick={() => {
           if (accessible) onSelect(module);
         }}
-        className="flex w-full gap-4 items-center mb-4 text-left disabled:cursor-not-allowed"
+        className={`group flex w-full gap-3 items-center px-2.5 py-2 mb-0.5 rounded-lg text-left transition-colors disabled:cursor-not-allowed ${
+          active
+            ? "bg-primary/10"
+            : accessible
+              ? "hover:bg-muted/60"
+              : ""
+        }`}
       >
-        <CategoryIcon category={category} accessible={accessible} />
+        <span className="shrink-0 grid place-items-center">
+          <CategoryIcon category={category} accessible={accessible} />
+        </span>
         <p
-          className={`text-lg ${
+          className={`text-sm leading-snug ${
             active
-              ? "text-[#B153E0] font-semibold"
+              ? "text-primary font-semibold"
               : !accessible
-                ? "text-[#565656]"
-                : ""
+                ? "text-muted-foreground"
+                : "text-foreground/90"
           }`}
         >
           {label} {module.title}

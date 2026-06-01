@@ -57,7 +57,7 @@ export default function ModuleNavButtons({
       {shouldShowUnlockChapterButton() && (
         <button
           onClick={unlockCurrentChapter}
-          className="py-2 mt-5 px-6 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+          className="py-2 mt-5 px-6 bg-accent hover:bg-accent/85 ease-in-out duration-150 focus:ring ring-accent/30 rounded-lg font-semibold text-accent-foreground text-lg"
         >
           Unlock Chapter
         </button>
@@ -65,13 +65,13 @@ export default function ModuleNavButtons({
       <div className="flex justify-between items-center">
         <button
           onClick={handlePrev}
-          className="py-2 mt-5 px-6 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+          className="py-2 mt-5 px-6 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
         >
           Previous
         </button>
         <button
           onClick={handleNext}
-          className="py-2 mt-5 px-6 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg"
+          className="py-2 mt-5 px-6 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
         >
           Next
         </button>

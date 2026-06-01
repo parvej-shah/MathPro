@@ -5,8 +5,6 @@ import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "
 import { UserContext } from "@/Contexts/UserContext";
 import { Toaster, toast } from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { saveLastAccessedModule } from "@/utils/moduleAccessUtils";
 import DiscussionSection from "@/components/DiscussionSection";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
@@ -34,7 +32,7 @@ function findObjectBySerial(data: Course, targetSerial: number): CourseModule | 
 }
 
 export default function CourseDetailsPage() {
-  const [user, setUser] = useContext<any>(UserContext);
+  const [, setUser] = useContext<any>(UserContext);
   const router = useRouter();
   const params = useParams();
   const courseId = params?.courseId as string | undefined;
@@ -184,7 +182,6 @@ export default function CourseDetailsPage() {
     setDeleteOption,
     activeCommentDeletionData,
     setActiveCommentDeletionData,
-    fetchDiscussions,
     fetchSubdiscussions,
     postSubdiscussion,
     submitNewDiscussion: submitNewDiscussionBase,
@@ -224,11 +221,9 @@ export default function CourseDetailsPage() {
   }, [courseId, courseData, fetchEvalutedAssignment, submitProgress, setActiveModule]);
 
   // ── Side effects ──────────────────────────────────────────────────────────
-  // Fetch discussions + auto-submit progress on module change
+  // Auto-submit progress on module change
   useEffect(() => {
     if (!activeModule?.id) return;
-
-    fetchDiscussions(activeModule.id);
 
     if (activeModule.is_free || courseData?.isTaken) {
       const cat = activeModule.data?.category;
@@ -303,8 +298,8 @@ export default function CourseDetailsPage() {
               </svg>
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-heading mb-4">Failed to Load Course</h2>
-          <p className="text-paragraph mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Failed to Load Course</h2>
+          <p className="text-muted-foreground mb-6">
             We couldn&apos;t load this course. Please check your internet connection and try again.
           </p>
           <button
@@ -323,23 +318,11 @@ export default function CourseDetailsPage() {
     <div className="overflow-x-hidden">
       <Toaster />
       {pageLoading ? (
-        <ModulePageSkeleton />
+        <div className="pt-24 pb-8">
+          <ModulePageSkeleton />
+        </div>
       ) : (
         <>
-          {/* Floating compiler button — right side so it's reachable on mobile */}
-          <button
-            style={{ zIndex: 999 }}
-            onClick={() => { setUser({ ...user, openCompiler: true }); }}
-            className="fixed top-1/2 -translate-y-1/2 right-0 bg-[#0B060D] bg-opacity-30 backdrop-blur-lg border border-gray-200/20 p-3 hover:bg-gray-300/20 rounded-l-lg"
-          >
-            <svg width={40} height={40} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M13.2942 7.17041L12.0001 12L10.706 16.8297" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M8.49994 9L8.32837 9.17157C6.99504 10.5049 6.32837 11.1716 6.32837 12C6.32837 12.8284 6.99504 13.4951 8.32837 14.8284L8.49994 15" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-              <path d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </button>
-
           {/* Discussions modal */}
           <Transition appear show={false} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={() => {}}>
@@ -349,7 +332,7 @@ export default function CourseDetailsPage() {
               <div className="fixed inset-0 overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center">
                   <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                    <Dialog.Panel className="w-[90vw] md:w-[80vw] transform overflow-hidden rounded-2xl bg-[#0B060D]/60 dark:bg-[#0B060D]/30 backdrop-blur-lg border border-gray-200/20 p-6 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Panel className="w-[90vw] md:w-[80vw] transform overflow-hidden rounded-2xl bg-card/80 backdrop-blur-lg border border-border/20 p-6 text-left align-middle shadow-xl transition-all">
                       <Dialog.Title as="div" className="text-lg font-medium leading-6">
                         <div className="flex justify-end mb-4">
                           <svg className="cursor-pointer" width="30" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
@@ -361,20 +344,20 @@ export default function CourseDetailsPage() {
                           </svg>
                         </div>
                         <textarea
-                          className="w-full px-3 py-3 rounded mb-2 resize-none bg-gray-200/20 outline-none focus:ring ring-gray-300/80 text-white"
+                          className="w-full px-3 py-3 rounded mb-2 resize-none bg-gray-200/20 outline-none focus:ring ring-border/50 text-foreground"
                           placeholder="Write a question or an answer"
                           value={newDiscussion}
                           onChange={(e) => { setNewDiscussion(e.target.value); }}
                         />
                         <div className="flex justify-end mb-4">
-                          <button onClick={submitNewDiscussion} className="py-2 px-8 bg-[#532e62] hover:opacity-75 ease-in-out duration-150 focus:ring ring-gray-300/80 rounded font-semibold text-white text-lg">Submit</button>
+                          <button onClick={submitNewDiscussion} className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg">Submit</button>
                         </div>
                       </Dialog.Title>
                       <div className="mt-2 max-h-[50vh] overflow-y-scroll">
                         {discussions?.map((elem) => (
                           <div className="my-4" key={elem.id}>
-                            <p className="text-white text-2xl">{String(elem.name ?? "")}</p>
-                            <p className="text-white">{String(elem.content ?? "")}</p>
+                            <p className="text-foreground text-2xl">{String(elem.name ?? "")}</p>
+                            <p className="text-muted-foreground">{String(elem.content ?? "")}</p>
                           </div>
                         ))}
                       </div>
@@ -394,7 +377,7 @@ export default function CourseDetailsPage() {
               <div className="fixed inset-0 overflow-y-auto">
                 <div className="flex min-h-full items-center justify-center p-4 text-center">
                   <Transition.Child as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                    <Dialog.Panel className="w-[90vw] md:w-[50vw] lg:w-[40vw] text-darkHeading transform overflow-hidden rounded-2xl bg-gray-900/70 backdrop-blur-3xl border border-gray-300/30 text-left align-middle shadow-xl transition-all">
+                    <Dialog.Panel className="w-[90vw] md:w-[50vw] lg:w-[40vw] text-foreground transform overflow-hidden rounded-2xl bg-card/90 backdrop-blur-3xl border border-border/30 text-left align-middle shadow-xl transition-all">
                       <Dialog.Title as="div" className="text-lg font-medium leading-6 p-2">
                         <div className="flex justify-end">
                           <button className="hover:bg-gray-300/20 p-2 mr-2 rounded" onClick={() => { setOpenDicussionDeleteDialogue(false); }}>
@@ -406,14 +389,14 @@ export default function CourseDetailsPage() {
                       </Dialog.Title>
                       <div className="border-b border-t border-gray-300/20 py-3 px-6">
                         <div className="flex flex-col items-center">
-                          <FontAwesomeIcon icon={faTriangleExclamation} className="text-4xl text-orange-300" />
-                          <p className="text-xl font-bold text-darkHeading mt-1">Warning!</p>
-                          <p className="text-darkHeading text-center mt-1">Do you want to delete your comment?</p>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-10 h-10 text-orange-300"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" /></svg>
+                          <p className="text-xl font-bold text-foreground mt-1">Warning!</p>
+                          <p className="text-foreground text-center mt-1">Do you want to delete your comment?</p>
                         </div>
                       </div>
                       <div className="p-6 flex gap-4">
-                        <button onClick={() => { setOpenDicussionDeleteDialogue(false); }} className="bg-gray-300/30 hover:opacity-60 ease-in-out duration-150 text-darkHeading py-3 w-full rounded-xl font-bold">Cancel</button>
-                        <button onClick={() => { deleteDiscussion(); setOpenDicussionDeleteDialogue(false); }} className="bg-red-600 hover:bg-opacity-50 ease-in-out duration-150 text-darkHeading py-3 w-full rounded-xl font-bold">Delete</button>
+                        <button onClick={() => { setOpenDicussionDeleteDialogue(false); }} className="bg-muted/30 hover:opacity-60 ease-in-out duration-150 text-foreground py-3 w-full rounded-xl font-bold">Cancel</button>
+                        <button onClick={() => { deleteDiscussion(); setOpenDicussionDeleteDialogue(false); }} className="bg-destructive hover:bg-destructive/80 ease-in-out duration-150 text-white py-3 w-full rounded-xl font-bold">Delete</button>
                       </div>
                     </Dialog.Panel>
                   </Transition.Child>
@@ -423,19 +406,19 @@ export default function CourseDetailsPage() {
           </Transition>
 
           {/* Main layout */}
-          <div className="py-16 bg-white dark:bg-[#0B060D] overflow-x-hidden">
-            <div className="w-[90%] lgXl:w-[80%] mx-auto py-12 z-20">
+          <div className="pt-24 pb-8 bg-background overflow-x-hidden">
+            <div className="w-[90%] lgXl:w-[80%] mx-auto z-20">
 
               {/* Mobile-only top bar: course title + sidebar sheet trigger */}
               <div className="flex items-center justify-between mb-6 lg:hidden">
-                <h2 className="text-xl font-semibold text-heading dark:text-darkHeading line-clamp-1 flex-1 mr-3">
+                <h2 className="text-xl font-semibold text-foreground line-clamp-1 flex-1 mr-3">
                   {courseData?.title}
                 </h2>
                 <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
                   <SheetTrigger
                     render={
                       <button
-                        className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300/30 bg-gray-100/10 hover:bg-gray-200/20 text-heading dark:text-darkHeading text-sm font-medium"
+                        className="shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg border border-border/30 bg-muted/10 hover:bg-muted/20 text-foreground text-sm font-medium"
                         aria-label="Open course content"
                       />
                     }
@@ -450,13 +433,12 @@ export default function CourseDetailsPage() {
                     </svg>
                     Contents
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-white dark:bg-[#0B060D]">
-                    <SheetHeader className="px-4 pt-4 pb-2 border-b border-gray-300/20">
-                      <SheetTitle className="text-heading dark:text-darkHeading text-base">
-                        Course Contents
-                      </SheetTitle>
+                  <SheetContent side="right" showCloseButton={false} className="w-[85vw] sm:w-[400px] p-0 flex flex-col bg-background">
+                    {/* Visually-hidden title for a11y; the sidebar renders its own header. */}
+                    <SheetHeader className="sr-only">
+                      <SheetTitle>Course Contents</SheetTitle>
                     </SheetHeader>
-                    <div className="flex-1 overflow-hidden">
+                    <div className="flex-1 overflow-hidden p-3">
                       <CourseSidebar
                         courseData={courseData}
                         activeModuleId={activeModule?.id}
@@ -464,6 +446,7 @@ export default function CourseDetailsPage() {
                         onSelectModule={goToModule}
                         isActiveChapter={isActiveChapter}
                         className="h-full border-0 rounded-none"
+                        onClose={() => setMobileSidebarOpen(false)}
                       />
                     </div>
                   </SheetContent>
@@ -474,7 +457,7 @@ export default function CourseDetailsPage() {
                 {/* Background glow */}
                 <svg viewBox="0 0 980 892" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute hidden -top-17.5 -left-50 h-full z-0">
                   <g filter="url(#filter0_f_261_7530)">
-                    <ellipse cx="314.306" cy="293.812" rx="167.107" ry="94.0796" transform="rotate(-10.6934 314.306 293.812)" fill="#B153E0" />
+                    <ellipse cx="314.306" cy="293.812" rx="167.107" ry="94.0796" transform="rotate(-10.6934 314.306 293.812)" fill="oklch(0.718 0.147 159.2)" />
                   </g>
                   <defs>
                     <filter id="filter0_f_261_7530" x="-350.838" y="-303.722" width="1330.29" height="1195.07" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
@@ -486,15 +469,9 @@ export default function CourseDetailsPage() {
                 </svg>
 
                 {/* Content column */}
-                <div style={{ flex: 2 }} className="text-heading dark:text-darkHeading z-10 min-w-0">
+                <div style={{ flex: 2 }} className="text-foreground z-10 min-w-0">
                   {/* Course title — desktop only (mobile shows it in the top bar above) */}
-                  <h2 className="hidden lg:block text-2xl lg:text-4xl font-semibold mb-0">{courseData?.title}</h2>
-                  {!(courseData?.isTaken || false) && (
-                    <div className="flex gap-8 items-center pb-6 border-b border-gray-400/50 dark:border-gray-300/10 relative" />
-                  )}
-                  {(courseData?.isTaken || false) && (
-                    <div className="pb-6 border-b border-gray-400/50 dark:border-gray-300/10" />
-                  )}
+                  <h2 className="hidden lg:block text-2xl lg:text-3xl font-semibold mb-3 pb-3 border-b border-border/50">{courseData?.title}</h2>
 
                   <ModulePlayer
                     activeModule={activeModule as any}
@@ -526,7 +503,7 @@ export default function CourseDetailsPage() {
                       <p className="font-semibold text-2xl pb-4 border-b border-gray-300/10">Description</p>
                       <SafeHtmlRenderer
                         content={activeModule.description}
-                        className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-lg text-paragraph dark:text-darkParagraph border-t border-gray-400/50 pt-2 dark:border-gray-300/10"
+                        className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-lg text-muted-foreground border-t border-border/50 pt-2"
                       />
                     </div>
                   )}
@@ -542,13 +519,13 @@ export default function CourseDetailsPage() {
                     unlockCurrentChapter={unlockCurrentChapter}
                   />
 
-                  {activeModule?.id && (courseData?.isTaken || activeModule?.is_free) && (
+                  {/* {activeModule?.id && (courseData?.isTaken || activeModule?.is_free) && (
                     <div className="mt-8">
                       <ModuleFeedback moduleId={activeModule.id} moduleTitle={activeModule.title} />
                     </div>
-                  )}
+                  )} */}
 
-                  <div className="mt-10">
+                  {/* <div className="mt-10">
                     <DiscussionSection
                       discussions={discussions as any}
                       discussionLoading={discussionLoading}
@@ -566,7 +543,7 @@ export default function CourseDetailsPage() {
                       setOpenDicussionDeleteDialogue={setOpenDicussionDeleteDialogue}
                       setActiveCommentDeletionData={setActiveCommentDeletionData as any}
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Sidebar column — hidden on mobile, shown on lg+ */}
@@ -577,7 +554,7 @@ export default function CourseDetailsPage() {
                     activeModuleRef={activeModuleRef}
                     onSelectModule={goToModule}
                     isActiveChapter={isActiveChapter}
-                    className="max-h-[calc(100vh-8rem)] sticky top-8"
+                    className="max-h-[calc(100vh-7rem)] sticky top-24"
                   />
                 </div>
               </div>

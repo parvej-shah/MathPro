@@ -53,7 +53,7 @@ export default function CourseDetailsPage() {
   const params = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const courseId = params?.id;
-  const [user, setUser] = useContext<any>(UserContext);
+  const [user] = useContext<any>(UserContext);
   const { lmsPreference } = useLmsPreference();
 
   // State
@@ -387,46 +387,6 @@ export default function CourseDetailsPage() {
             onClose={() => setOpenPrebookCourseSuccessful(false)}
             courseTitle={courseData.title}
           />
-
-          {/* Compiler Button */}
-          <button
-            style={{ zIndex: 999 }}
-            onClick={() => setUser({ ...user, openCompiler: true })}
-            className="fixed top-80 -left-2 bg-background/30 backdrop-blur-lg border border-border/20 p-3 hover:bg-muted/20"
-          >
-            <svg
-              width={40}
-              height={40}
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M15.5 9L15.6716 9.17157C17.0049 10.5049 17.6716 11.1716 17.6716 12C17.6716 12.8284 17.0049 13.4951 15.6716 14.8284L15.5 15"
-                stroke="#fff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M13.2942 7.17041L12.0001 12L10.706 16.8297"
-                stroke="#fff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M8.49994 9L8.32837 9.17157C6.99504 10.5049 6.32837 11.1716 6.32837 12C6.32837 12.8284 6.99504 13.4951 8.32837 14.8284L8.49994 15"
-                stroke="#fff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              <path
-                d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"
-                stroke="#fff"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
 
           {/* Main Content Section */}
           <div className="pt-20 pb-24 lg:pb-0 bg-background overflow-x-hidden">
