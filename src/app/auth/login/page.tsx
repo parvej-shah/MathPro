@@ -1,12 +1,42 @@
 "use client";
 
-import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn, setCookieWithDomain } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts?: {
+        id?: {
+          initialize: (options: {
+            client_id: string;
+            callback: (response: { credential?: string }) => void;
+          }) => void;
+          renderButton: (
+            element: HTMLElement,
+            options: {
+              theme?: "outline" | "filled_blue" | "filled_black";
+              size?: "large" | "medium" | "small";
+              text?:
+                | "signin_with"
+                | "signup_with"
+                | "continue_with"
+                | "signin";
+              shape?: "rectangular" | "pill" | "circle" | "square";
+              width?: number;
+              logo_alignment?: "left" | "center";
+            },
+          ) => void;
+        };
+      };
+    };
+  }
+}
 
 type LoginState = {
   login: string;
@@ -18,7 +48,10 @@ function LoginPageContent() {
   const searchParams = useSearchParams();
   const [form, setForm] = useState<LoginState>({ login: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const redirectUrl = useMemo(() => searchParams.get("redirect") || "/dashboard", [searchParams]);
   const registerHref = useMemo(
     () => `/auth/register?redirect=${encodeURIComponent(redirectUrl)}`,
@@ -58,20 +91,146 @@ function LoginPageContent() {
     }
   };
 
+  useEffect(() => {
+    if (!googleClientId || !googleButtonRef.current) return;
+
+    let cancelled = false;
+    let createdScript: HTMLScriptElement | null = null;
+    let existingScriptLoadHandler: (() => void) | null = null;
+    let existingScriptErrorHandler: (() => void) | null = null;
+
+    const renderGoogleButton = () => {
+      if (
+        cancelled ||
+        !googleButtonRef.current ||
+        !window.google?.accounts?.id
+      ) {
+        return;
+      }
+
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: async ({ credential }) => {
+          if (!credential) {
+            setError("Google লগইন টোকেন পাওয়া যায়নি। আবার চেষ্টা করো।");
+            return;
+          }
+
+          setGoogleLoading(true);
+          setError("");
+
+          try {
+            const res = await axios.post(`${BACKEND_URL}/admin/auth/google`, {
+              id_token: credential,
+            });
+            const token = res?.data?.token;
+            if (!token) {
+              throw new Error("Missing token in Google login response");
+            }
+            localStorage.setItem("token", token);
+            setCookieWithDomain("token", token, ".mathpro.org");
+            router.replace(redirectUrl);
+          } catch (err: unknown) {
+            const message = axios.isAxiosError<{ error?: string }>(err)
+              ? err.response?.data?.error
+              : undefined;
+            setError(message || "Google লগইন করা যায়নি। আবার চেষ্টা করো।");
+          } finally {
+            setGoogleLoading(false);
+          }
+        },
+      });
+
+      googleButtonRef.current.innerHTML = "";
+      const buttonWidth = Math.min(
+        360,
+        googleButtonRef.current.parentElement?.clientWidth || 360,
+      );
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        width: buttonWidth,
+        logo_alignment: "left",
+      });
+    };
+
+    if (window.google?.accounts?.id) {
+      renderGoogleButton();
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]',
+    ) as HTMLScriptElement | null;
+
+    if (existingScript) {
+      existingScriptLoadHandler = () => renderGoogleButton();
+      existingScriptErrorHandler = () => {
+        setError("Google লগইন লোড করা যায়নি। পরে আবার চেষ্টা করো।");
+      };
+      existingScript.addEventListener("load", existingScriptLoadHandler);
+      existingScript.addEventListener("error", existingScriptErrorHandler);
+    } else {
+      createdScript = document.createElement("script");
+      createdScript.src = "https://accounts.google.com/gsi/client";
+      createdScript.async = true;
+      createdScript.defer = true;
+      createdScript.onload = renderGoogleButton;
+      createdScript.onerror = () => {
+        setError("Google লগইন লোড করা যায়নি। পরে আবার চেষ্টা করো।");
+      };
+      document.head.appendChild(createdScript);
+    }
+
+    return () => {
+      cancelled = true;
+      if (existingScript && existingScriptLoadHandler) {
+        existingScript.removeEventListener("load", existingScriptLoadHandler);
+      }
+      if (existingScript && existingScriptErrorHandler) {
+        existingScript.removeEventListener("error", existingScriptErrorHandler);
+      }
+      if (createdScript) {
+        createdScript.onload = null;
+        createdScript.onerror = null;
+      }
+    };
+  }, [googleClientId, redirectUrl, router]);
+
   return (
     <AuthShell
       title="আবার শুরু করো"
       description="তোমার লাইভ ক্লাস, রেকর্ডেড লেকচার আর প্র্যাকটিস সব এক জায়গায় ফিরে পাবে।"
     >
+      {googleClientId ? (
+        <div className="space-y-3">
+          <div
+            className={googleLoading ? "pointer-events-none opacity-70" : ""}
+            ref={googleButtonRef}
+          />
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              অথবা
+            </span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+        </div>
+      ) : null}
+
       <form className="space-y-4" onSubmit={onSubmit}>
         <div>
           <label className="mb-1.5 block text-sm font-semibold" htmlFor="login">
-            ফোন বা ইমেইল
+            ইমেইল
           </label>
           <input
             id="login"
             className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-            placeholder="তোমার ফোন বা ইমেইল"
+            placeholder="তোমার ইমেইল"
             value={form.login}
             onChange={(e) => setForm((p) => ({ ...p, login: e.target.value }))}
             required

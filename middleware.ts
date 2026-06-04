@@ -39,7 +39,14 @@ function hasValidToken(token: string | undefined): boolean {
 }
 
 function isProtectedPath(pathname: string): boolean {
-  return pathname === "/dashboard" || pathname.startsWith("/dashboard/") || pathname === "/course" || pathname.startsWith("/course/");
+  return (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/course" ||
+    pathname.startsWith("/course/") ||
+    pathname === "/profile" ||
+    pathname.startsWith("/profile/")
+  );
 }
 
 export function middleware(req: NextRequest) {
@@ -65,6 +72,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/course/:path*", "/auth/:path*"],
+  matcher: ["/dashboard/:path*", "/course/:path*", "/profile/:path*", "/auth/:path*"],
 };
-

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '@/api.config';
-import { jwtDecode } from 'jwt-decode';
 
 export interface UserProfile {
   id: number;
@@ -10,6 +9,8 @@ export interface UserProfile {
   phone: string | null;
   login: string;
   login_type?: 'email' | 'phone';
+  auth_providers?: string[];
+  has_password?: boolean;
   profile: {
     email: string | null;
     phone: string | null;
@@ -62,14 +63,16 @@ export const useUserProfile = (): UseUserProfileReturn => {
       } else {
         throw new Error('Invalid response format from server');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching user profile:', err);
       // Backend error response: { success: false, error: "..." }
-      const errorMessage =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        err.message ||
-        'Failed to fetch user profile';
+      const errorMessage = axios.isAxiosError<{ error?: string; message?: string }>(err)
+        ? err.response?.data?.error ||
+          err.response?.data?.message ||
+          err.message
+        : err instanceof Error
+          ? err.message
+          : 'Failed to fetch user profile';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -77,7 +80,13 @@ export const useUserProfile = (): UseUserProfileReturn => {
   };
 
   useEffect(() => {
-    fetchProfile();
+    const timeoutId = window.setTimeout(() => {
+      void fetchProfile();
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   return {

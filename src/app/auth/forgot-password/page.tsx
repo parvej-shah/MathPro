@@ -1,32 +1,35 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import bcrypt from "bcryptjs-react";
 import { BACKEND_URL } from "@/api.config";
+import { isLoggedIn } from "@/helpers";
+import AuthShell from "../_components/AuthShell";
 
-export default function ForgotPasswordPage() {
-  const [phone, setPhone] = useState("");
+function ForgotPasswordContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
-  const [otpHash, setOtpHash] = useState("");
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
+  const [showOtpForm, setShowOtpForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [redirectUrl, setRedirectUrl] = useState("/dashboard");
-
-  useEffect(() => {
-    const redirect = new URLSearchParams(window.location.search).get("redirect");
-    setRedirectUrl(redirect || "/dashboard");
-  }, []);
+  const redirectUrl = useMemo(() => searchParams.get("redirect") || "/dashboard", [searchParams]);
   const loginHref = useMemo(
     () => `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`,
     [redirectUrl],
   );
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      router.replace(redirectUrl);
+    }
+  }, [redirectUrl, router]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -35,101 +38,132 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      if (!showOtp) {
-        const res = await axios.get(`${BACKEND_URL}/admin/auth/otp-forgot/${phone}`);
-        setOtpHash(res?.data?.data?.otp || "");
-        setShowOtp(true);
-        setSuccess("OTP sent to your phone.");
-        return;
-      }
-
-      if (!isPhoneVerified) {
-        const ok = bcrypt.compareSync(otp, otpHash);
-        if (!ok) {
-          setError("Wrong OTP.");
-          return;
-        }
-        setIsPhoneVerified(true);
-        setSuccess("OTP verified. Set your new password.");
+      if (!showOtpForm) {
+        const res = await axios.post(`${BACKEND_URL}/admin/auth/forgot-password`, {
+          contact: email.trim(),
+        });
+        setShowOtpForm(true);
+        setSuccess(res.data?.message || "OTP তোমার ইমেইলে পাঠানো হয়েছে।");
         return;
       }
 
       if (password !== confirmPass) {
-        setError("Passwords do not match.");
+        setError("পাসওয়ার্ড দুটি এক হয়নি।");
         return;
       }
 
-      await axios.put(`${BACKEND_URL}/admin/auth/change-password`, {
-        phone,
-        password,
+      const res = await axios.post(`${BACKEND_URL}/admin/auth/reset-password`, {
+        contact: email.trim(),
+        otp: otp.trim(),
+        newPassword: password,
       });
-      setSuccess("Password changed successfully.");
-    } catch (err: any) {
-      setError(err?.response?.data?.error || err?.response?.data?.data || "Request failed.");
+      setSuccess(res.data?.message || "পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।");
+    } catch (err: unknown) {
+      const message = axios.isAxiosError<{ error?: string }>(err)
+        ? err.response?.data?.error
+        : undefined;
+      setError(message || "অনুরোধটি সম্পন্ন করা যায়নি। আবার চেষ্টা করো।");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-page-bg text-foreground flex items-center justify-center px-4 py-14">
-      <section className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-5">Forgot Password</h1>
-        <form className="space-y-4" onSubmit={onSubmit}>
+    <AuthShell
+      title="পাসওয়ার্ড রিসেট করো"
+      description="তোমার ইমেইলে OTP পাঠানো হবে। সেটা দিয়ে নতুন পাসওয়ার্ড সেট করতে পারবে।"
+    >
+      <form className="space-y-4" onSubmit={onSubmit}>
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold" htmlFor="email">
+            ইমেইল
+          </label>
           <input
-            className="w-full rounded-lg border border-input bg-background px-3 py-2"
-            placeholder="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            id="email"
+            type="email"
+            className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+            placeholder="তোমার ইমেইল"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
-          {showOtp ? (
-            <input
-              className="w-full rounded-lg border border-input bg-background px-3 py-2"
-              placeholder="OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              required
-            />
-          ) : null}
-          {isPhoneVerified ? (
-            <>
+        </div>
+
+        {showOtpForm ? (
+          <>
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold" htmlFor="otp">
+                OTP
+              </label>
+              <input
+                id="otp"
+                className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+                placeholder="ইমেইলে পাওয়া OTP"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <input
                 type="password"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2"
-                placeholder="New password"
+                className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+                placeholder="নতুন পাসওয়ার্ড"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
               <input
                 type="password"
-                className="w-full rounded-lg border border-input bg-background px-3 py-2"
-                placeholder="Confirm password"
+                className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
+                placeholder="পাসওয়ার্ড নিশ্চিত করো"
                 value={confirmPass}
                 onChange={(e) => setConfirmPass(e.target.value)}
                 required
               />
-            </>
-          ) : null}
-          {error ? <p className="text-sm text-red-500">{error}</p> : null}
-          {success ? <p className="text-sm text-emerald-600">{success}</p> : null}
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-emerald-600 text-white py-2.5 font-semibold disabled:opacity-70">
-            {loading
-              ? "Please wait..."
-              : !showOtp
-                ? "Send OTP"
-                : !isPhoneVerified
-                  ? "Verify OTP"
-                  : "Change Password"}
-          </button>
-        </form>
-        <p className="mt-4 text-sm">
-          <Link href={loginHref} className="text-emerald-600 hover:underline">
-            Return to login
-          </Link>
-        </p>
-      </section>
-    </main>
+            </div>
+          </>
+        ) : null}
+
+        {error ? (
+          <p className="rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+        {success ? (
+          <p className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700">
+            {success}
+          </p>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-linear-to-r from-primary to-primary/85 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 disabled:translate-y-0 disabled:opacity-70"
+        >
+          {loading
+            ? "একটু অপেক্ষা করো..."
+            : showOtpForm
+              ? "নতুন পাসওয়ার্ড সেট করো"
+              : "OTP পাঠাও"}
+        </button>
+      </form>
+
+      <p className="mt-5 text-sm font-semibold text-muted-foreground">
+        মনে পড়ে গেছে?{" "}
+        <Link href={loginHref} className="text-primary transition hover:text-primary/80">
+          লগইন করো
+        </Link>
+      </p>
+    </AuthShell>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ForgotPasswordContent />
+    </Suspense>
   );
 }
