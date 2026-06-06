@@ -1,4 +1,4 @@
-import { Section, EnrollmentSection } from '../_lib/types';
+import { Section, EnrollmentSection } from './types';
 
 // Slider settings for react-slick
 export const settings = {

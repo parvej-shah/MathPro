@@ -125,7 +125,7 @@ export default function LiveClass() {
   };
 
   const initiateMeeting = async (config: ZoomConfig) => {
-    const ZoomMtg = (await import("@zoomus/websdk/index")).ZoomMtg;
+    const ZoomMtg = (await import("@zoomus/websdk")).ZoomMtg;
 
     ZoomMtg.setZoomJSLib("https://source.zoom.us/2.16.0/lib", "/av");
     ZoomMtg.preLoadWasm();
