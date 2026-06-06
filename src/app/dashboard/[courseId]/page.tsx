@@ -27,16 +27,11 @@ import {
     StreakCountCard,
     RankingCard,
 } from "@/components/Dashboard/CourseDashboard";
-import { useLmsPreference } from "@/hooks/useLmsPreference";
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
-import LmsPreferenceModal from "@/components/LmsPreferenceModal";
-
 export default function CourseDashboardPage() {
     const router = useRouter();
     const params = useParams<{ courseId: string }>();
     const courseId = params?.courseId;
     const [mounted, setMounted] = useState(false);
-    const { lmsPreference, loading: lmsLoading, setLmsPreference, error: lmsError } = useLmsPreference();
 
     // Fetch real course data once courseId is available
     const shouldFetch = typeof courseId === "string" && courseId.length > 0;
@@ -367,23 +362,8 @@ export default function CourseDashboardPage() {
     );
   }
 
-    const showLmsModal = Boolean(
-        mounted &&
-        courseId &&
-        isLmsPreferenceCourse(courseId) &&
-        lmsPreference === null &&
-        !lmsLoading &&
-        isLoggedIn()
-    );
-
     return (
         <DashboardLayout key={courseId as string}>
-            <LmsPreferenceModal
-                isOpen={showLmsModal}
-                onClose={() => {}}
-                setLmsPreference={setLmsPreference}
-                error={lmsError}
-            />
             <main className="pt-20 bg-page-bg min-h-screen">
                 <div className="w-[95%] lg:w-[90%] xl:w-[85%] mx-auto py-8 lg:py-12">
                     {/* Course Title Section - REAL DATA */}
@@ -430,11 +410,6 @@ export default function CourseDashboardPage() {
                                 progress={calculatedProgress}
                                 courseId={courseId as string}
                                 nextLesson={nextLesson}
-                                continueLearningUrl={
-                                    lmsPreference === 'locked' && typeof courseId === "string" && isLmsPreferenceCourse(courseId)
-                                        ? getCpLmsUrlForCourse(courseId)
-                                        : undefined
-                                }
                                 loading={courseLoading}
                             />
 

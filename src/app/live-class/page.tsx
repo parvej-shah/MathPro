@@ -27,7 +27,19 @@ type EnrolledCourse = {
   title?: string;
 };
 
-const getDurationInMinutes = (duration: any) => {
+type ZoomConfig = {
+  leaveUrl: string;
+  signature: string;
+  sdkKey: string;
+  meetingNumber: string;
+  passWord: string;
+  userName: string;
+  userEmail: string;
+  registrantToken?: string;
+  zakToken?: string;
+};
+
+const getDurationInMinutes = (duration: string | number | undefined | null) => {
   if (!duration) return 60;
   if (typeof duration === "number") return duration;
   const match = String(duration).match(/(\d+(?:\.\d+)?)\s*Hour/i);
@@ -50,7 +62,7 @@ const renderRichDescription = (content: string) =>
     .join("");
 
 export default function LiveClass() {
-  const [user, setUser] = useContext<any>(UserContext);
+  const [user, setUser] = useContext(UserContext);
   const [liveClasses, setLiveClasses] = useState<{ list?: LiveClassItem[]; serverTimeStamp?: number }>({});
   const [isMeeting, setMeeting] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
@@ -66,7 +78,7 @@ export default function LiveClass() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        const courses = (res?.data?.data || []).filter((course: any) => course?.id);
+        const courses = (res?.data?.data || []).filter((course: EnrolledCourse) => course?.id);
         setEnrolledCourses(courses);
         if (courses.length > 0) {
           setSelectedCourseId(courses[0].id.toString());
@@ -112,7 +124,7 @@ export default function LiveClass() {
       .catch(() => setUser({ ...user, loading: false }));
   };
 
-  const initiateMeeting = async (config: any) => {
+  const initiateMeeting = async (config: ZoomConfig) => {
     const ZoomMtg = (await import("@zoomus/websdk/index")).ZoomMtg;
 
     ZoomMtg.setZoomJSLib("https://source.zoom.us/2.16.0/lib", "/av");

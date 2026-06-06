@@ -30,8 +30,8 @@ export const useCountdown = (
     const [seconds, setSeconds] = useState(0);
 
     const calculateTimeLeft = () => {
-        const now: any = new Date();
-        let targetDate: any = null;
+        const now: Date = new Date();
+        let targetDate: Date | null = null;
 
         // Smart logic based on is_live status
         if (isLive === false) {
@@ -69,7 +69,7 @@ export const useCountdown = (
             return;
         }
 
-        const difference: any = targetDate - now;
+        const difference: number = targetDate.getTime() - now.getTime();
 
         // Handle negative difference (target date in the past)
         if (difference <= 0) {

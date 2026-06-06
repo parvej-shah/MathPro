@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
-import { isLoggedIn, setCookieWithDomain } from "@/helpers";
+import { isLoggedIn, persistAuthToken } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
 
 type RegisterState = {
@@ -59,8 +59,7 @@ function RegisterPageContent() {
         throw new Error("Missing token in registration response");
       }
 
-      localStorage.setItem("token", token);
-      setCookieWithDomain("token", token, ".mathpro.org");
+      persistAuthToken(token);
       router.replace(redirectUrl);
     } catch (err: unknown) {
       const errorResponse = axios.isAxiosError<{ error?: string }>(err)

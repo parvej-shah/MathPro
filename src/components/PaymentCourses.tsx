@@ -1,18 +1,12 @@
 import React from 'react';
 import { IndividualCourse } from '../hooks/usePaymentHistory';
-import { useLmsPreference } from '@/hooks/useLmsPreference';
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from '@/constants/lmsPreference';
 
 interface PaymentCoursesProps {
   courses: IndividualCourse[];
 }
 
 const PaymentCourses: React.FC<PaymentCoursesProps> = ({ courses }) => {
-  const { lmsPreference } = useLmsPreference();
-  const getCourseUrl = (courseId: number) =>
-    lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
-      ? getCpLmsUrlForCourse(String(courseId))
-      : `/course/${courseId}`;
+  const getCourseUrl = (courseId: number) => `/course/${courseId}`;
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-BD', {
       style: 'currency',
@@ -21,34 +15,29 @@ const PaymentCourses: React.FC<PaymentCoursesProps> = ({ courses }) => {
     }).format(amount);
   };
 
-  const formatInstructorList = (instructorList: any): string => {
+  const formatInstructorList = (instructorList: IndividualCourse['instructor_list']): string => {
     if (!instructorList) return 'N/A';
-    
-    // Debug log to understand the structure
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Instructor list structure:', instructorList, typeof instructorList);
-    }
-    
+
     // Handle object structure with instructors array
-    if (instructorList && typeof instructorList === 'object' && instructorList.instructors) {
+    if (instructorList && typeof instructorList === 'object' && !Array.isArray(instructorList) && instructorList.instructors) {
       if (Array.isArray(instructorList.instructors)) {
         const names = instructorList.instructors
-          .map((instructor: any) => instructor.name || instructor)
+          .map((instructor) => instructor.name)
           .filter(Boolean);
         return names.length > 0 ? names.join(', ') : 'N/A';
       }
     }
-    
+
     // Handle direct array
     if (Array.isArray(instructorList)) {
       return instructorList.length > 0 ? instructorList.join(', ') : 'N/A';
     }
-    
+
     // Handle string
     if (typeof instructorList === 'string') {
       return instructorList.trim() || 'N/A';
     }
-    
+
     return 'N/A';
   };
 

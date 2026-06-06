@@ -456,19 +456,19 @@ const ModulePlayer = memo(function ModulePlayer({
 
           {/* Quiz questions (taking or just submitted) */}
           {(!showQuizAnswer || justSubmitted) &&
-            (activeModule?.data?.quiz as any[])?.map((quiz: any, index: number) => (
+            (activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => (
               <div
                 key={`quiz-question-${index}`}
                 className="my-6 bg-primary/10 border border-primary/40 dark:bg-muted/10 rounded-lg p-6"
               >
                 <RichFieldRenderer
-                  htmlContent={quiz.question_html}
-                  plainContent={quiz.question}
+                  htmlContent={quiz.question_html as string | undefined}
+                  plainContent={quiz.question as string | undefined}
                   className="text-foreground forced-white font-bold"
                 />
                 <div className="flex flex-col gap-2 mt-3">
-                  {quiz.options?.map((elem: any, optIndex: number) => {
-                    const optionContent = quiz.options_html?.[optIndex] || elem;
+                  {(quiz.options as string[] | undefined)?.map((elem: string, optIndex: number) => {
+                    const optionContent = (quiz.options_html as string[] | undefined)?.[optIndex] || elem;
                     const isSelected = elem === quizAnswer[index];
                     const isCorrect = showQuizAnswer && isSelected && quizVerdict[index];
                     const isWrong = showQuizAnswer && isSelected && !quizVerdict[index];
@@ -503,14 +503,14 @@ const ModulePlayer = memo(function ModulePlayer({
                     <p className="text-foreground text-xl mt-2">Answer:</p>
                     <p className="text-success">
                       {decryptString(
-                        quiz.answer || quiz.correct_answer,
-                        process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ,
+                        String(quiz.answer || quiz.correct_answer || ""),
+                        process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
                       )}
                     </p>
-                    {(quiz.explanation_html || quiz.explanation) && (
+                    {(quiz.explanation_html != null || quiz.explanation != null) && (
                       <RichFieldRenderer
-                        htmlContent={quiz.explanation_html ? decryptString(quiz.explanation_html, process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ) : undefined}
-                        plainContent={quiz.explanation ? decryptString(quiz.explanation, process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ) : undefined}
+                        htmlContent={quiz.explanation_html ? decryptString(String(quiz.explanation_html), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : undefined}
+                        plainContent={quiz.explanation ? decryptString(String(quiz.explanation), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : undefined}
                         className="text-muted-foreground mt-2"
                       />
                     )}

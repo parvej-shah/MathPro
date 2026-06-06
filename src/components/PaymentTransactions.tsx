@@ -1,19 +1,13 @@
 import React from 'react';
 import { Transaction } from '../hooks/usePaymentHistory';
-import { useLmsPreference } from '@/hooks/useLmsPreference';
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from '@/constants/lmsPreference';
 
 interface PaymentTransactionsProps {
   transactions: Transaction[];
 }
 
 const PaymentTransactions: React.FC<PaymentTransactionsProps> = ({ transactions }) => {
-  const { lmsPreference } = useLmsPreference();
   const getCourseHref = (itemType: string, courseId?: number, bundleId?: number) => {
-    if (itemType === 'course' && courseId != null)
-      return lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
-        ? getCpLmsUrlForCourse(String(courseId))
-        : `/course/${courseId}`;
+    if (itemType === 'course' && courseId != null) return `/course/${courseId}`;
     if (itemType === 'bundle' && bundleId != null) return `/bundle/${bundleId}`;
     return '#';
   };

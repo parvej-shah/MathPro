@@ -11,9 +11,6 @@ import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn, createLoginRedirectUrl, getAuthToken } from "@/helpers";
 import { jwtDecode } from "jwt-decode";
 import { usePaymentHistory } from "@/hooks/usePaymentHistory";
-import { useLmsPreference } from "@/hooks/useLmsPreference";
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
-
 // Import new modular components
 import SuccessHeader from "@/components/PostPayment/Success/SuccessHeader";
 import ImportantMessages from "@/components/PostPayment/Success/ImportantMessages";
@@ -52,7 +49,6 @@ export default function CentralizedSuccessPage() {
 
   // Payment history for access verification
   const { historyData, loading: historyLoading } = usePaymentHistory();
-  const { lmsPreference } = useLmsPreference();
 
   useEffect(() => {
     setMounted(true);
@@ -404,10 +400,7 @@ export default function CentralizedSuccessPage() {
       const courses = (purchaseData as PurchasedBundle).courses || [];
       return courses.map((c) => ({
         ...c,
-        url:
-          lmsPreference === "locked" && isLmsPreferenceCourse(c.id)
-            ? getCpLmsUrlForCourse(c.id)
-            : `/course/${c.id}`,
+        url: `/course/${c.id}`,
       }));
     } else {
       const course = purchaseData as PurchasedCourse;
@@ -415,10 +408,7 @@ export default function CentralizedSuccessPage() {
         {
           id: course.id,
           title: course.title,
-          url:
-            lmsPreference === "locked" && isLmsPreferenceCourse(course.id)
-              ? getCpLmsUrlForCourse(course.id)
-              : `/course/${course.id}`,
+          url: `/course/${course.id}`,
           short_description: course.short_description,
           chips: course.chips,
         },

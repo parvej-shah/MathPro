@@ -3,15 +3,40 @@ import { jwtDecode } from 'jwt-decode';
 import CryptoJS from "crypto-js";
 
 const AUTH_COOKIE_DOMAIN = ".mathpro.org";
+const AUTH_EVENT_NAME = "tokenUpdated";
+
+interface JwtPayload {
+  name?: string;
+  email?: string;
+  user_id?: string | number;
+  userId?: string | number;
+  sub?: string | number;
+  id?: string | number;
+  exp?: number;
+}
+
+interface ModuleItem {
+  data?: {
+    category?: string;
+  };
+}
+
+interface ChapterItem {
+  modules?: ModuleItem[];
+}
+
+interface CourseDataWithChapters {
+  chapters?: ChapterItem[];
+}
 
 export const HindSiliguri = Anek_Bangla({
   subsets: ["bengali"],
   weight: ["400", "500", "600", "700", "800"],
   variable: "--font-anek-bangla",
 });
-export const checkTokenValidity = (token: any) => {
+export const checkTokenValidity = (token: string) => {
   try {
-    const decoded = jwtDecode<any>(token);
+    const decoded = jwtDecode<JwtPayload>(token);
 
     // Check if token has any user identifier
     const hasUserIdentifier =
@@ -64,6 +89,18 @@ export function setCookieWithDomain(
   document.cookie = `${name}=${encodeURIComponent(value)}; path=/; domain=${domain}; max-age=${maxAgeSeconds}; SameSite=Lax${secure}`;
 }
 
+function emitAuthTokenUpdate(token: string | null) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(AUTH_EVENT_NAME, { detail: { token } }));
+}
+
+export function persistAuthToken(token: string) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("token", token);
+  setCookieWithDomain("token", token, AUTH_COOKIE_DOMAIN);
+  emitAuthTokenUpdate(token);
+}
+
 /** Append token to URL using hash (#token=...) so it is not sent to the server. For cross-LMS redirects. */
 export function appendTokenToUrl(url: string, token: string | null): string {
   if (!token || typeof token !== "string") return url;
@@ -89,7 +126,7 @@ export const extractTokenFromUrl = (): string | null => {
 
   if (token) {
     try {
-      const decoded = jwtDecode<any>(token);
+      const decoded = jwtDecode<JwtPayload>(token);
       const hasValidStructure =
         decoded &&
         (decoded.name ||
@@ -100,8 +137,7 @@ export const extractTokenFromUrl = (): string | null => {
       const isNotExpired = decoded.exp && decoded.exp > Date.now() / 1000;
 
       if (hasValidStructure && isNotExpired) {
-        localStorage.setItem("token", token);
-        setCookieWithDomain("token", token, AUTH_COOKIE_DOMAIN);
+        persistAuthToken(token);
 
         const url = new URL(window.location.href);
         url.searchParams.delete("token");
@@ -126,11 +162,13 @@ export const extractTokenFromUrl = (): string | null => {
     if (url.hash === "#") url.hash = "";
     window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
   }
+  // suppress unused variable warning
+  void fromHash;
   return null;
 };
 
 export const isLoggedIn = () => {
-  let token: any = "";
+  let token: string | null = null;
   if (typeof window !== "undefined") {
     // 1. First check URL parameters (highest priority)
     token = extractTokenFromUrl();
@@ -140,6 +178,7 @@ export const isLoggedIn = () => {
       token = getCookie("token");
       if (token) {
         localStorage.setItem("token", token);
+        emitAuthTokenUpdate(token);
       }
     }
 
@@ -193,6 +232,7 @@ export const getAuthToken = (): string | null => {
     token = getCookie("token");
     if (token) {
       localStorage.setItem("token", token);
+      emitAuthTokenUpdate(token);
     }
   }
 
@@ -213,10 +253,11 @@ export const logout = () => {
   localStorage.removeItem("token");
   deleteCookie("token");
   deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
+  emitAuthTokenUpdate(null);
   window.location.reload();
 };
 
-export function capitalizeFirstWord(str: String) {
+export function capitalizeFirstWord(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 let token: string = "";
@@ -257,7 +298,7 @@ export function calculateRemainingDays(targetDate: string) {
 
   return remainingDays;
 }
-export function countAssignmentsAndVideos(data: any) {
+export function countAssignmentsAndVideos(data: ModuleItem[]) {
   let assignmentCount = 0;
   let videoCount = 0;
 
@@ -267,7 +308,7 @@ export function countAssignmentsAndVideos(data: any) {
 
   if (!Array.isArray(data)) return { assignmentCount, videoCount, codeCount, quizCount, pdfCount };
 
-  data.forEach((item: any) => {
+  data.forEach((item) => {
     const category = item?.data?.category;
     if (category === "ASSIGNMENT") {
       assignmentCount++;
@@ -291,7 +332,7 @@ export function countAssignmentsAndVideos(data: any) {
   };
 }
 
-export function countModulesAssignmentsVideos(data: any) {
+export function countModulesAssignmentsVideos(data: CourseDataWithChapters) {
   let totalModules = 0;
   let totalAssignments = 0;
   let totalVideos = 0;
@@ -330,14 +371,14 @@ export function countModulesAssignmentsVideos(data: any) {
   };
 }
 
-export function decryptString(encryptedText: any, secretKey: any) {
+export function decryptString(encryptedText: string, secretKey: string) {
   console.log(encryptedText, secretKey);
   const bytes = CryptoJS.AES.decrypt(encryptedText, secretKey);
 
   const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
   return decryptedText;
 }
-export function convertUnixTimestamp(timestamp: any) {
+export function convertUnixTimestamp(timestamp: number) {
   const date = new Date(timestamp);
 
   const options: Intl.DateTimeFormatOptions = {
@@ -354,7 +395,7 @@ export function convertUnixTimestamp(timestamp: any) {
   return formattedDate;
 }
 
-export function formatDate(inputDate: any) {
+export function formatDate(inputDate: Date) {
   const months = [
     "Jan",
     "Feb",
@@ -386,15 +427,15 @@ export function formatDate(inputDate: any) {
 export const getUserIdFromToken = (): string | null => {
   if (typeof window === "undefined") return null;
 
-  const token = getAuthToken();
-  if (!token) return null;
+  const tok = getAuthToken();
+  if (!tok) return null;
 
   try {
-    const decoded = jwtDecode<any>(token);
-    
+    const decoded = jwtDecode<JwtPayload>(tok);
+
     // Try different possible user ID fields (same as checkTokenValidity function)
     const userId = decoded.user_id || decoded.id || decoded.userId || decoded.sub;
-    
+
     return userId ? String(userId) : null;
   } catch (error) {
     console.error('getUserIdFromToken: Failed to decode JWT token:', error);

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { BundlePurchase } from '../hooks/usePaymentHistory';
-import { useLmsPreference } from '@/hooks/useLmsPreference';
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from '@/constants/lmsPreference';
 
 interface PaymentBundlesProps {
   bundles: BundlePurchase[];
@@ -9,11 +7,7 @@ interface PaymentBundlesProps {
 
 const PaymentBundles: React.FC<PaymentBundlesProps> = ({ bundles }) => {
   const [expandedBundles, setExpandedBundles] = useState<Set<number>>(new Set());
-  const { lmsPreference } = useLmsPreference();
-  const getCourseUrl = (courseId: number) =>
-    lmsPreference === 'locked' && isLmsPreferenceCourse(String(courseId))
-      ? getCpLmsUrlForCourse(String(courseId))
-      : `/course/${courseId}`;
+  const getCourseUrl = (courseId: number) => `/course/${courseId}`;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-BD', {

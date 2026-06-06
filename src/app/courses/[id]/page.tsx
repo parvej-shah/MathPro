@@ -40,8 +40,6 @@ import { jwtDecode } from "jwt-decode";
 // Types
 import { TabState, PrebookingData } from "@/features/course-details/_lib/types";
 import { englishToBanglaNumbers } from "@/helpers";
-import { useLmsPreference } from "@/hooks/useLmsPreference";
-import { isLmsPreferenceCourse, getCpLmsUrlForCourse } from "@/constants/lmsPreference";
 import dynamic from "next/dynamic";
 
 const TestimonialMarquee = dynamic(
@@ -54,7 +52,6 @@ export default function CourseDetailsPage() {
   const searchParams = useSearchParams();
   const courseId = params?.id;
   const [user] = useContext<any>(UserContext);
-  const { lmsPreference } = useLmsPreference();
 
   // State
   const [activeTab, setActiveTab] = useState<TabState>({
@@ -266,17 +263,6 @@ export default function CourseDetailsPage() {
 
   const renderGotoCourseButton = () => {
     if (!courseData?.id) return null;
-    const courseId = courseData.id.toString();
-    if (lmsPreference === "locked" && isLmsPreferenceCourse(courseId)) {
-      return (
-        <a
-          href={getCpLmsUrlForCourse(courseId)}
-          className="flex justify-center text-primary-foreground items-center bg-primary py-3 w-full mt-8 rounded-xl hover:bg-primary/80 ease-in-out duration-150 font-semibold"
-        >
-          কোর্সে যান
-        </a>
-      );
-    }
     return (
       <Link
         href={`/dashboard/${courseData.id}`}

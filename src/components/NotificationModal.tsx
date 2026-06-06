@@ -9,11 +9,39 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { SyncLoader } from "react-spinners";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 
+interface NotificationModuleData {
+  liveId?: string | number;
+  chapterId?: string | number;
+  moduleId?: string | number;
+  title?: string;
+  moduleTitle?: string;
+  scheduled_at?: number;
+  scheduledAt?: number;
+  startTime?: number;
+}
+
+interface NotificationData {
+  title?: string;
+  body?: string;
+  scheduled_at?: number;
+  scheduledAt?: number;
+  moduleData?: NotificationModuleData;
+}
+
+interface Notification {
+  id: string | number;
+  type: string;
+  course_id?: string | number;
+  is_read: boolean;
+  timestamp: number;
+  data: NotificationData;
+}
+
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   courseId: string | string[] | undefined;
-  onNotificationClick?: (notification: any) => void;
+  onNotificationClick?: (notification: Notification) => void;
   onCountUpdate?: () => void;
 };
 
@@ -70,7 +98,7 @@ const formatScheduledDate = (value: number | undefined | null): string => {
 };
 
 /** Get display title; fixes "undefined" / "Invalid Date" for LIVE (e.g. cp2.0). */
-const getNotificationDisplayTitle = (notification: any): string => {
+const getNotificationDisplayTitle = (notification: Notification): string => {
   const raw = notification?.data?.title;
   const type = notification?.type;
   const moduleData = notification?.data?.moduleData ?? {};
@@ -100,12 +128,12 @@ export default function NotificationModal({
   onCountUpdate,
 }: Props) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const notificationPerPage = 10;
 
   const fetchNotifications = async (page: number = 0, append: boolean = false) => {
@@ -161,7 +189,7 @@ export default function NotificationModal({
     }
   };
 
-  const markAsRead = async (notification: any) => {
+  const markAsRead = async (notification: Notification) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -215,10 +243,10 @@ export default function NotificationModal({
     }
   };
 
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: Notification) => {
     if (notification.type === "ADMIN_SIDE") {
       setSelectedNotification(notification);
-      setExpandedId(notification.id);
+      setExpandedId(String(notification.id));
       if (!notification.is_read) {
         markAsRead(notification);
       }

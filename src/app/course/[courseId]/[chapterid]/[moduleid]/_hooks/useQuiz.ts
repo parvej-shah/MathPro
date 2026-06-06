@@ -37,14 +37,15 @@ export function useQuiz(
   }, [activeModule?.id]);
 
   const submitQuiz = useCallback((): { score: number; answers: Record<number, string>; verdict: boolean[] } => {
-    const quizes = (activeModule?.data?.quiz as any[]) ?? [];
+    const quizes = (activeModule?.data?.quiz as Array<{ answer?: string; correct_answer?: string }>) ?? [];
     const verdict: boolean[] = [];
     let accepted = 0;
+    const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "";
 
-    quizes.forEach((quiz: any, index: number) => {
+    quizes.forEach((quiz, index: number) => {
       const decrypted = decryptString(
-        quiz.answer || quiz.correct_answer,
-        process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ,
+        quiz.answer || quiz.correct_answer || "",
+        secretKey,
       );
       if (decrypted === quizAnswer[index]) {
         verdict.push(true);

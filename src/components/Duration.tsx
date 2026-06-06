@@ -4,8 +4,8 @@ export default function Duration({
   className,
   seconds,
 }: {
-  className: any;
-  seconds: any;
+  className: string;
+  seconds: number;
 }) {
   return (
     <time dateTime={`P${Math.round(seconds)}S`} className={className}>
@@ -14,7 +14,7 @@ export default function Duration({
   );
 }
 
-function format(seconds: any) {
+function format(seconds: number) {
   const date = new Date(seconds * 1000);
   const hh = date.getUTCHours();
   const mm = date.getUTCMinutes();
@@ -25,6 +25,6 @@ function format(seconds: any) {
   return `${mm}:${ss}`;
 }
 
-function pad(string: any) {
-  return ("0" + string).slice(-2);
+function pad(value: number) {
+  return ("0" + value).slice(-2);
 }

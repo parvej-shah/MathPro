@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
-import { isLoggedIn, setCookieWithDomain } from "@/helpers";
+import { isLoggedIn, persistAuthToken } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
 
 declare global {
@@ -35,6 +35,8 @@ declare global {
         };
       };
     };
+    __mathProGoogleAuthInitializedFor?: string;
+    __mathProGoogleScriptPromise?: Promise<void>;
   }
 }
 
@@ -53,10 +55,17 @@ function LoginPageContent() {
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const redirectUrl = useMemo(() => searchParams.get("redirect") || "/dashboard", [searchParams]);
+  const redirectUrlRef = useRef(redirectUrl);
+  const routerRef = useRef(router);
   const registerHref = useMemo(
     () => `/auth/register?redirect=${encodeURIComponent(redirectUrl)}`,
     [redirectUrl],
   );
+
+  useEffect(() => {
+    redirectUrlRef.current = redirectUrl;
+    routerRef.current = router;
+  }, [redirectUrl, router]);
 
   useEffect(() => {
     if (isLoggedIn()) {
@@ -78,8 +87,7 @@ function LoginPageContent() {
       if (!token) {
         throw new Error("Missing token in login response");
       }
-      localStorage.setItem("token", token);
-      setCookieWithDomain("token", token, ".mathpro.org");
+      persistAuthToken(token);
       router.replace(redirectUrl);
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
@@ -95,9 +103,35 @@ function LoginPageContent() {
     if (!googleClientId || !googleButtonRef.current) return;
 
     let cancelled = false;
-    let createdScript: HTMLScriptElement | null = null;
-    let existingScriptLoadHandler: (() => void) | null = null;
-    let existingScriptErrorHandler: (() => void) | null = null;
+
+    const handleGoogleCredential = async ({ credential }: { credential?: string }) => {
+      if (!credential) {
+        setError("Google লগইন টোকেন পাওয়া যায়নি। আবার চেষ্টা করো।");
+        return;
+      }
+
+      setGoogleLoading(true);
+      setError("");
+
+      try {
+        const res = await axios.post(`${BACKEND_URL}/admin/auth/google`, {
+          id_token: credential,
+        });
+        const token = res?.data?.token;
+        if (!token) {
+          throw new Error("Missing token in Google login response");
+        }
+        persistAuthToken(token);
+        routerRef.current.replace(redirectUrlRef.current);
+      } catch (err: unknown) {
+        const message = axios.isAxiosError<{ error?: string }>(err)
+          ? err.response?.data?.error
+          : undefined;
+        setError(message || "Google লগইন করা যায়নি। আবার চেষ্টা করো।");
+      } finally {
+        setGoogleLoading(false);
+      }
+    };
 
     const renderGoogleButton = () => {
       if (
@@ -108,38 +142,13 @@ function LoginPageContent() {
         return;
       }
 
-      window.google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: async ({ credential }) => {
-          if (!credential) {
-            setError("Google লগইন টোকেন পাওয়া যায়নি। আবার চেষ্টা করো।");
-            return;
-          }
-
-          setGoogleLoading(true);
-          setError("");
-
-          try {
-            const res = await axios.post(`${BACKEND_URL}/admin/auth/google`, {
-              id_token: credential,
-            });
-            const token = res?.data?.token;
-            if (!token) {
-              throw new Error("Missing token in Google login response");
-            }
-            localStorage.setItem("token", token);
-            setCookieWithDomain("token", token, ".mathpro.org");
-            router.replace(redirectUrl);
-          } catch (err: unknown) {
-            const message = axios.isAxiosError<{ error?: string }>(err)
-              ? err.response?.data?.error
-              : undefined;
-            setError(message || "Google লগইন করা যায়নি। আবার চেষ্টা করো।");
-          } finally {
-            setGoogleLoading(false);
-          }
-        },
-      });
+      if (window.__mathProGoogleAuthInitializedFor !== googleClientId) {
+        window.google.accounts.id.initialize({
+          client_id: googleClientId,
+          callback: handleGoogleCredential,
+        });
+        window.__mathProGoogleAuthInitializedFor = googleClientId;
+      }
 
       googleButtonRef.current.innerHTML = "";
       const buttonWidth = Math.min(
@@ -156,50 +165,52 @@ function LoginPageContent() {
       });
     };
 
-    if (window.google?.accounts?.id) {
-      renderGoogleButton();
-      return () => {
-        cancelled = true;
-      };
-    }
+    const loadGoogleScript = () => {
+      if (window.google?.accounts?.id) {
+        return Promise.resolve();
+      }
 
-    const existingScript = document.querySelector(
-      'script[src="https://accounts.google.com/gsi/client"]',
-    ) as HTMLScriptElement | null;
+      if (!window.__mathProGoogleScriptPromise) {
+        window.__mathProGoogleScriptPromise = new Promise<void>((resolve, reject) => {
+          const existingScript = document.querySelector(
+            'script[src="https://accounts.google.com/gsi/client"]',
+          ) as HTMLScriptElement | null;
 
-    if (existingScript) {
-      existingScriptLoadHandler = () => renderGoogleButton();
-      existingScriptErrorHandler = () => {
+          if (existingScript) {
+            existingScript.addEventListener("load", () => resolve(), { once: true });
+            existingScript.addEventListener(
+              "error",
+              () => reject(new Error("Failed to load Google Sign-In script")),
+              { once: true },
+            );
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.src = "https://accounts.google.com/gsi/client";
+          script.async = true;
+          script.defer = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load Google Sign-In script"));
+          document.head.appendChild(script);
+        });
+      }
+
+      return window.__mathProGoogleScriptPromise;
+    };
+
+    loadGoogleScript()
+      .then(() => {
+        renderGoogleButton();
+      })
+      .catch(() => {
         setError("Google লগইন লোড করা যায়নি। পরে আবার চেষ্টা করো।");
-      };
-      existingScript.addEventListener("load", existingScriptLoadHandler);
-      existingScript.addEventListener("error", existingScriptErrorHandler);
-    } else {
-      createdScript = document.createElement("script");
-      createdScript.src = "https://accounts.google.com/gsi/client";
-      createdScript.async = true;
-      createdScript.defer = true;
-      createdScript.onload = renderGoogleButton;
-      createdScript.onerror = () => {
-        setError("Google লগইন লোড করা যায়নি। পরে আবার চেষ্টা করো।");
-      };
-      document.head.appendChild(createdScript);
-    }
+      });
 
     return () => {
       cancelled = true;
-      if (existingScript && existingScriptLoadHandler) {
-        existingScript.removeEventListener("load", existingScriptLoadHandler);
-      }
-      if (existingScript && existingScriptErrorHandler) {
-        existingScript.removeEventListener("error", existingScriptErrorHandler);
-      }
-      if (createdScript) {
-        createdScript.onload = null;
-        createdScript.onerror = null;
-      }
     };
-  }, [googleClientId, redirectUrl, router]);
+  }, [googleClientId]);
 
   return (
     <AuthShell
@@ -258,17 +269,17 @@ function LoginPageContent() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-linear-to-r from-primary to-primary/85 py-3 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/25 disabled:translate-y-0 disabled:opacity-70"
+          className="w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? "লগইন হচ্ছে..." : "লগইন করো"}
         </button>
       </form>
 
-      <div className="mt-5 flex items-center justify-between gap-3 text-sm font-semibold">
-        <Link className="text-muted-foreground transition hover:text-primary" href="/auth/forgot-password">
-          পাসওয়ার্ড ভুলে গেছো?
+      <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+        <Link className="font-medium text-primary hover:underline" href={`/auth/forgot-password?redirect=${encodeURIComponent(redirectUrl)}`}>
+          পাসওয়ার্ড ভুলে গেছ?
         </Link>
-        <Link className="text-primary transition hover:text-primary/80" href={registerHref}>
+        <Link className="font-medium text-primary hover:underline" href={registerHref}>
           নতুন অ্যাকাউন্ট খুলো
         </Link>
       </div>
@@ -278,7 +289,7 @@ function LoginPageContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense>
       <LoginPageContent />
     </Suspense>
   );

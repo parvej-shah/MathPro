@@ -131,10 +131,7 @@ const uniqueById = (items: NotificationRecord[]) =>
   });
 
 export default function NotificationsPageClient({ courseId }: NotificationsPageClientProps) {
-  const [, setUser] = useContext(UserContext) as [
-    UserState,
-    Dispatch<SetStateAction<UserState>>,
-  ];
+  const [, setUser] = useContext(UserContext);
   const [token] = useState(() =>
     typeof window === "undefined" ? "" : localStorage.getItem("token") || "",
   );

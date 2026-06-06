@@ -12,8 +12,6 @@ interface ProgressCardProps {
         moduleId?: number;
         chapterId?: number;
     } | null;
-    /** When set, "Continue Learning" links to this URL (e.g. external LMS) instead of in-app course route */
-    continueLearningUrl?: string;
     loading?: boolean;
 }
 
@@ -22,7 +20,6 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
     progress,
     courseId,
     nextLesson,
-    continueLearningUrl,
     loading = false
 }) => {
     if (loading) {
@@ -68,34 +65,20 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                     </div>
                 </div>
 
-                {continueLearningUrl ? (
-                    <a
-                        href={continueLearningUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center justify-center gap-4 bg-linear-to-r from-primary to-teal hover:opacity-95 text-primary-foreground text-xl font-bold py-5 rounded-2xl transition-all duration-300 shadow-xl shadow-primary/20 group transform hover:-translate-y-1"
-                    >
+                <Link
+                    href={
+                        nextLesson?.moduleId && nextLesson?.chapterId
+                            ? `/course/${courseId}/${nextLesson.chapterId}/${nextLesson.moduleId}`
+                            : `/course/${courseId}`
+                    }
+                >
+                    <button className="w-full bg-linear-to-r from-primary to-teal hover:opacity-95 text-primary-foreground text-xl font-bold py-5 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 shadow-xl shadow-primary/20 group transform hover:-translate-y-1">
                         <div className="bg-white/20 p-2 rounded-full group-hover:scale-110 transition-transform">
                             <BsPlay className="text-2xl" />
                         </div>
                         শেখা চালিয়ে যাও
-                    </a>
-                ) : (
-                    <Link
-                        href={
-                            nextLesson?.moduleId && nextLesson?.chapterId
-                                ? `/course/${courseId}/${nextLesson.chapterId}/${nextLesson.moduleId}`
-                                : `/course/${courseId}`
-                        }
-                    >
-                        <button className="w-full bg-linear-to-r from-primary to-teal hover:opacity-95 text-primary-foreground text-xl font-bold py-5 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 shadow-xl shadow-primary/20 group transform hover:-translate-y-1">
-                            <div className="bg-white/20 p-2 rounded-full group-hover:scale-110 transition-transform">
-                                <BsPlay className="text-2xl" />
-                            </div>
-                            শেখা চালিয়ে যাও
-                        </button>
-                    </Link>
-                )}
+                    </button>
+                </Link>
 
                 {nextLesson ? (
                     <p className="text-center mt-4 text-muted-foreground text-sm">
