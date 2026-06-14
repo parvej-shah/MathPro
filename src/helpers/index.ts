@@ -177,8 +177,13 @@ export const isLoggedIn = () => {
     if (!token) {
       token = getCookie("token");
       if (token) {
+        // Mirror the cookie into localStorage so other reads stay consistent,
+        // but do NOT emit tokenUpdated here: isLoggedIn() is a pure predicate
+        // called during render in many places (e.g. Nav). Emitting would re-enter
+        // any tokenUpdated listener that itself calls isLoggedIn(), causing an
+        // infinite "setState while rendering" loop. The token isn't changing on a
+        // read — only persistAuthToken() (a real write) should broadcast.
         localStorage.setItem("token", token);
-        emitAuthTokenUpdate(token);
       }
     }
 
@@ -231,8 +236,12 @@ export const getAuthToken = (): string | null => {
   if (!token) {
     token = getCookie("token");
     if (token) {
+      // Mirror the cookie into localStorage, but do NOT emit tokenUpdated here.
+      // getAuthToken() is a read, called during render (e.g. RankingCard via
+      // getUserIdFromToken). Emitting re-enters the Nav tokenUpdated listener,
+      // which calls back in and loops ("setState while rendering"). Only real
+      // writes (persistAuthToken) should broadcast. Same fix as isLoggedIn().
       localStorage.setItem("token", token);
-      emitAuthTokenUpdate(token);
     }
   }
 

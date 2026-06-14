@@ -6,10 +6,14 @@ interface CourseDashboardData {
   id: number;
   title: string;
   short_description: string;
+  // New shape (frontend-guide-user.md §5).
   thumbnails: {
-    course_thumbnail_link_16_9?: string;
-    course_thumbnail_link?: string;
+    course_thumbnail_16_9?: string;
     trailer_video_thumb_16_9?: string;
+    facebook_community_thumb_16_9?: string;
+  };
+  media?: {
+    intro_video?: string; // NEW grouping — dashboard video player
   };
   progress: {
     maxModuleSerialProgress: number;
@@ -24,7 +28,9 @@ interface CourseDashboardData {
   };
   community?: {
     facebook_community?: string;
+    facebook_page?: string;
     facebook_private_group?: string;
+    telegram_group?: string; // NEW — enrolled-only link
     whatsapp?: string;
     phone?: string;
     email?: string;
@@ -32,11 +38,22 @@ interface CourseDashboardData {
   enrollment: {
     enrollment_date: number;
     is_enrolled: boolean;
+    total_seats?: number | null; // NEW
+    enrolled?: number; // NEW
+  };
+  enrollment_details?: {
+    // NEW — unix seconds, all optional
+    prebooking_end_date?: number | null;
+    enrollment_end_date?: number | null;
+    course_start_date?: number | null;
   };
   metadata: {
     is_live: boolean;
     language?: string;
     url: string;
+    slug?: string | null; // NEW
+    tags?: string[]; // NEW
+    course_outline?: string | null; // NEW
   };
   // Optional backward compatibility fields
   chapters?: Array<{

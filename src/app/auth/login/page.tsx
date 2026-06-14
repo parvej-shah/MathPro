@@ -219,10 +219,17 @@ function LoginPageContent() {
     >
       {googleClientId ? (
         <div className="space-y-3">
-          <div
-            className={googleLoading ? "pointer-events-none opacity-70" : ""}
-            ref={googleButtonRef}
-          />
+          <div className="flex justify-center">
+            <div
+              className={[
+                "mx-auto",
+                googleLoading ? "pointer-events-none opacity-70" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              ref={googleButtonRef}
+            />
+          </div>
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-border" />
             <span className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">

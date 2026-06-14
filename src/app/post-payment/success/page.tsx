@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import axios from "axios";
@@ -26,7 +26,7 @@ import {
   Course,
 } from "@/components/PostPayment/Success/types";
 
-export default function CentralizedSuccessPage() {
+function CentralizedSuccessPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -341,36 +341,16 @@ export default function CentralizedSuccessPage() {
       }
 
       if (courseData) {
-        // Fetch transaction_id from payment history if not present
+        // Fill in transaction_id from already-fetched payment history if not present
         if (!courseData.transaction_id) {
-          try {
-            const paymentHistoryResponse = await axios.get(
-              `${BACKEND_URL}/user/payment/history`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              },
-            );
+          const purchasedCourse = historyData?.individual_courses?.find(
+            (c) => c.course_id.toString() === id,
+          );
 
-            if (
-              paymentHistoryResponse.data.success &&
-              paymentHistoryResponse.data.data
-            ) {
-              const individualCourses =
-                paymentHistoryResponse.data.data.individual_courses || [];
-              const purchasedCourse = individualCourses.find(
-                (c: any) => c.course_id.toString() === id,
-              );
-
-              if (purchasedCourse && purchasedCourse.transaction_id) {
-                courseData.transaction_id = purchasedCourse.transaction_id;
-                courseData.purchase_date = purchasedCourse.enrollment_date;
-                courseData.amount = purchasedCourse.paid_amount;
-              }
-            }
-          } catch (paymentError) {
-            // Continue without transaction_id
+          if (purchasedCourse && purchasedCourse.transaction_id) {
+            courseData.transaction_id = purchasedCourse.transaction_id;
+            courseData.purchase_date = purchasedCourse.enrollment_date;
+            courseData.amount = purchasedCourse.paid_amount;
           }
         }
 
@@ -552,5 +532,13 @@ export default function CentralizedSuccessPage() {
         </div>
       </main>
     </>
+  );
+}
+
+export default function CentralizedSuccessPage() {
+  return (
+    <Suspense fallback={<PostPaymentSuccessSkeleton />}>
+      <CentralizedSuccessPageContent />
+    </Suspense>
   );
 }

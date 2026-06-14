@@ -104,28 +104,6 @@ export const QuizSkeleton: React.FC = () => (
   </div>
 );
 
-// ─── Assignment Skeleton ──────────────────────────────────────────
-export const AssignmentSkeleton: React.FC = () => (
-  <div className="space-y-6">
-    <Bone className="h-9 w-[60%]" />
-    <Bone className="h-7 w-36" rounded="rounded-full" />
-    <div className="space-y-3">
-      {[1, 2, 3, 4].map((i) => (
-        <Bone key={i} className={`h-4 ${i === 4 ? 'w-[70%]' : 'w-full'}`} />
-      ))}
-    </div>
-    <div className="space-y-5 pt-4">
-      {[1, 2].map((i) => (
-        <div key={i} className="space-y-2">
-          <Bone className="h-4 w-28" />
-          <Bone className="h-11 w-full" rounded="rounded-xl" />
-        </div>
-      ))}
-    </div>
-    <Bone className="h-11 w-full" rounded="rounded-xl" />
-  </div>
-);
-
 // ─── Module Sidebar Skeleton ──────────────────────────────────────
 export const ModuleSidebarSkeleton: React.FC = () => (
   <div className="space-y-5">

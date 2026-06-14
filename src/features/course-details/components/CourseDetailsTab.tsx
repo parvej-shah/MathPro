@@ -4,6 +4,7 @@ import { Feedback, FAQ } from "@/features/course-details/_lib/types";
 import { englishToBanglaNumbers, calculateRemainingDays } from "@/helpers";
 import { settings } from "@/features/course-details/_lib/utils";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
+import { usePublicFaqs } from "@/hooks/usePublicFaqs";
 
 interface CourseDetailsTabProps {
   description: string;
@@ -21,8 +22,10 @@ export default function CourseDetailsTab({
   youGet,
 }: CourseDetailsTabProps) {
   const [expandedDescription, setExpandedDescription] = useState(false);
+  const { faqs: sharedFaqs } = usePublicFaqs();
 
   const youGetItems = youGet ? youGet.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const displayFaqs = sharedFaqs.length > 0 ? sharedFaqs : (faqs ?? []);
 
   return (
     <div>
@@ -217,11 +220,11 @@ export default function CourseDetailsTab({
         <p className="text-xl lg:text-3xl mb-8 font-semibold">
           সচরাচর জানতে চাওয়া প্রশ্নের উত্তর
         </p>
-        {faqs && faqs.length > 0 ? (
-          faqs.map((faq, index) => (
+        {displayFaqs.length > 0 ? (
+          displayFaqs.map((faq, index) => (
             <div
               className="collapse collapse-plus dark:bg-muted/5 bg-muted/20 border-border/50 backdrop-blur-lg border mb-4"
-              key={index}
+              key={`faq-${index}-${faq.question}`}
             >
               <input
                 type="radio"

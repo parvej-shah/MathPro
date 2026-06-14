@@ -19,7 +19,6 @@ import { useCourseData } from "./_hooks/useCourseData";
 import { useModuleProgress } from "./_hooks/useModuleProgress";
 import { useQuiz } from "./_hooks/useQuiz";
 import { useQuizTimer } from "./_hooks/useQuizTimer";
-import { useAssignment } from "./_hooks/useAssignment";
 import { useDiscussions } from "./_hooks/useDiscussions";
 
 function findObjectBySerial(data: Course, targetSerial: number): CourseModule | undefined {
@@ -129,15 +128,6 @@ export default function CourseDetailsPage() {
     }
   }, [retakeQuizBase, resetQuizState, activeModule, resetTimer]);
 
-  // ── Assignment ────────────────────────────────────────────────────────────
-  const {
-    assignmentEvaluted,
-    assignmentSubmission,
-    setAssignmentSubmission,
-    submitAssignment,
-    fetchEvalutedAssignment,
-  } = useAssignment(activeModule, submitProgress);
-
   // ── Codeforces ────────────────────────────────────────────────────────────
   // cfHandle lives in ModulePlayer; checkCFStatus needs submitProgress.
   // Kept minimal here — just a thin pass-through.
@@ -199,11 +189,7 @@ export default function CourseDetailsPage() {
     saveLastAccessedModule(courseId as string, module.id, module.chapter_id).catch(() => {});
 
     const category = module.data?.category;
-    const taken = courseData?.isTaken || false;
 
-    if (category === "ASSIGNMENT" && taken) {
-      fetchEvalutedAssignment(module.id);
-    }
     if (category === "VIDEO" || category === "PDF" || category === "TEXT") {
       submitProgress(module.id, module.score ?? 0);
     }
@@ -218,7 +204,7 @@ export default function CourseDetailsPage() {
         `/course/${courseId}/${module.chapter_id}/${module.id}`,
       );
     }
-  }, [courseId, courseData, fetchEvalutedAssignment, submitProgress, setActiveModule]);
+  }, [courseId, submitProgress, setActiveModule]);
 
   // ── Side effects ──────────────────────────────────────────────────────────
   // Auto-submit progress on module change
@@ -476,10 +462,6 @@ export default function CourseDetailsPage() {
                   <ModulePlayer
                     activeModule={activeModule as any}
                     courseData={courseData as any}
-                    assignmentEvaluted={assignmentEvaluted}
-                    assignmentSubmission={assignmentSubmission}
-                    setAssignmentSubmission={setAssignmentSubmission as any}
-                    submitAssignment={submitAssignment}
                     cfHandle=""
                     setCfHandle={() => {}}
                     checkCFStatus={checkCFStatus as any}

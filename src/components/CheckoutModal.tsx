@@ -4,6 +4,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import toast from "react-hot-toast";
 import { useUserProfile, UserProfile } from "@/hooks/useUserProfile";
+import { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
 
 const Spinner = ({ className = "size-5" }: { className?: string }) => (
   <svg
@@ -29,7 +30,7 @@ export interface CheckoutFormData {
 interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onProceed: () => void;
+  onProceed: (bookSelection: BookSelection | null) => void;
   type: "bundle" | "course";
   title: string;
   price: number;
@@ -39,6 +40,16 @@ interface CheckoutModalProps {
   discountPercentage?: string;
   ownedCoursesCount?: number;
   youGet?: string[];
+  attachedBooks?: AttachedBook[];
+  booksTotal?: number;
+}
+
+interface ShippingFormData {
+  name: string;
+  phone: string;
+  address: string;
+  city: string;
+  postcode: string;
 }
 
 const FIELD_CLASS = (hasError: boolean, disabled = false) =>
@@ -60,6 +71,8 @@ export default function CheckoutModal({
   discountPercentage,
   ownedCoursesCount,
   youGet,
+  attachedBooks,
+  booksTotal,
 }: CheckoutModalProps) {
   const { profile, loading: profileLoading, error: profileError, refetch } = useUserProfile();
   const [formData, setFormData] = useState<CheckoutFormData>({
@@ -73,6 +86,17 @@ export default function CheckoutModal({
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [includeBooks, setIncludeBooks] = useState(false);
+  const [shipping, setShipping] = useState<ShippingFormData>({
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    postcode: "",
+  });
+  const [shippingErrors, setShippingErrors] = useState<Partial<Record<"name" | "phone" | "address", string>>>({});
+
+  const hasAttachedBooks = !!attachedBooks?.length;
 
   useEffect(() => {
     if (profile) {
@@ -99,6 +123,15 @@ export default function CheckoutModal({
       });
       setErrors({});
       setAgreedToTerms(false);
+      setIncludeBooks(false);
+      setShipping({
+        name: profile.name || "",
+        phone: profile.phone || profile.profile?.phone || "",
+        address: "",
+        city: "",
+        postcode: "",
+      });
+      setShippingErrors({});
     }
   }, [isOpen, profile, profileLoading]);
 
@@ -144,10 +177,29 @@ export default function CheckoutModal({
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateShipping = (): boolean => {
+    if (!includeBooks) return true;
+    const newErrors: Partial<Record<"name" | "phone" | "address", string>> = {};
+    if (!shipping.name.trim()) newErrors.name = "নাম প্রয়োজন";
+    if (!shipping.phone.trim()) newErrors.phone = "ফোন নম্বর প্রয়োজন";
+    else if (!validatePhone(shipping.phone.trim())) newErrors.phone = "১১ সংখ্যার ফোন নম্বর দিন (01XXXXXXXXX)";
+    if (!shipping.address.trim()) newErrors.address = "ঠিকানা প্রয়োজন";
+    setShippingErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleShippingChange = (field: keyof ShippingFormData, value: string) => {
+    setShipping((prev) => ({ ...prev, [field]: value }));
+    if (shippingErrors[field as "name" | "phone" | "address"]) {
+      setShippingErrors((prev) => { const n = { ...prev }; delete n[field as "name" | "phone" | "address"]; return n; });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToTerms) { toast.error("অনুগ্রহ করে শর্তাবলী সম্মত হন"); return; }
     if (!validateForm()) { toast.error("অনুগ্রহ করে সকল তথ্য সঠিকভাবে পূরণ করুন"); return; }
+    if (!validateShipping()) { toast.error("বই পাঠানোর জন্য সঠিক ঠিকানা দিন"); return; }
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem("token");
@@ -166,7 +218,19 @@ export default function CheckoutModal({
       if (response.data.success) {
         await refetch();
         onClose();
-        onProceed();
+        const bookSelection: BookSelection | null = includeBooks
+          ? {
+              include: true,
+              shipping: {
+                name: shipping.name.trim(),
+                phone: shipping.phone.trim(),
+                address: shipping.address.trim(),
+                ...(shipping.city.trim() && { city: shipping.city.trim() }),
+                ...(shipping.postcode.trim() && { postcode: shipping.postcode.trim() }),
+              },
+            }
+          : null;
+        onProceed(bookSelection);
       } else {
         throw new Error(response.data.error || "Failed to update profile");
       }
@@ -258,6 +322,18 @@ export default function CheckoutModal({
                       {formatPrice(savings)}{discountPercentage && ` (${discountPercentage})`}
                     </span>
                   </div>
+                )}
+                {includeBooks && !!booksTotal && (
+                  <>
+                    <div className="flex items-center justify-between text-xs text-white/60">
+                      <span>বইয়ের মূল্য</span>
+                      <span>{formatPrice(booksTotal)}</span>
+                    </div>
+                    <div className="border-t border-white/10 pt-3 flex items-center justify-between">
+                      <span className="text-sm text-white/60 font-medium">সর্বমোট</span>
+                      <span className="text-2xl font-black text-primary">{formatPrice(price + booksTotal)}</span>
+                    </div>
+                  </>
                 )}
               </div>
 
@@ -437,6 +513,113 @@ export default function CheckoutModal({
                     />
                     {errors.department && <p className="text-destructive text-xs mt-1">{errors.department}</p>}
                   </div>
+
+                  {/* Books inclusion */}
+                  {hasAttachedBooks && (
+                    <div className="rounded-xl border border-border/60 p-3 sm:p-4 space-y-3">
+                      <label className="flex items-start gap-3 cursor-pointer group">
+                        <div className="relative mt-0.5">
+                          <input
+                            type="checkbox"
+                            checked={includeBooks}
+                            onChange={(e) => setIncludeBooks(e.target.checked)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 rounded border-2 border-border peer-checked:bg-primary peer-checked:border-primary transition-all flex items-center justify-center">
+                            {includeBooks && (
+                              <svg className="w-3 h-3 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-sm font-semibold text-foreground">
+                          বইসহ অর্ডার করতে চাও?
+                          {typeof booksTotal === "number" && (
+                            <span className="ml-1 text-xs font-medium text-muted-foreground">
+                              (বইয়ের মূল্য {formatPrice(booksTotal)})
+                            </span>
+                          )}
+                        </span>
+                      </label>
+                      <ul className="ml-8 space-y-1">
+                        {attachedBooks!.map((book) => (
+                          <li key={book.id} className="text-xs text-muted-foreground">
+                            • {book.title}{typeof book.price === "number" && ` — ${formatPrice(book.price)}`}
+                          </li>
+                        ))}
+                      </ul>
+
+                      {includeBooks && (
+                        <div className="space-y-3 pt-2 border-t border-border/40">
+                          <p className="text-xs font-semibold text-foreground">বই পাঠানোর ঠিকানা</p>
+                          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                                নাম <span className="text-destructive">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                value={shipping.name}
+                                onChange={(e) => handleShippingChange("name", e.target.value)}
+                                placeholder="প্রাপকের নাম"
+                                className={FIELD_CLASS(!!shippingErrors.name)}
+                              />
+                              {shippingErrors.name && <p className="text-destructive text-xs mt-1">{shippingErrors.name}</p>}
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                                ফোন নম্বর <span className="text-destructive">*</span>
+                              </label>
+                              <input
+                                type="tel"
+                                value={shipping.phone}
+                                onChange={(e) => handleShippingChange("phone", e.target.value)}
+                                placeholder="01XXXXXXXXX"
+                                className={FIELD_CLASS(!!shippingErrors.phone)}
+                              />
+                              {shippingErrors.phone && <p className="text-destructive text-xs mt-1">{shippingErrors.phone}</p>}
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-foreground mb-1.5">
+                              ঠিকানা <span className="text-destructive">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={shipping.address}
+                              onChange={(e) => handleShippingChange("address", e.target.value)}
+                              placeholder="বাড়ি/রোড/এলাকা"
+                              className={FIELD_CLASS(!!shippingErrors.address)}
+                            />
+                            {shippingErrors.address && <p className="text-destructive text-xs mt-1">{shippingErrors.address}</p>}
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">শহর</label>
+                              <input
+                                type="text"
+                                value={shipping.city}
+                                onChange={(e) => handleShippingChange("city", e.target.value)}
+                                placeholder="শহর"
+                                className={FIELD_CLASS(false)}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-foreground mb-1.5">পোস্ট কোড</label>
+                              <input
+                                type="text"
+                                value={shipping.postcode}
+                                onChange={(e) => handleShippingChange("postcode", e.target.value)}
+                                placeholder="পোস্ট কোড"
+                                className={FIELD_CLASS(false)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Terms */}
                   <label className="flex items-start gap-3 cursor-pointer group pt-1">

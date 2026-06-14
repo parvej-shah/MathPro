@@ -1,107 +1,84 @@
-import { BsChevronRight } from 'react-icons/bs';
-import { Instructor } from '@/features/course-details/_lib/types';
+import Image from "next/image";
+import { Instructor } from "@/features/course-details/_lib/types";
 
 interface InstructorTabProps {
-    instructors?: Instructor[];
+  instructors?: Instructor[];
 }
 
 export default function InstructorTab({ instructors }: InstructorTabProps) {
-    return (
-        <div className="py-12 relative">
-            <svg
-                viewBox="0 0 904 1160"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute -left-[200px] -top-[200px] h-full w-full"
-                style={{ zIndex: '-1' }}
-            >
-                <g filter="url(#filter0_f_261_7930)">
-                    <ellipse
-                        cx="268.669"
-                        cy="580.032"
-                        rx="136.757"
-                        ry="76.9931"
-                        transform="rotate(-10.6934 268.669 580.032)"
-                        fill="oklch(0.718 0.147 159.2)"
-                    />
-                </g>
-                <defs>
-                    <filter
-                        id="filter0_f_261_7930"
-                        x="-366.482"
-                        y="0.212158"
-                        width="1270.3"
-                        height="1159.64"
-                        filterUnits="userSpaceOnUse"
-                        colorInterpolationFilters="sRGB"
-                    >
-                        <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                        <feBlend
-                            mode="normal"
-                            in="SourceGraphic"
-                            in2="BackgroundImageFix"
-                            result="shape"
-                        />
-                        <feGaussianBlur
-                            stdDeviation="250"
-                            result="effect1_foregroundBlur_261_7930"
-                        />
-                    </filter>
-                </defs>
-            </svg>
+  return (
+    <section className="py-12">
+      <div className="mb-6 flex flex-col gap-2">
+        <p className="text-2xl font-semibold tracking-tight text-foreground lg:text-3xl">
+          ইন্সট্রাক্টর
+        </p>
+        <p className="text-sm text-muted-foreground">
+          কারা তোমাকে কোর্সটা শেখাবেন, এক নজরে দেখে নাও।
+        </p>
+      </div>
 
-            <h2 className="text-2xl lg:text-4xl font-semibold pb-12 relative z-10">
-                কোর্স ইন্সট্রাক্টর
-            </h2>
-            {instructors && instructors.length > 0 ? (
-                instructors.map((instructor) => (
-                    <div
-                        className="my-8 rounded-2xl cursor-pointer border border-primary/10 hover:border-primary/30 duration-150 ease-in-out z-10 overflow-hidden bg-primary/5 dark:bg-primary/10"
-                        key={instructor.name}
-                    >
-                        <div className="px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                            <div className="flex-shrink-0">
-                                {instructor.imageUploadedLink ? (
-                                    <img
-                                        src={instructor.imageUploadedLink}
-                                        alt={instructor.name}
-                                        className="w-52 h-64 md:w-60 md:h-80 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-lg"
-                                    />
-                                ) : (
-                                    <img
-                                        src="/Frame 1000004442.png"
-                                        alt={instructor.name}
-                                        className="w-52 h-64 md:w-60 md:h-80 lg:w-72 lg:h-96 object-cover rounded-2xl shadow-lg"
-                                    />
-                                )}
-                            </div>
+      {instructors && instructors.length > 0 ? (
+        <div className="space-y-3">
+          {instructors.map((instructor) => {
+            const credibilityLines = instructor.credibility
+              .split("\n")
+              .map((line) => line.trim())
+              .filter(Boolean);
 
-                            <div className="flex-grow text-center md:text-left">
-                                <h3 className="text-2xl lg:text-3xl font-semibold text-foreground mb-3">
-                                    {instructor.name}
-                                </h3>
-                                <div className="text-muted-foreground space-y-1">
-                                    {instructor.credibility.split('\n').map((line, i) => (
-                                        <p key={i} className="text-sm lg:text-base leading-relaxed">
-                                            {line}
-                                        </p>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="hidden md:block flex-shrink-0 text-primary self-center">
-                                <BsChevronRight size={24} />
-                            </div>
-                        </div>
+            return (
+              <article
+                key={instructor.name}
+                className="rounded-2xl border border-border/60 bg-card/80 p-4 shadow-sm backdrop-blur-sm transition-colors duration-200 hover:border-primary/25 hover:bg-card"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                  <div className="flex items-center gap-3 sm:w-56 sm:flex-shrink-0">
+                    <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-muted">
+                      <Image
+                        src={instructor.imageUploadedLink || "/Frame 1000004442.png"}
+                        alt={instructor.name}
+                        width={56}
+                        height={56}
+                        className="h-full w-full object-cover"
+                      />
                     </div>
-                ))
-            ) : (
-                <div className="text-center py-8">
-                    <p className="text-muted-foreground">
-                        ইন্সট্রাক্টরের তথ্য শীঘ্রই আপডেট করা হবে
-                    </p>
+
+                    <div className="min-w-0">
+                      <h3 className="truncate text-lg font-semibold text-foreground">
+                        {instructor.name}
+                      </h3>
+                      <p className="text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">
+                        ইন্সট্রাক্টর
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {credibilityLines.map((line, index) => (
+                        <div
+                          key={`${instructor.name}-${index}`}
+                          className="flex items-start gap-2 rounded-xl bg-muted/35 px-3 py-2"
+                        >
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary/70" />
+                          <p className="text-sm leading-6 text-muted-foreground">
+                            {line}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-            )}
+              </article>
+            );
+          })}
         </div>
-    );
+      ) : (
+        <div className="rounded-2xl border border-border/60 bg-card/70 px-4 py-8 text-center">
+          <p className="text-muted-foreground">
+            ইন্সট্রাক্টরের তথ্য শীঘ্রই আপডেট করা হবে
+          </p>
+        </div>
+      )}
+    </section>
+  );
 }

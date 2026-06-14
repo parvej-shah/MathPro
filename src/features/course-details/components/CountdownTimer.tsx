@@ -1,11 +1,11 @@
-import { EnrollmentSection } from "@/features/course-details/_lib/types";
+import { getEnrollmentDates, type NewChips } from "@/features/course-details/_lib/chips";
 
 interface CountdownTimerProps {
   days: number;
   hours: number;
   minutes: number;
   seconds: number;
-  enrollment?: EnrollmentSection;
+  chips?: NewChips | null;
   isLive?: boolean; // is_live status from course data
 }
 
@@ -14,32 +14,26 @@ export default function CountdownTimer({
   hours,
   minutes,
   seconds,
-  enrollment,
+  chips,
   isLive,
 }: CountdownTimerProps) {
+  const { prebookingEnd, enrollmentEnd } = getEnrollmentDates(chips);
+
   // Determine which deadline is being counted based on is_live status
   let isPrebookingDeadline = false;
   let isEnrollmentDeadline = false;
 
   if (isLive === false) {
-    // Prebook mode: Check for prebooking_end
-    isPrebookingDeadline = !!enrollment?.prebooking_end?.value;
+    isPrebookingDeadline = !!prebookingEnd;
   } else if (isLive === true) {
-    // Enrollment mode: Check for enrollment_end
-    isEnrollmentDeadline = !!enrollment?.enrollment_end?.value;
+    isEnrollmentDeadline = !!enrollmentEnd;
   } else {
-    // is_live is undefined: Fallback to old logic
-    isPrebookingDeadline = !!enrollment?.prebooking_end?.value;
-    isEnrollmentDeadline =
-      !!enrollment?.enrollment_end?.value && !isPrebookingDeadline;
+    isPrebookingDeadline = !!prebookingEnd;
+    isEnrollmentDeadline = !!enrollmentEnd && !isPrebookingDeadline;
   }
 
   // Don't show if no deadline exists
-  if (
-    !isPrebookingDeadline &&
-    !isEnrollmentDeadline &&
-    !enrollment?.end?.value
-  ) {
+  if (!isPrebookingDeadline && !isEnrollmentDeadline) {
     return null;
   }
 
@@ -51,77 +45,64 @@ export default function CountdownTimer({
       : "অবশিষ্ট সময়";
 
   return (
-    <div className="mt-4 border-t py-4 border-b border-gray-300/30">
-      <div>
-        <div className="flex text-sm justify-center">
-          <p className="text-foreground mr-16 font-bold text-lg">
-            {labelText}
-          </p>
-          <div className="flex gap-2 items-center">
-            <svg
-              width="12"
-              height="15"
-              viewBox="0 0 12 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.66536 1.5V6.16667H10.6654L5.33203 13.5V8.83333H1.33203L6.66536 1.5Z"
-                stroke="url(#paint0_linear_4530_4930)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <defs>
-                <linearGradient
-                  id="paint0_linear_4530_4930"
-                  x1="5.9987"
-                  y1="1.5"
-                  x2="5.9987"
-                  y2="13.5"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#CF8E16" />
-                  <stop offset="1" stopColor="#FFE49C" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <p className="text-[#FDAF22] text-lg">তারাতারি করো</p>
-          </div>
+    <div className="mt-4 rounded-3xl border border-border/40 bg-linear-to-b from-background/95 to-muted/20 p-4 shadow-sm backdrop-blur-sm">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <p className="text-center text-lg font-bold tracking-tight text-foreground lg:text-left">
+          {labelText}
+        </p>
+        <div className="inline-flex items-center justify-center gap-2 self-center rounded-full border border-warning/20 bg-warning/10 px-3 py-1.5 text-sm font-semibold text-warning lg:self-auto">
+          <svg
+            width="12"
+            height="15"
+            viewBox="0 0 12 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M6.66536 1.5V6.16667H10.6654L5.33203 13.5V8.83333H1.33203L6.66536 1.5Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span>তারাতারি করো</span>
         </div>
-        <div className="flex gap-4 justify-center mt-4">
-          <div className="flex flex-col items-center">
-            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
-              {days.toString().padStart(2, "0")}
-            </p>
-            <p className="mt-1 text-lg font-bold text-muted-foreground">
-              দিন
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
-              {hours.toString().padStart(2, "0")}
-            </p>
-            <p className="mt-1 text-lg font-bold text-muted-foreground">
-              ঘন্টা
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
-              {minutes.toString().padStart(2, "0")}
-            </p>
-            <p className="mt-1 text-lg font-bold text-muted-foreground">
-              মিনিট
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <p className="text-foreground bg-warning/20 py-3 rounded-lg font-bold text-4xl w-[80px] text-center border-2 border-warning/40">
-              {seconds.toString().padStart(2, "0")}
-            </p>
-            <p className="mt-1 text-lg font-bold text-muted-foreground">
-              সেকেন্ড
-            </p>
-          </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="flex flex-col items-center">
+          <p className="w-full rounded-2xl border border-warning/20 bg-linear-to-b from-warning/15 to-warning/5 px-3 py-4 text-center text-4xl font-extrabold tracking-tight tabular-nums text-foreground shadow-sm">
+            {days.toString().padStart(2, "0")}
+          </p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            দিন
+          </p>
+        </div>
+        <div className="flex flex-col items-center">
+          <p className="w-full rounded-2xl border border-warning/20 bg-linear-to-b from-warning/15 to-warning/5 px-3 py-4 text-center text-4xl font-extrabold tracking-tight tabular-nums text-foreground shadow-sm">
+            {hours.toString().padStart(2, "0")}
+          </p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            ঘন্টা
+          </p>
+        </div>
+        <div className="flex flex-col items-center">
+          <p className="w-full rounded-2xl border border-warning/20 bg-linear-to-b from-warning/15 to-warning/5 px-3 py-4 text-center text-4xl font-extrabold tracking-tight tabular-nums text-foreground shadow-sm">
+            {minutes.toString().padStart(2, "0")}
+          </p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            মিনিট
+          </p>
+        </div>
+        <div className="flex flex-col items-center">
+          <p className="w-full rounded-2xl border border-warning/20 bg-linear-to-b from-warning/15 to-warning/5 px-3 py-4 text-center text-4xl font-extrabold tracking-tight tabular-nums text-foreground shadow-sm">
+            {seconds.toString().padStart(2, "0")}
+          </p>
+          <p className="mt-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            সেকেন্ড
+          </p>
         </div>
       </div>
     </div>

@@ -11,13 +11,14 @@ interface Course {
   enrolled: number;
   short_description: string;
   chips: {
-    course_thumbnail_link?: string; // Old field (backward compatibility)
     thumbnails?: {
-      course_thumbnail_link_16_9?: string;
+      course_thumbnail_16_9?: string;
       trailer_video_thumb_16_9?: string;
       facebook_community_thumb_16_9?: string;
     };
   };
+  slug?: string | null;
+  tags?: string[] | null;
   instructor_list?: {
     instructors: Array<{
       name: string;

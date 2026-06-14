@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BsExclamationTriangle, BsArrowLeft } from "react-icons/bs";
 
-export default function FailurePage() {
+function FailurePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState(10);
@@ -98,5 +98,13 @@ export default function FailurePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function FailurePage() {
+  return (
+    <Suspense fallback={null}>
+      <FailurePageContent />
+    </Suspense>
   );
 }

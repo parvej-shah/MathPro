@@ -1,21 +1,25 @@
 import React from "react";
 import LandingStyleCourseCard from "./LandingStyleCourseCard";
 import { Course } from "../_lib/types";
+import { getCourseThumbnail, deriveSectionFlags } from "@/features/course-details/_lib/chips";
 
 interface PremiumCourseCardProps {
   course: Course;
 }
 
 export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
-  const thumbnail =
-    course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
-    course.chips?.course_thumbnail_link ||
-    null;
+  const thumbnail = getCourseThumbnail(course.chips);
+  const flags = deriveSectionFlags(course.chips);
 
-  const tags: string[] = [];
-  if (course.chips?.sections?.liveClass) tags.push("লাইভ ক্লাস");
-  if (course.chips?.sections?.video) tags.push("রেকর্ডেড");
-  if (course.chips?.sections?.contest) tags.push("কুইজ");
+  // Prefer the course's own tags for chips; fall back to derived section flags.
+  const tags: string[] =
+    course.tags && course.tags.length > 0
+      ? course.tags.slice(0, 3)
+      : [
+          ...(flags.hasLive ? ["লাইভ ক্লাস"] : []),
+          ...(flags.hasRecorded ? ["রেকর্ডেড"] : []),
+          ...(flags.hasExam ? ["কুইজ"] : []),
+        ];
 
   return (
     <LandingStyleCourseCard
@@ -23,13 +27,13 @@ export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
       title={course.title}
       description={course.short_description}
       thumbnail={thumbnail}
-      href={`/course-details/${course.id}`}
+      href={`/courses/${course.slug || course.url || course.id}`}
       price={course.price}
       originalPrice={course.x_price > course.price ? course.x_price : undefined}
       tags={tags}
       isLive={course.is_live}
-      hasRecorded={!!course.chips?.sections?.video}
-      hasExam={!!course.chips?.sections?.contest}
+      hasRecorded={flags.hasRecorded}
+      hasExam={flags.hasExam}
     />
   );
 }

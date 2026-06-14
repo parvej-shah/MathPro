@@ -1,90 +1,25 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Script from "next/script";
-import { Search, ChevronDown, ThumbsUp, ThumbsDown, Sparkles, BookOpen, Pencil, CreditCard, Headphones, GraduationCap, FileQuestion } from "lucide-react";
-
-interface FAQItem {
-  id: string;
-  question: string;
-  answer: string;
-  category?: FAQCategory;
-}
+import {
+  Search,
+  ChevronDown,
+  ThumbsUp,
+  ThumbsDown,
+  Sparkles,
+  BookOpen,
+  Pencil,
+  CreditCard,
+  Headphones,
+  GraduationCap,
+  FileQuestion,
+} from "lucide-react";
+import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
+import { usePublicFaqs } from "@/hooks/usePublicFaqs";
+import { PublicFAQ } from "@/types/faq";
 
 type FAQCategory = "all" | "courses" | "enrollment" | "payment" | "support" | "certificate";
-
-const faqData: FAQItem[] = [
-  {
-    id: "faq-1",
-    question: "MathPro এর কোর্সগুলো কাদের জন্য?",
-    answer:
-      "MathPro এর কোর্সগুলো JSC, SSC ও HSC শিক্ষার্থীদের জন্য বিশেষভাবে ডিজাইন করা। যেকোনো লেভেল থেকে শুরু করে গণিতে দক্ষ হতে চাইলে আমাদের কোর্স পারফেক্ট। বেসিক থেকে অ্যাডভান্স পর্যন্ত সব টপিক কাভার করা হয়।",
-    category: "courses",
-  },
-  {
-    id: "faq-2",
-    question: "কোর্সগুলো কিভাবে চলে?",
-    answer:
-      "প্রতিটি কোর্সে থাকে রেকর্ডেড ভিডিও লেকচার, লাইভ ক্লাস, কুইজ, অ্যাসাইনমেন্ট এবং প্র্যাকটিস প্রবলেম। নিয়মিত লাইভ ডাউট সলভিং সেশনে সরাসরি প্রশ্ন করতে পারবে।",
-    category: "courses",
-  },
-  {
-    id: "faq-3",
-    question: "কোর্সে ভর্তি হতে কি কোনো পূর্ব অভিজ্ঞতা লাগবে?",
-    answer:
-      "না, বেশিরভাগ কোর্সে কোনো পূর্ব অভিজ্ঞতা লাগে না। আমরা একদম বেসিক থেকে শুরু করি। তবে প্রতিটি কোর্সের পেজে প্রয়োজনীয়তা উল্লেখ করা থাকে।",
-    category: "enrollment",
-  },
-  {
-    id: "faq-4",
-    question: "কোর্সের পেমেন্ট কিভাবে করব?",
-    answer:
-      "বিকাশ, নগদ, রকেট এবং যেকোনো ব্যাংক কার্ড দিয়ে পেমেন্ট করতে পারবে। পেমেন্ট সম্পূর্ণ সিকিউর এবং SSL এনক্রিপ্টেড। ইনস্টলমেন্ট অপশনও আছে কিছু কোর্সে।",
-    category: "payment",
-  },
-  {
-    id: "faq-5",
-    question: "কোর্স কেনার পর কতদিন এক্সেস থাকবে?",
-    answer:
-      "বেশিরভাগ কোর্সে ১ বছর পর্যন্ত এক্সেস থাকে। এই সময়ে যেকোনো সময় ভিডিও দেখতে, প্র্যাকটিস করতে এবং রিভিশন করতে পারবে।",
-    category: "courses",
-  },
-  {
-    id: "faq-6",
-    question: "সমস্যায় পড়লে কিভাবে সাহায্য পাব?",
-    answer:
-      "প্রতিটি লেসনের নিচে ডিসকাশন সেকশন আছে যেখানে প্রশ্ন করতে পারবে। সাপ্তাহিক লাইভ সেশনে সরাসরি প্রশ্ন করা যায়। এছাড়া আমাদের কমিউনিটি ও ডেডিকেটেড সাপোর্ট টিম সবসময় প্রস্তুত।",
-    category: "support",
-  },
-  {
-    id: "faq-7",
-    question: "কোর্স শেষে সার্টিফিকেট পাব?",
-    answer:
-      "হ্যাঁ, প্রতিটি কোর্স সফলভাবে শেষ করলে এবং ফাইনাল অ্যাসেসমেন্টে পাস করলে অফিসিয়াল সার্টিফিকেট পাবে।",
-    category: "certificate",
-  },
-  {
-    id: "faq-8",
-    question: "রিফান্ড পলিসি কি?",
-    answer:
-      "কোর্স শুরুর ৭ দিনের মধ্যে সন্তুষ্ট না হলে ফুল রিফান্ড পাবে। তবে কোর্সের ২৫% এর বেশি কমপ্লিট করলে রিফান্ড প্রযোজ্য হবে না।",
-    category: "payment",
-  },
-  {
-    id: "faq-9",
-    question: "মোবাইল থেকে কোর্স করা যাবে?",
-    answer:
-      "হ্যাঁ, আমাদের প্ল্যাটফর্ম সম্পূর্ণ মোবাইল রেসপন্সিভ। যেকোনো ডিভাইস থেকে ভিডিও দেখা, কুইজ দেওয়া এবং অ্যাসাইনমেন্ট সাবমিট করা যায়।",
-    category: "courses",
-  },
-  {
-    id: "faq-10",
-    question: "MathPro এর ইন্সট্রাক্টররা কারা?",
-    answer:
-      "আমাদের ইন্সট্রাক্টররা দেশের নামকরা বিশ্ববিদ্যালয়ের অভিজ্ঞ শিক্ষক ও গণিত বিশেষজ্ঞ। তাদের শিক্ষকতা ও সাবজেক্ট নলেজ তোমাকে সেরা প্রস্তুতি দিতে সক্ষম।",
-    category: "courses",
-  },
-];
 
 const categories: { value: FAQCategory; label: string; Icon: React.ElementType }[] = [
   { value: "all", label: "সব প্রশ্ন", Icon: FileQuestion },
@@ -101,7 +36,7 @@ function FAQAccordionItem({
   onToggle,
   index,
 }: {
-  faq: FAQItem;
+  faq: PublicFAQ;
   isOpen: boolean;
   onToggle: () => void;
   index: number;
@@ -122,9 +57,7 @@ function FAQAccordionItem({
       >
         <div
           className={`hidden sm:flex shrink-0 w-10 h-10 rounded-xl items-center justify-center font-extrabold text-sm transition-all duration-300 ${
-            isOpen
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground"
+            isOpen ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
           }`}
         >
           {String(index + 1).padStart(2, "0")}
@@ -140,9 +73,7 @@ function FAQAccordionItem({
 
         <div
           className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-            isOpen
-              ? "bg-primary/10 text-primary rotate-180"
-              : "bg-muted text-muted-foreground"
+            isOpen ? "bg-primary/10 text-primary rotate-180" : "bg-muted text-muted-foreground"
           }`}
         >
           <ChevronDown className="size-5" />
@@ -156,9 +87,10 @@ function FAQAccordionItem({
       >
         <div className="overflow-hidden">
           <div className="px-5 pb-6 lg:px-7 lg:pb-7 sm:pl-22">
-            <p className="text-base text-paragraph leading-relaxed">
-              {faq.answer}
-            </p>
+            <SafeHtmlRenderer
+              content={faq.answer}
+              className="text-base text-paragraph leading-relaxed"
+            />
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 pt-5 mt-5 border-t border-border">
               <span className="text-sm text-muted-foreground">
@@ -194,11 +126,7 @@ function FAQAccordionItem({
                   <span>না</span>
                 </button>
               </div>
-              {feedback && (
-                <span className="text-sm font-semibold text-primary">
-                  ধন্যবাদ!
-                </span>
-              )}
+              {feedback && <span className="text-sm font-semibold text-primary">ধন্যবাদ!</span>}
             </div>
           </div>
         </div>
@@ -208,9 +136,16 @@ function FAQAccordionItem({
 }
 
 export default function FAQSection() {
-  const [openItems, setOpenItems] = useState<Set<string>>(new Set([faqData[0].id]));
+  const { faqs: faqData, loading } = usePublicFaqs();
+  const [openItems, setOpenItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<FAQCategory>("all");
+
+  useEffect(() => {
+    if (faqData.length > 0 && openItems.size === 0) {
+      setOpenItems(new Set([String(faqData[0].id)]));
+    }
+  }, [faqData, openItems.size]);
 
   const filteredFAQs = useMemo(() => {
     let filtered = faqData;
@@ -229,23 +164,22 @@ export default function FAQSection() {
     }
 
     return filtered;
-  }, [searchQuery, selectedCategory]);
+  }, [faqData, searchQuery, selectedCategory]);
 
   const toggleItem = (id: string) => {
     setOpenItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
-      return newSet;
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
     });
   };
 
-  const expandAll = () => setOpenItems(new Set(filteredFAQs.map((faq) => faq.id)));
+  const expandAll = () => setOpenItems(new Set(filteredFAQs.map((faq) => String(faq.id))));
   const collapseAll = () => setOpenItems(new Set());
 
   return (
     <section className="relative py-20 md:py-24 bg-section-b overflow-hidden">
-      {/* Math motif background */}
       <div
         aria-hidden
         className="absolute top-4 -left-10 md:-left-6 text-[10rem] md:text-[18rem] text-primary/10 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"
@@ -262,7 +196,6 @@ export default function FAQSection() {
       </div>
 
       <div className="relative z-10 w-[90%] lg:w-[85%] max-w-[1440px] mx-auto">
-        {/* Header */}
         <div className="text-center mb-12 md:mb-14">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-5">
             <Sparkles className="size-4 text-primary" />
@@ -280,7 +213,6 @@ export default function FAQSection() {
           </p>
         </div>
 
-        {/* Search & Filters */}
         <div className="mb-10 space-y-5">
           <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
@@ -331,15 +263,22 @@ export default function FAQSection() {
           </div>
         </div>
 
-        {/* FAQ Items */}
         <div className="space-y-3 max-w-4xl mx-auto">
-          {filteredFAQs.length > 0 ? (
+          {loading ? (
+            [0, 1, 2].map((item) => (
+              <div key={item} className="rounded-2xl border border-border bg-card p-6 animate-pulse">
+                <div className="h-6 w-2/3 bg-muted rounded mb-4" />
+                <div className="h-4 w-full bg-muted rounded mb-2" />
+                <div className="h-4 w-5/6 bg-muted rounded" />
+              </div>
+            ))
+          ) : filteredFAQs.length > 0 ? (
             filteredFAQs.map((faq, index) => (
               <FAQAccordionItem
                 key={faq.id}
                 faq={faq}
-                isOpen={openItems.has(faq.id)}
-                onToggle={() => toggleItem(faq.id)}
+                isOpen={openItems.has(String(faq.id))}
+                onToggle={() => toggleItem(String(faq.id))}
                 index={index}
               />
             ))
@@ -364,7 +303,6 @@ export default function FAQSection() {
           )}
         </div>
 
-        {/* SEO Schema Markup */}
         <Script
           id="mathpro-faq-schema"
           type="application/ld+json"

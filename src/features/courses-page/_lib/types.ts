@@ -6,30 +6,13 @@ export interface Course {
   language: string;
   enrolled: number;
   short_description: string;
-  chips: {
-    deadline?: string;
-    total_seats?: string;
-    sections?: {
-      chapter?: { label: string; value: string };
-      video?: { label: string; value: string };
-      contest?: { label: string; value: string };
-      liveClass?: { label: string; value: string };
-      codingProblem?: { label: string; value: string };
-      archiveClass?: { label: string; value: string };
-    };
-    enrollment?: {
-      start?: { label: string; value: string; icon?: string };
-      end?: { label: string; value: string; icon?: string };
-      classStart?: { label: string; value: string; icon?: string };
-      classTime?: { label: string; value: string; icon?: string };
-    };
-    course_thumbnail_link?: string;
-    thumbnails?: {
-      course_thumbnail_link_16_9?: string;
-      trailer_video_thumb_16_9?: string;
-      facebook_community_thumb_16_9?: string;
-    };
-  };
+  // New top-level fields (frontend-guide-user.md §2)
+  slug?: string | null;
+  tags?: string[] | null;
+  total_seats?: number | null;
+  course_outline?: string | null;
+  // New chips shape (frontend-guide-user.md §4) — read via _lib/chips.ts helpers.
+  chips: import("@/features/course-details/_lib/chips").NewChips;
   instructor_list: {
     instructors: Instructor[];
   };
@@ -71,6 +54,19 @@ export interface Feedback {
 export interface CoursesResponse {
   success: boolean;
   data: Course[];
+}
+
+// Grouped course directory (COURSE_DIRECTORY_API_SPEC.md): category -> courses.
+export interface CourseCategory {
+  id: number;
+  slug: string;
+  category_name: string;
+  courses: Course[];
+}
+
+export interface DirectoryResponse {
+  success: boolean;
+  data: CourseCategory[];
 }
 
 export interface StatsData {

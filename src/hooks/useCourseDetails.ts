@@ -5,7 +5,7 @@ import { BACKEND_URL } from '@/api.config';
 import { UserContext } from '@/Contexts/UserContext';
 import { jwtDecode } from 'jwt-decode';
 import { isLoggedIn } from '@/helpers';
-import { CourseData, EnrollmentSection, Section } from '@/features/course-details/_lib/types';
+import { CourseData, EnrollmentSection, Section, BookSelection } from '@/features/course-details/_lib/types';
 
 interface PrebookingData {
     name: string;
@@ -37,7 +37,7 @@ interface UseCourseDetailsReturn {
     loading: boolean;
     error: string | null;
     fetchCourse: () => void;
-    buyCourse: (couponCode?: string | null) => void;
+    buyCourse: (couponCode?: string | null, bookSelection?: BookSelection | null) => void;
     prebookCourse: (data: PrebookingData) => Promise<boolean>;
     purchaseFreeCourse: () => void;
     prebookButtonLoading: boolean;
@@ -74,8 +74,17 @@ export const useCourseDetails = (
         setUser({ ...user, loading: true });
         const token = localStorage.getItem('token');
 
+        // Pretty slug URLs (e.g. /courses/discrete-mathematics) hit the slug route;
+        // purely-numeric ids fall back to the legacy getfull/:id route.
+        // (frontend-guide-user.md §1)
+        const idStr = String(courseId);
+        const isNumericId = /^\d+$/.test(idStr);
+        const endpoint = isNumericId
+            ? '/user/course/getfull/' + idStr
+            : '/user/course/getfull/slug/' + idStr;
+
         axios
-            .get(BACKEND_URL + '/user/course/getfull/' + courseId, {
+            .get(BACKEND_URL + endpoint, {
                 headers: {
                     ...(token && { Authorization: `Bearer ${token}` }),
                 },
@@ -106,16 +115,22 @@ export const useCourseDetails = (
             });
     };
 
-    const buyCourse = (couponCode?: string | null) => {
+    const buyCourse = (couponCode?: string | null, bookSelection?: BookSelection | null) => {
         setUser({ ...user, loading: true });
         const token = localStorage.getItem('token');
 
         // Prepare request body
         const requestBody: any = { eventId: courseData!.price * 6251 };
-        
+
         // Add coupon code if provided
         if (couponCode && couponCode.trim()) {
             requestBody.coupon_code = couponCode.trim();
+        }
+
+        // Optional book inclusion + shipping (BOOKS_COURSE_BUNDLE_PAYMENT_FRONTEND_SPEC.md)
+        if (bookSelection?.include) {
+            requestBody.include_books = true;
+            requestBody.shipping = bookSelection.shipping;
         }
 
         // Get user_id from token if available
@@ -151,10 +166,17 @@ export const useCourseDetails = (
                         { duration: 2000 }
                     );
                 }
+                if (res.data.books_included) {
+                    toast.success(
+                        `বইসহ অর্ডার করা হচ্ছে (৳${res.data.books_total || 0})`,
+                        { duration: 2000 }
+                    );
+                }
                 // Small delay to show toast before redirect
+                const hasToast = res.data.coupon_applied || res.data.books_included;
                 setTimeout(() => {
                     window.location = res.data.data;
-                }, res.data.coupon_applied ? 500 : 0);
+                }, hasToast ? 500 : 0);
             })
             .catch((err) => {
                 setUser({ ...user, loading: false });

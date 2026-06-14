@@ -1,9 +1,18 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
-import LandingStyleCourseCard from "@/features/courses-page/components/LandingStyleCourseCard";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import PremiumCourseCard from "@/features/courses-page/components/PremiumCourseCard";
 import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
-import { motion, AnimatePresence } from "framer-motion";
+import FAQSection from "@/features/courses-page/components/FAQSection";
+import type { CourseCategory } from "@/features/courses-page/_lib/types";
+import { useCourseDirectory } from "@/hooks/useCourseDirectory";
+import {
+  mapPublicTestimonialsToFeedbacks,
+  usePublicTestimonials,
+} from "@/hooks/usePublicTestimonials";
+import { englishToBanglaNumbers } from "@/helpers";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import {
@@ -14,7 +23,6 @@ import {
   Star,
   MapPin,
   BookOpen,
-  ArrowRight,
   Sparkles,
   GraduationCap,
   Calculator,
@@ -22,12 +30,7 @@ import {
   Laptop,
   Users,
   ArrowUpRight,
-  HelpCircle,
-  MessageCircle,
-  Plus,
-  Minus,
   Video,
-  FileText
 } from "lucide-react";
 
 const slides = [
@@ -260,136 +263,159 @@ const features = [
   { icon: Laptop, title: "দ্রুত ও সহজ এক্সেস", desc: "বিকাশ বা নগদে পেমেন্ট করেই সাথে সাথে কোর্সে যুক্ত হও। যেকোনো ডিভাইস থেকে অনায়াসে ক্লাস করার সুবিধা।" },
 ];
 
-const groupedCourses = [
-  {
-    category: "অষ্টম শ্রেণি (Class 8)",
-    tabs: ["সকল (Class 8)", "২০২৬"],
-    items: [
-      {
-        title: "অষ্টম শ্রেণি | গণিত মাস্টারব্যাচ ২০২৬",
-        desc: "অষ্টম শ্রেণির গণিত সিলেবাসের প্রতিটি অধ্যায় বেসিক থেকে অ্যাডভান্স লেভেলে শেখানো হবে। জয় করো গণিতভীতি।",
-        tags: ["Class 8", "Math", "Foundation"],
-        price: 1500,
-        href: "/courses",
-      }
-    ]
-  },
-  {
-    category: "উচ্চ মাধ্যমিক (HSC)",
-    tabs: ["সকল (HSC)", "HSC 2026", "HSC 2025"],
-    items: [
-      {
-        title: "(উচ্চতর গণিত ১ম পত্র) | প্রিলিমিনারি টু প্রো ব্যাচ",
-        desc: "এইচএসসি উচ্চতর গণিত ১ম পত্রের প্রতিটি বিষয় এবং টাইপওয়াইজ ম্যাথ সলভিং এর জন্য সেরা কোর্স।",
-        tags: ["HSC Math", "1st Paper"],
-        price: 3000,
-        href: "/courses",
-      },
-      {
-        title: "(উচ্চতর গণিত ২য় পত্র) | মাস্টার ক্লাস এইচএসসি",
-        desc: "এইচএসসি ২য় পত্রের জটিল বিষয়গুলোকে সহজ টেকনিক এবং ভিজ্যুয়ালাইজেশনের মাধ্যমে শেখানো হবে।",
-        tags: ["HSC Math", "2nd Paper"],
-        price: 3000,
-        href: "/courses",
-      },
-      {
-        title: "(গণিত ১ম ও ২য় পত্র) কম্বো | বোর্ড স্ট্যান্ডার্ড কোর্স",
-        desc: "এইচএসসি গণিতের পূর্ণাঙ্গ সিলেবাস একসাথে শেষ করতে আমাদের এই স্পেশাল কম্বো প্যাক।",
-        tags: ["Combo", "HSC Special"],
-        price: 5000,
-        href: "/courses",
-      }
-    ]
-  },
-  {
-    category: "মাধ্যমিক (SSC)",
-    tabs: ["সকল (SSC)", "SSC 2026", "SSC 2025"],
-    items: [
-      {
-        title: "সাধারণ গণিত | এসএসসি ২০২৫ স্পেশাল ব্যাচ",
-        desc: "এসএসসি ২০২৫ পরীক্ষার্থীদের জন্য সাধারণ গণিতের ফুল সিলেবাস রিভিশন এবং টেস্ট পেপার সলভিং কোর্স।",
-        tags: ["General Math", "SSC 2025"],
-        price: 2000,
-        href: "/courses",
-      },
-      {
-        title: "উচ্চতর গণিত | এসএসসি ২০২৫ টার্গেট এ+",
-        desc: "উচ্চতর গণিতের কঠিন কনসেপ্টগুলোকে সহজ করে আয়ত্ত করতে এবং এ+ নিশ্চিত করতে এই কোর্সটি অনন্য।",
-        tags: ["Higher Math", "SSC 2025"],
-        price: 2000,
-        href: "/courses",
-      },
-      {
-        title: "গণিত অলিম্পিয়াড প্রিপারেশন | স্কুল লেভেল",
-        desc: "যেকোনো গণিত প্রতিযোগিতায় ভালো করতে এবং গাণিতিক মেধা বিকাশে এই কোর্সটি ডিজাইন করা হয়েছে।",
-        tags: ["Olympisd", "Academic"],
-        price: 1500,
-        href: "/courses",
-      }
-    ]
-  }
+const ALL_TAG_ID = "all";
+const sessionTagPattern = /(?:^|\s)(jsc|ssc|hsc)(?:\s|$)|[০-৯]{2,4}|\d{2,4}/i;
+const nonSessionTagKeywords = [
+  "লাইভ",
+  "রেকর্ডেড",
+  "ভিডিও",
+  "কুইজ",
+  "quiz",
+  "live",
+  "recorded",
 ];
 
-const reviews = [
-  {
-    name: "সাদমান সাকিব",
-    school: "ঢাকা কলেজ",
-    rating: 5,
-    text: "MathPro-এর লাইভ ক্লাসগুলো অসাধারণ। কনসেপ্টগুলো এতো সুন্দর করে ক্লিয়ার করা হয় যে গণিত আর ভয়ের বিষয় মনে হয় না।",
-  },
-  {
-    name: "ফারিহা রহমান",
-    school: "ভিকারুননিসা নূন স্কুল এন্ড কলেজ",
-    rating: 5,
-    text: "রেকর্ডেড ভিডিও এবং মক টেস্টগুলো আমার প্রস্তুতিকে অনেক বেশি মজবুত করেছে। আমি এখন অনেক বেশি কনফিডেন্ট।",
-  },
-  {
-    name: "রাফসান জনি",
-    school: "নটর ডেম কলেজ",
-    rating: 5,
-    text: "ভাইয়াদের পড়ানোর স্টাইলটা একদম আলাদা। বোরিং টপিকগুলোও খুব সহজে মনে রাখা যায়। সেরা প্ল্যাটফর্ম!",
-  },
-  {
-    name: "তাসনিম জেরিন",
-    school: "আইডিয়াল স্কুল অ্যান্ড কলেজ",
-    rating: 5,
-    text: "সবচেয়ে ভালো লাগে এদের এমসিকিউ কুইজ সিস্টেমটা। নিজের ভুলগুলো সাথে সাথেই শুধরে নেওয়া যায়।",
-  },
-  {
-    name: "আসিফ ইকবাল",
-    school: "রাজউক উত্তরা মডেল কলেজ",
-    rating: 5,
-    text: "বিকাশ পেমেন্টের মাধ্যমে খুব দ্রুত কোর্সে যুক্ত হতে পেরেছি। এবং সাপোর্ট টিমও অনেক হেল্পফুল।"
-  }
-];
+function normalizeTag(tag: string) {
+  return tag.replace(/\s+/g, " ").trim();
+}
 
-const faqs = [
-  {
-    question: "লাইভ ক্লাস মিস করলে কী হবে?",
-    answer: "কোনো চিন্তা নেই! প্রতিটি লাইভ ক্লাসের এইচডি রেকর্ডিং ক্লাসের পর পরই তোমার ড্যাশবোর্ডে যুক্ত হয়ে যাবে। তুমি যেকোনো সময় যতবার খুশি দেখতে পারবে।"
-  },
-  {
-    question: "কোর্সে কীভাবে ভর্তি হবো?",
-    answer: "খুবই সহজ! 'এনরোল করো' বাটনে ক্লিক করে বিকাশ অথবা নগদের মাধ্যমে পেমেন্ট সম্পন্ন করলেই সাথে সাথে কোর্সের এক্সেস পেয়ে যাবে।"
-  },
-  {
-    question: "অফলাইন মক টেস্ট কি সবাই দিতে পারবে?",
-    answer: "হ্যাঁ, আমাদের যেকোনো অনলাইন কোর্সের শিক্ষার্থীরা নির্দিষ্ট ফি দিয়ে আমাদের মিরপুর বা উত্তরা শাখায় এসে অফলাইন মক টেস্ট দিতে পারবে।"
-  },
-  {
-    question: "ক্লাসের নোট বা লেকচার শিট কি দেওয়া হবে?",
-    answer: "অবশ্যই। প্রতিটি ক্লাসের সাথে ওই ক্লাসের পিডিএফ লেকচার শিট এবং প্র‍্যাকটিস ম্যাটেরিয়াল দেওয়া থাকে, যা তুমি ডাউনলোড করে নিতে পারবে।"
-  },
-  {
-    question: "পেমেন্ট করার পর কোর্স চালু হতে কতক্ষণ লাগে?",
-    answer: "পেমেন্ট সম্পন্ন হওয়ার সাথে সাথেই স্বয়ংক্রিয়ভাবে তোমার অ্যাকাউন্টে কোর্সটি যুক্ত হয়ে যাবে। কোনো অপেক্ষার প্রয়োজন নেই!"
+function banglaDigitsToEnglish(value: string) {
+  return value.replace(/[০-৯]/g, (digit) =>
+    String("০১২৩৪৫৬৭৮৯".indexOf(digit)),
+  );
+}
+
+function isSessionFilterTag(tag: string) {
+  const normalized = normalizeTag(tag);
+  if (!normalized) return false;
+
+  const lowerCased = normalized.toLowerCase();
+  if (nonSessionTagKeywords.some((keyword) => lowerCased.includes(keyword))) {
+    return false;
   }
-];
+
+  return sessionTagPattern.test(lowerCased);
+}
+
+function formatTagLabel(tag: string) {
+  return normalizeTag(tag).replace(/\d+/g, (match) =>
+    englishToBanglaNumbers(Number(match)),
+  );
+}
+
+function extractTagSortValue(tag: string) {
+  const digits = banglaDigitsToEnglish(tag).match(/\d{2,4}/g);
+  if (!digits || digits.length === 0) return -1;
+  return Number(digits[digits.length - 1]);
+}
+
+function CategoryCourseSection({ category }: { category: CourseCategory }) {
+  const filterTags = useMemo(() => {
+    const uniqueTags = new Map<string, string>();
+
+    category.courses.forEach((course) => {
+      course.tags?.forEach((tag) => {
+        if (!isSessionFilterTag(tag)) return;
+        const normalized = normalizeTag(tag);
+        if (!uniqueTags.has(normalized)) {
+          uniqueTags.set(normalized, tag);
+        }
+      });
+    });
+
+    return Array.from(uniqueTags.values()).sort((a, b) => {
+      const yearDifference = extractTagSortValue(b) - extractTagSortValue(a);
+      if (yearDifference !== 0) return yearDifference;
+      return normalizeTag(a).localeCompare(normalizeTag(b), "en", {
+        sensitivity: "base",
+      });
+    });
+  }, [category.courses]);
+
+  const [selectedTag, setSelectedTag] = useState(ALL_TAG_ID);
+
+  const activeTag =
+    selectedTag === ALL_TAG_ID || filterTags.includes(selectedTag)
+      ? selectedTag
+      : ALL_TAG_ID;
+
+  const visibleCourses = useMemo(() => {
+    const courses =
+      activeTag === ALL_TAG_ID
+        ? category.courses
+        : category.courses.filter((course) =>
+            course.tags?.some((tag) => normalizeTag(tag) === activeTag),
+          );
+
+    return courses.slice(0, 3);
+  }, [activeTag, category.courses]);
+
+  return (
+    <div className="flex flex-col">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 relative z-[45]">
+        <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-heading">
+          {category.category_name}
+        </h3>
+        <Link
+          href="/courses"
+          className="text-sm font-bold text-primary hover:gap-2 flex items-center gap-1 transition-all"
+        >
+          সব দেখুন <span>&gt;</span>
+        </Link>
+      </div>
+
+      {filterTags.length > 0 && (
+        <div className="flex flex-wrap gap-3 mb-10 relative z-[45]">
+          <button
+            type="button"
+            onClick={() => setSelectedTag(ALL_TAG_ID)}
+            className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${
+              selectedTag === ALL_TAG_ID
+                ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary"
+            }`}
+          >
+            সব
+          </button>
+          {filterTags.map((tag) => (
+              <button
+              key={tag}
+              type="button"
+              onClick={() => setSelectedTag(normalizeTag(tag))}
+              className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${
+                activeTag === normalizeTag(tag)
+                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                  : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary"
+              }`}
+            >
+              {formatTagLabel(tag)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {visibleCourses.length > 0 ? (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
+          {visibleCourses.map((course) => (
+            <PremiumCourseCard key={course.id} course={course} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center text-muted-foreground relative z-[45]">
+          এই ট্যাগে এখনো কোনো কোর্স পাওয়া যায়নি।
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function LandingPage() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  // Live category sections from GET /user/course/directory (COURSE_DIRECTORY_API_SPEC.md).
+  const { categories: courseCategories, loading: coursesLoading } = useCourseDirectory();
+  const { testimonials } = usePublicTestimonials();
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -619,59 +645,34 @@ export function LandingPage() {
           </div>
 
           <div className="flex flex-col gap-24">
-            {groupedCourses.map((group, i) => (
-              <div key={i} className="flex flex-col">
-                {/* Category Header & Tabs */}
-                <div className="flex flex-col lg:flex-row lg:items-center gap-6 mb-10 relative z-[45]">
-                  <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-heading">
-                    {group.category}
-                  </h3>
-                  <div className="flex flex-wrap items-center gap-3 lg:ml-6">
-                    {group.tabs.map((tab, idx) => (
-                      <button
-                        key={idx}
-                        className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${idx === 0
-                          ? 'bg-foreground text-background shadow-xl'
-                          : 'bg-card border border-border text-muted-foreground hover:bg-muted hover:text-foreground hover:border-foreground/20'
-                          }`}
-                      >
-                        {tab}
-                      </button>
+            {coursesLoading ? (
+              // Lightweight skeleton rows while the directory loads.
+              [0, 1].map((i) => (
+                <div key={i} className="flex flex-col">
+                  <div className="h-10 w-48 bg-muted rounded-lg mb-10 animate-pulse" />
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
+                    {[0, 1, 2].map((j) => (
+                      <div key={j} className="h-72 bg-muted rounded-2xl animate-pulse" />
                     ))}
                   </div>
                 </div>
-
-                {/* Cards Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-                  {group.items.slice(0, 3).map((course, idx) => (
-                    <LandingStyleCourseCard
-                      key={idx}
-                      id={idx}
-                      title={course.title}
-                      description={course.desc}
-                      href={course.href}
-                      price={course.price}
-                      tags={course.tags}
-                      isLive={false}
-                      hasRecorded={true}
-                      hasExam={true}
-                    />
-                  ))}
-                </div>
+              ))
+            ) : courseCategories.length === 0 ? (
+              <div className="text-center text-muted-foreground py-16 relative z-[45]">
+                নতুন কোর্স শীঘ্রই যোগ করা হবে।
               </div>
-            ))}
+            ) : (
+              courseCategories.map((category) => (
+                <CategoryCourseSection key={category.slug} category={category} />
+              ))
+            )}
           </div>
         </div>
       </section>
 
       {/* --- STUDENT REVIEWS (MARQUEE) --- */}
       <TestimonialMarquee
-        feedbacks={reviews.map((r) => ({
-          name: r.name,
-          bio: r.school,
-          description: r.text,
-          imageUploadedLink: "",
-        }))}
+        feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)}
       />
 
       {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
@@ -792,79 +793,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* --- FAQ SECTION --- */}
-      <section className="py-28 bg-section-b relative overflow-hidden">
-        {/* Math Motif Background */}
-        <div className="absolute top-10 md:top-20 right-0 md:right-20 text-[12rem] md:text-[20rem] text-[#3b82f6]/5 font-serif font-bold rotate-12 select-none pointer-events-none">λ</div>
-        <div className="absolute -bottom-4  md:bottom-10 left-0 md:left-10 text-[9rem] md:text-[15rem] text-[#10b981]/5 font-serif font-bold -rotate-12 select-none pointer-events-none">∀</div>
-        <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
-          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-start">
-
-            {/* FAQ Intro & Support Box (Left Column) */}
-            <div className="lg:col-span-5 lg:sticky lg:top-32 relative z-[45]">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-6">
-                <HelpCircle className="size-4" />
-                সচরাচর জিজ্ঞাসা
-              </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-6 text-heading font-heading">
-                তোমার সব<br /><span className="text-primary">প্রশ্নের উত্তর</span>
-              </h2>
-              <p className="text-muted-foreground text-lg mb-10 leading-relaxed font-medium pr-4">
-                কোর্স, পেমেন্ট বা অন্যান্য বিষয় নিয়ে কোনো কনফিউশন আছে? নিচের তালিকা থেকে তোমার উত্তরটি জেনে নাও।
-              </p>
-
-              <div className="bg-card p-8 rounded-3xl border border-border shadow-xl shadow-black/5 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-                <div className="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-6 relative z-10">
-                  <MessageCircle className="size-7" />
-                </div>
-                <h4 className="font-extrabold text-xl text-heading mb-2 font-heading relative z-10">আরও কিছু জানার আছে?</h4>
-                <p className="text-muted-foreground font-medium text-[15px] mb-8 relative z-10">আমাদের সাপোর্ট টিম সবসময় তোমার পাশে আছে। যেকোনো প্রয়োজনে মেসেজ দাও।</p>
-                <button className="w-full py-4 bg-foreground hover:bg-primary text-background font-bold rounded-2xl transition-colors shadow-lg hover:shadow-emerald-900/20 relative z-10">
-                  সাপোর্টে মেসেজ দাও
-                </button>
-              </div>
-            </div>
-
-            {/* Accordion List (Right Column) */}
-            <div className="lg:col-span-7 lg:pl-10 flex flex-col gap-4">
-              {faqs.map((faq, idx) => (
-                <div
-                  key={idx}
-                  className={`bg-card rounded-[1.5rem] border transition-all duration-300 overflow-hidden relative z-[45] ${openFaq === idx ? 'border-emerald-500/60 dark:border-emerald-400/40 shadow-xl shadow-emerald-500/10 dark:shadow-emerald-400/10' : 'border-border hover:border-emerald-400/40 dark:hover:border-emerald-500/30'}`}
-                >
-                  <button
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-6 md:p-8 text-left bg-transparent outline-none group"
-                  >
-                    <h4 className={`font-extrabold text-[1.1rem] md:text-xl font-heading pr-8 transition-colors ${openFaq === idx ? 'text-primary' : 'text-heading group-hover:text-primary'}`}>
-                      {faq.question}
-                    </h4>
-                    <div className={`shrink-0 size-12 rounded-full flex items-center justify-center transition-colors ${openFaq === idx ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'}`}>
-                      {openFaq === idx ? <Minus className="size-6" /> : <Plus className="size-6" />}
-                    </div>
-                  </button>
-                  <AnimatePresence initial={false}>
-                    {openFaq === idx && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                      >
-                        <div className="px-6 md:px-8 pb-8 pt-0 text-muted-foreground font-medium leading-relaxed text-[15px]">
-                          {faq.answer}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        </div>
-      </section>
+      <FAQSection />
 
       {/* --- FOOTER CTA --- */}
       <section className="bg-emerald-950 py-24 relative overflow-hidden">

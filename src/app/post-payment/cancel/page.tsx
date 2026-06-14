@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function CancelPage() {
+function CancelPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -42,5 +42,13 @@ export default function CancelPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CancelPage() {
+  return (
+    <Suspense fallback={null}>
+      <CancelPageContent />
+    </Suspense>
   );
 }

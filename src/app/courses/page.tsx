@@ -34,6 +34,10 @@ const TestimonialMarquee = dynamic(
 );
 
 import { useCoursesPage } from "@/features/courses-page/hooks/useCoursesPage";
+import {
+  mapPublicTestimonialsToFeedbacks,
+  usePublicTestimonials,
+} from "@/hooks/usePublicTestimonials";
 
 export default function CoursesPage() {
   const pageTitle = "MathPro Courses";
@@ -46,14 +50,13 @@ export default function CoursesPage() {
     loading,
     error,
     instructors,
-    bundles,
+    featuredCourses,
     categories,
-    allFeedbacks,
     selectedCategory,
     setSelectedCategory,
     refetch,
-    courses,
   } = useCoursesPage();
+  const { testimonials } = usePublicTestimonials();
 
   if (loading) {
     return (
@@ -143,12 +146,9 @@ export default function CoursesPage() {
         <div className="w-[90%] lg:w-[85%] max-w-360 mx-auto pt-8 pb-20">
 
           {/* ── Hero Slider ───────────────────────────────────────────── */}
-          {(bundles.length > 0 || courses.length > 0) && (
+          {featuredCourses.length > 0 && (
             <div className="mb-10">
-              <FeaturedCourseSlider
-                featuredBundle={bundles.length > 0 ? bundles[0] : null}
-                recentCourse={courses.length > 0 ? courses[0] : null}
-              />
+              <FeaturedCourseSlider courses={featuredCourses} />
             </div>
           )}
 
@@ -187,7 +187,7 @@ export default function CoursesPage() {
 
           {instructors.length > 0 && <TeacherSlider instructors={instructors} />}
           {/* <FacebookCommunityCTASection /> */}
-          <TestimonialMarquee feedbacks={allFeedbacks} />
+          <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
           <FAQSection />
         </div>
       </main>

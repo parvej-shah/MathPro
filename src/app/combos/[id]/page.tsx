@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { jwtDecode } from "jwt-decode";
+import { Toaster } from "react-hot-toast";
 import {
   ArrowRight,
   BadgePercent,
@@ -18,9 +20,19 @@ import {
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
+import CheckoutModal from "@/components/CheckoutModal";
+import CouponInput from "@/components/CouponInput";
+import type { CouponApplyResponse } from "@/services/couponService";
 import { siteConfig } from "@/config/site.config";
+import { isLoggedIn } from "@/helpers";
+import { useBundlePayment } from "@/hooks/useBundlePayment";
+import type { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
 import { FAQSection, PremiumCourseCard } from "@/features/courses-page/components";
 import type { Course } from "@/features/courses-page/_lib/types";
+import {
+  mapPublicTestimonialsToFeedbacks,
+  usePublicTestimonials,
+} from "@/hooks/usePublicTestimonials";
 
 const TestimonialMarquee = dynamic(
   () =>
@@ -55,7 +67,6 @@ interface ComboCourse {
       codingProblem?: { label: string; value: string };
       archiveClass?: { label: string; value: string };
     };
-    enrollment?: Course["chips"]["enrollment"];
     deadline?: string;
     total_seats?: string;
   };
@@ -66,6 +77,7 @@ interface ComboCourse {
 interface Combo {
   id: number;
   title: string;
+  url?: string;
   price: number;
   short_description?: string;
   course_count: number;
@@ -74,6 +86,8 @@ interface Combo {
   prebooking?: number;
   is_live?: boolean;
   intro_video?: string;
+  attached_books?: AttachedBook[];
+  books_total?: number;
   chips?: {
     thumbnails?: {
       bundle_thumb_16_9?: string;
@@ -124,12 +138,14 @@ function toCourseGridItem(course: ComboCourse): Course {
     enrolled: course.enrolled || 0,
     short_description: course.short_description || "",
     chips: {
-      deadline: course.chips?.deadline,
-      total_seats: course.chips?.total_seats,
-      course_thumbnail_link: course.chips?.course_thumbnail_link,
-      thumbnails: course.chips?.thumbnails,
-      sections: course.chips?.sections,
-      enrollment: course.chips?.enrollment,
+      thumbnails: {
+        course_thumbnail_16_9: course.chips?.thumbnails?.course_thumbnail_link_16_9,
+        trailer_video_thumb_16_9: course.chips?.thumbnails?.trailer_video_thumb_16_9,
+        facebook_community_thumb_16_9: course.chips?.thumbnails?.facebook_community_thumb_16_9,
+      },
+      sections: Object.values(course.chips?.sections || {}).filter(
+        (s): s is { label: string; value: string } => Boolean(s),
+      ),
     },
     instructor_list: course.instructor_list || { instructors: [] },
     is_live: Boolean(course.is_live || course.chips?.sections?.liveClass),
@@ -326,7 +342,19 @@ function ComboDetailsSkeleton() {
 
 export default function ComboDetailsPage() {
   const params = useParams<{ id: string }>();
+  const { testimonials } = usePublicTestimonials();
+  const { buyBundle } = useBundlePayment();
   const comboId = params?.id;
+  const comboIdStr = String(comboId || "");
+  const isNumericComboId = /^\d+$/.test(comboIdStr);
+  const comboDetailsEndpoint = isNumericComboId
+    ? `${BACKEND_URL}/user/bundle/${comboIdStr}`
+    : `${BACKEND_URL}/user/bundle/slug/${comboIdStr}`;
+
+  const [openCheckoutModal, setOpenCheckoutModal] = useState(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
+  const [discountInfo, setDiscountInfo] = useState<CouponApplyResponse["data"] | null>(null);
+  const [userId, setUserId] = useState<number | undefined>(undefined);
 
   const {
     data: combo,
@@ -337,7 +365,7 @@ export default function ComboDetailsPage() {
     queryKey: ["combo-details", comboId],
     enabled: Boolean(comboId),
     queryFn: async (): Promise<Combo> => {
-      const response = await axios.get<ComboResponse>(`${BACKEND_URL}/user/bundle/${comboId}`);
+      const response = await axios.get<ComboResponse>(comboDetailsEndpoint);
       if (!response.data.success) {
         throw new Error("Failed to fetch combo details");
       }
@@ -368,6 +396,58 @@ export default function ComboDetailsPage() {
       discount,
     };
   }, [combo]);
+
+  // Clear coupon state when combo changes
+  useEffect(() => {
+    if (comboId) {
+      setAppliedCouponCode(null);
+      setDiscountInfo(null);
+    }
+  }, [comboId]);
+
+  // Get user ID from token
+  useEffect(() => {
+    if (isLoggedIn()) {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const decodedToken: any = jwtDecode(token);
+          const id = decodedToken.id || decodedToken.user_id || decodedToken.sub;
+          if (id) {
+            setUserId(parseInt(id.toString()));
+          }
+        } catch {
+          // Token decode failed, userId remains unset
+        }
+      }
+    }
+  }, []);
+
+  const handleBuyCombo = () => {
+    if (isLoggedIn() === false) {
+      const currentDomain = window.location.href;
+      window.location.href = `/auth/login?redirect=${encodeURIComponent(currentDomain)}`;
+    } else {
+      setOpenCheckoutModal(true);
+    }
+  };
+
+  const handleProceedToPayment = (bookSelection: BookSelection | null) => {
+    if (!combo) return;
+    buyBundle(combo.id, appliedCouponCode, bookSelection);
+  };
+
+  const handleCouponApplied = (discountData: CouponApplyResponse["data"]) => {
+    setDiscountInfo(discountData);
+    if (discountData?.coupon?.code) {
+      setAppliedCouponCode(discountData.coupon.code);
+    }
+  };
+
+  const handleCouponRemoved = () => {
+    setAppliedCouponCode(null);
+    setDiscountInfo(null);
+  };
 
   const includedCourses = useMemo(
     () => (combo?.courses || []).map(toCourseGridItem),
@@ -419,8 +499,28 @@ export default function ComboDetailsPage() {
           combo.short_description ||
           `এই Combo-তে ${toBanglaNumber(computed.courseCount)}টি কোর্স একসাথে নিয়ে কম খরচে প্রস্তুতি নাও।`
         }
-        path={`/combos/${combo.id}`}
+        path={`/combos/${combo.url || combo.id}`}
         image={thumb}
+      />
+
+      <Toaster />
+
+      <CheckoutModal
+        isOpen={openCheckoutModal}
+        onClose={() => setOpenCheckoutModal(false)}
+        onProceed={handleProceedToPayment}
+        type="bundle"
+        title={combo.title}
+        price={discountInfo?.final_price ?? combo.price}
+        originalPrice={computed.originalPrice}
+        courseCount={computed.courseCount}
+        savings={
+          discountInfo
+            ? discountInfo.original_price - discountInfo.final_price
+            : computed.savings
+        }
+        attachedBooks={combo.attached_books}
+        booksTotal={combo.books_total}
       />
 
       <ComboBackgroundLayers />
@@ -461,6 +561,48 @@ export default function ComboDetailsPage() {
                 </div>
               )}
 
+              {combo.attached_books && combo.attached_books.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="font-heading text-xl font-bold text-heading mb-4">
+                    এই Combo-র সাথে বইসমূহ
+                    {combo.books_total ? (
+                      <span className="ml-2 text-sm font-medium text-muted-foreground">
+                        (মোট মূল্য ৳{combo.books_total})
+                      </span>
+                    ) : null}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {combo.attached_books.map((book) => (
+                      <div
+                        key={book.id}
+                        className="flex gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5 border border-border/40"
+                      >
+                        {book.image_url && (
+                          <Image
+                            src={book.image_url}
+                            alt={book.title}
+                            width={64}
+                            height={80}
+                            className="rounded-md object-cover h-20 w-16 shrink-0"
+                          />
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-semibold text-foreground truncate">{book.title}</p>
+                          {typeof book.price === "number" && (
+                            <p className="text-sm text-primary font-bold mt-1">৳{book.price}</p>
+                          )}
+                          {book.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              {book.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-border bg-background/85 p-4">
                   <p className="text-sm font-semibold text-muted-foreground">মোট কোর্স</p>
@@ -494,29 +636,63 @@ export default function ComboDetailsPage() {
 
               <div className="mt-5 grid gap-3">
                 <div className="rounded-xl border border-border bg-background/80 p-4">
-                  <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
-                    <p className="text-4xl font-extrabold text-foreground">{formatPrice(combo.price)}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
+                    Combo Price
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2">
+                    <p className="text-4xl font-extrabold tracking-tight text-foreground">
+                      {formatPrice(discountInfo ? discountInfo.final_price : combo.price)}
+                    </p>
                     {computed.originalPrice > combo.price && (
-                      <p className="pb-1 text-xl font-bold text-muted-foreground line-through">
+                      <p className="pb-1 text-xl font-extrabold text-destructive line-through decoration-2">
                         {formatPrice(computed.originalPrice)}
                       </p>
                     )}
+                  </div>
+                  {computed.originalPrice > combo.price && (
+                    <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                      আলাদা কোর্সগুলোর মোট দাম:{" "}
+                      <span className="font-extrabold text-destructive">
+                        {formatPrice(computed.originalPrice)}
+                      </span>
+                    </p>
+                  )}
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
                     {computed.discount > 0 && (
                       <span className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-sm font-extrabold text-warning">
                         <BadgePercent className="size-4" />
                         {toBanglaNumber(computed.discount)}% ছাড়
                       </span>
                     )}
+                    {computed.savings > 0 && (
+                      <span className="inline-flex rounded-full border border-success/30 bg-success/15 px-3 py-1 text-sm font-extrabold text-success">
+                        সেভ {formatPrice(computed.savings)}
+                      </span>
+                    )}
                   </div>
+                  {discountInfo && (
+                    <p className="mt-2 text-sm font-semibold text-success">
+                      {`কুপনে সাশ্রয় ৳${discountInfo.discount_amount}`}
+                    </p>
+                  )}
                 </div>
 
-                <a
-                  href="/auth/login"
+                <CouponInput
+                  bundleId={combo.id}
+                  originalPrice={combo.price}
+                  userId={userId}
+                  onCouponApplied={handleCouponApplied}
+                  onCouponRemoved={handleCouponRemoved}
+                  appliedCouponCode={appliedCouponCode}
+                />
+
+                <button
+                  onClick={handleBuyCombo}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-teal px-6 py-3.5 text-base font-extrabold text-primary-foreground shadow-xl shadow-primary/20"
                 >
                   Combo নাও
                   <ArrowRight className="size-5" />
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -609,7 +785,7 @@ export default function ComboDetailsPage() {
           </div>
         </section>
 
-        <TestimonialMarquee />
+        <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
         <FAQSection />
       </main>
       <WhatsAppWidget

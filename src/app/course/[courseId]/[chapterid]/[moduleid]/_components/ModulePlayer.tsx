@@ -12,13 +12,6 @@ import type { CourseModule, Course } from "./types";
 interface ModulePlayerProps {
   activeModule: CourseModule;
   courseData: Course;
-  // assignment state
-  assignmentEvaluted: any[];
-  assignmentSubmission: { github_link: string; youtube_link: string };
-  setAssignmentSubmission: React.Dispatch<
-    React.SetStateAction<{ github_link: string; youtube_link: string }>
-  >;
-  submitAssignment: (e: React.FormEvent) => void;
   // code/CF state
   cfHandle: string;
   setCfHandle: (v: string) => void;
@@ -41,10 +34,6 @@ interface ModulePlayerProps {
 const ModulePlayer = memo(function ModulePlayer({
   activeModule,
   courseData,
-  assignmentEvaluted,
-  assignmentSubmission,
-  setAssignmentSubmission,
-  submitAssignment,
   cfHandle,
   setCfHandle,
   checkCFStatus,
@@ -70,6 +59,45 @@ const ModulePlayer = memo(function ModulePlayer({
       <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-6">
         {activeModule?.title}
       </h3>
+
+      {/* ── LIVE CLASS (overlay on a VIDEO module while live) ──── */}
+      {activeModule?.live_status === "LIVE" && (
+        <div className="mb-6 rounded-xl border border-primary/30 bg-primary/[.08] p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive"></span>
+            </span>
+            <span className="font-bold text-destructive tracking-wide">
+              লাইভ ক্লাস চলছে
+            </span>
+          </div>
+          {activeModule?.live_scheduled_at ? (
+            <p className="text-sm text-foreground/80 mb-2">
+              সময়:{" "}
+              {new Date(
+                activeModule.live_scheduled_at * 1000,
+              ).toLocaleString("bn-BD")}
+            </p>
+          ) : null}
+          {activeModule?.live_meeting_id ? (
+            <p className="text-base text-foreground mb-1">
+              জুম মিটিং আইডি:{" "}
+              <span className="font-semibold">
+                {activeModule.live_meeting_id}
+              </span>
+            </p>
+          ) : null}
+          {activeModule?.live_meeting_pass ? (
+            <p className="text-base text-foreground">
+              পাসকোড:{" "}
+              <span className="font-semibold">
+                {activeModule.live_meeting_pass}
+              </span>
+            </p>
+          ) : null}
+        </div>
+      )}
 
       {/* ── VIDEO ─────────────────────────────────────────────── */}
       {category === "VIDEO" && activeModule?.data?.videoHost === "Youtube" &&
@@ -108,96 +136,6 @@ const ModulePlayer = memo(function ModulePlayer({
             src={`https://docs.google.com/viewer?url=${activeModule.data.pdf_link as string}&embedded=true`}
             className="w-full h-[65vh] rounded-xl border border-border/40"
           />
-        ))}
-
-      {/* ── ASSIGNMENT ────────────────────────────────────────── */}
-      {category === "ASSIGNMENT" &&
-        (!activeModule?.description ||
-        activeModule.description.trim() === "" ? (
-          <ModuleUpcoming />
-        ) : (
-          <div className="mx-auto z-20">
-            <p className="text-lg mb-2">
-              Assignment Status:{" "}
-              {assignmentEvaluted.length === 0 && (
-                <span className="font-semibold text-xl text-destructive">
-                  INCOMPLETE
-                </span>
-              )}
-              {assignmentEvaluted.length > 0 && (
-                <span className="font-semibold text-xl text-success">
-                  {assignmentEvaluted[0]?.status}
-                </span>
-              )}
-            </p>
-            <p className="text-lg mb-2">
-              Verdict:{" "}
-              {assignmentEvaluted.length > 0 &&
-                assignmentEvaluted[0]?.status === "EVALUATED" && (
-                  <span
-                    className={`font-semibold text-xl ${
-                      assignmentEvaluted[0]?.evaluation?.verdict === "PASSED"
-                        ? "text-success"
-                        : "text-destructive"
-                    }`}
-                  >
-                    {assignmentEvaluted[0]?.evaluation?.verdict}
-                  </span>
-                )}
-            </p>
-            <p className="text-lg mb-2">
-              Feedback:{" "}
-              {assignmentEvaluted.length > 0 &&
-                assignmentEvaluted[0]?.status === "EVALUATED" && (
-                  <span className="text-foreground">
-                    {assignmentEvaluted[0]?.evaluation?.feedback}
-                  </span>
-                )}
-            </p>
-            <form
-              onSubmit={submitAssignment}
-              className="lg:px-8 px-6 py-6 text-foreground bg-muted/20 backdrop-blur-xl rounded-xl mx-auto flex flex-col items-center gap-4"
-            >
-              <div className="w-full">
-                <p className="text-lg font-semibold mb-1">Github URL</p>
-                <input
-                  className="w-full px-3 py-3 rounded bg-gray-200/20 outline-none focus:ring ring-gray-300/80"
-                  placeholder="Github URL"
-                  value={assignmentSubmission.github_link}
-                  required
-                  onChange={(e) =>
-                    setAssignmentSubmission((prev) => ({
-                      ...prev,
-                      github_link: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="w-full">
-                <p className="text-lg font-semibold mb-1">Youtube URL</p>
-                <input
-                  className="w-full px-3 py-3 rounded bg-gray-200/20 outline-none focus:ring ring-gray-300/80"
-                  placeholder="Youtube URL"
-                  value={assignmentSubmission.youtube_link}
-                  required
-                  onChange={(e) =>
-                    setAssignmentSubmission((prev) => ({
-                      ...prev,
-                      youtube_link: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="mt-4">
-                <button
-                  type="submit"
-                  className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
-                >
-                  Submit Assignment
-                </button>
-              </div>
-            </form>
-          </div>
         ))}
 
       {/* ── CODE (internal problem page) ─────────────────────── */}

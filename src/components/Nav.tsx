@@ -58,6 +58,7 @@ export default function Nav({ mode = "default" }: NavProps) {
   const coursesActive = pathname?.startsWith("/courses");
   const dashboardActive = pathname?.startsWith("/dashboard");
   const notificationsActive = pathname?.startsWith("/notifications");
+  const billingActive = pathname?.startsWith("/billing");
   const authButtonClass = `px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
     isScrolled
       ? "bg-emerald-500 text-white hover:bg-emerald-600"
@@ -77,7 +78,7 @@ export default function Nav({ mode = "default" }: NavProps) {
     <nav
       className={`fixed top-0 left-0 w-full z-[9000] transition-all duration-300 ${
         isScrolled
-          ? "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+          ? "bg-background supports-[backdrop-filter]:bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
           : "bg-transparent border-b border-white/10"
       }`}
     >
@@ -105,6 +106,14 @@ export default function Nav({ mode = "default" }: NavProps) {
                 className={`transition-colors ${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}
               >
                 ড্যাশবোর্ড
+              </Link>
+            )}
+            {loggedIn && (
+              <Link
+                href="/billing"
+                className={`transition-colors ${navHoverClass} ${billingActive ? "text-emerald-600" : ""}`}
+              >
+                পেমেন্ট হিস্টরি
               </Link>
             )}
             {mode === "landing" && (
@@ -229,6 +238,19 @@ export default function Nav({ mode = "default" }: NavProps) {
                         }`}
                       >
                         ড্যাশবোর্ড
+                      </Link>
+                    )}
+                    {loggedIn && (
+                      <Link
+                        href="/billing"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`rounded-xl border px-4 py-3 transition-colors ${
+                          billingActive
+                            ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                            : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                        }`}
+                      >
+                        পেমেন্ট হিস্টরি
                       </Link>
                     )}
                     {loggedIn && (

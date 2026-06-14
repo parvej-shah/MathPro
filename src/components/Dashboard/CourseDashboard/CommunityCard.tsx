@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { BsFacebook } from 'react-icons/bs';
+import { BsFacebook, BsTelegram } from 'react-icons/bs';
 import { FaCopy, FaCheck } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 interface CommunityCardProps {
     communityLink: string;
     accessCode?: string;
+    telegramLink?: string; // enrolled-only, frontend-guide-user.md §5
 }
 
-export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, accessCode }) => {
+export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, accessCode, telegramLink }) => {
     const [copied, setCopied] = useState(false);
 
     const copyAccessCode = () => {
@@ -70,6 +71,18 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
                 >
                     গ্রুপে যোগ দাও
                 </a>
+
+                {telegramLink && (
+                    <a
+                        href={telegramLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 flex items-center justify-center gap-2 w-full bg-[#229ED9] text-white py-4 rounded-xl font-bold hover:bg-[#1e8dc1] transition-all shadow-lg shadow-sky-500/20 hover:shadow-sky-500/40 transform hover:-translate-y-0.5"
+                    >
+                        <BsTelegram className="text-xl" />
+                        Telegram গ্রুপে যোগ দাও
+                    </a>
+                )}
             </div>
         </div>
     );

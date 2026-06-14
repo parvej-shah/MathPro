@@ -17,6 +17,7 @@ import { useCourseDetails } from "@/hooks/useCourseDetails";
 import { useCountdown } from "@/hooks/useCountdown";
 import Image from "next/image";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
+import { getEnrollmentDates, getCourseThumbnail } from "@/features/course-details/_lib/chips";
 
 // Components
 import {
@@ -38,9 +39,13 @@ import type { CouponApplyResponse } from "@/services/couponService";
 import { jwtDecode } from "jwt-decode";
 
 // Types
-import { TabState, PrebookingData } from "@/features/course-details/_lib/types";
+import { TabState, PrebookingData, BookSelection } from "@/features/course-details/_lib/types";
 import { englishToBanglaNumbers } from "@/helpers";
 import dynamic from "next/dynamic";
+import {
+  mapPublicTestimonialsToFeedbacks,
+  usePublicTestimonials,
+} from "@/hooks/usePublicTestimonials";
 
 const TestimonialMarquee = dynamic(
   () => import("@/features/courses-page/components/TestimonialMarquee"),
@@ -52,11 +57,12 @@ export default function CourseDetailsPage() {
   const searchParams = useSearchParams();
   const courseId = params?.id;
   const [user] = useContext<any>(UserContext);
+  const { testimonials } = usePublicTestimonials();
 
   // State
   const [activeTab, setActiveTab] = useState<TabState>({
-    studyPlan: true,
-    instructor: false,
+    studyPlan: false,
+    instructor: true,
     courseComplete: false,
   });
   const [conditionsChecked, setConditionsChecked] = useState(false);
@@ -198,18 +204,14 @@ export default function CourseDetailsPage() {
     userId,
   ]);
 
-  // Smart countdown - based on is_live status
+  // Smart countdown - based on is_live status. Dates come from the new
+  // chips.enrollment_details (unix seconds) → ISO strings for the countdown hook.
+  const enrollmentDates = getEnrollmentDates(courseData?.chips);
   const { days, hours, minutes, seconds } = useCountdown(
-    courseData?.chips?.deadline, // Old structure (backward compatible)
+    undefined,
     {
-      prebooking_end:
-        typeof courseData?.chips?.enrollment?.prebooking_end?.value === "string"
-          ? courseData.chips.enrollment.prebooking_end.value
-          : undefined,
-      enrollment_end:
-        typeof courseData?.chips?.enrollment?.enrollment_end?.value === "string"
-          ? courseData.chips.enrollment.enrollment_end.value
-          : undefined,
+      prebooking_end: enrollmentDates.prebookingEnd?.toISOString(),
+      enrollment_end: enrollmentDates.enrollmentEnd?.toISOString(),
     },
     courseData?.is_live, // Pass is_live status to determine which deadline to use
   );
@@ -234,10 +236,10 @@ export default function CourseDetailsPage() {
     }
   };
 
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = (bookSelection: BookSelection | null) => {
     // This is called after CheckoutModal successfully updates profile
-    // Pass applied coupon code to buyCourse
-    buyCourse(appliedCouponCode);
+    // Pass applied coupon code and optional book selection to buyCourse
+    buyCourse(appliedCouponCode, bookSelection);
   };
 
   const handleCouponApplied = (discountData: CouponApplyResponse["data"]) => {
@@ -288,9 +290,8 @@ export default function CourseDetailsPage() {
         }
         path={`/courses/${courseId}`}
         image={
-          courseData?.chips?.thumbnails?.course_thumbnail_link_16_9 ||
+          courseData?.chips?.thumbnails?.course_thumbnail_16_9 ||
           courseData?.chips?.thumbnails?.trailer_video_thumb_16_9 ||
-          courseData?.chips?.course_thumbnail_link ||
           courseData?.thumbnail ||
           courseData?.image?.imageUploadedLink
         }
@@ -357,6 +358,8 @@ export default function CourseDetailsPage() {
                   ? discountInfo.original_price - discountInfo.final_price
                   : undefined
               }
+              attachedBooks={courseData.attached_books}
+              booksTotal={courseData.books_total}
             />
           )}
 
@@ -437,14 +440,70 @@ export default function CourseDetailsPage() {
                     </p>
                   )}
 
-                  <CourseStats sections={courseData?.chips?.sections} />
+                  <CourseStats chips={courseData?.chips} />
+
+                  {/* Tags (frontend-guide-user.md §2) */}
+                  {courseData?.tags && courseData.tags.length > 0 && (
+                    <div className="mt-6 flex flex-wrap gap-2">
+                      {courseData.tags.map((tag, i) => (
+                        <span
+                          key={`${tag}-${i}`}
+                          className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Books included (frontend-guide-user.md §2) */}
+                  {courseData?.attached_books && courseData.attached_books.length > 0 && (
+                    <div className="mt-8">
+                      <h3 className="font-heading text-xl font-bold text-heading mb-4">
+                        কোর্সের সাথে বইসমূহ
+                        {courseData.books_total ? (
+                          <span className="ml-2 text-sm font-medium text-muted-foreground">
+                            (মোট মূল্য ৳{courseData.books_total})
+                          </span>
+                        ) : null}
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {courseData.attached_books.map((book) => (
+                          <div
+                            key={book.id}
+                            className="flex gap-4 p-4 rounded-xl bg-muted/40 dark:bg-white/5 border border-border/40"
+                          >
+                            {book.image_url && (
+                              <Image
+                                src={book.image_url}
+                                alt={book.title}
+                                width={64}
+                                height={80}
+                                className="rounded-md object-cover h-20 w-16 shrink-0"
+                              />
+                            )}
+                            <div className="min-w-0">
+                              <p className="font-semibold text-foreground truncate">{book.title}</p>
+                              {typeof book.price === "number" && (
+                                <p className="text-sm text-primary font-bold mt-1">৳{book.price}</p>
+                              )}
+                              {book.description && (
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                  {book.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <CourseTabs activeTab={activeTab} onTabChange={changeTab} />
 
                   {activeTab.studyPlan && (
                       <StudyPlanTab
                         chapters={courseData.chapters || []}
-                        courseData={courseData}
                         courseId={courseId}
                       />
                   )}
@@ -459,8 +518,10 @@ export default function CourseDetailsPage() {
                     <CourseDetailsTab
                       description={courseData.description}
                       feedbacks={courseData?.feedback_list?.feedbacks}
-                      faqs={courseData?.faq_list?.faqs}
-                      deadline={courseData?.chips?.deadline}
+                      deadline={
+                        (enrollmentDates.enrollmentEnd ??
+                          enrollmentDates.prebookingEnd)?.toISOString()
+                      }
                       youGet={courseData?.you_get?.you_get}
                     />
                   )}
@@ -487,8 +548,7 @@ export default function CourseDetailsPage() {
                         (() => {
                           const thumbnail =
                             courseData?.chips?.thumbnails?.trailer_video_thumb_16_9 ||
-                            courseData?.chips?.thumbnails?.course_thumbnail_link_16_9 ||
-                            courseData?.chips?.course_thumbnail_link ||
+                            getCourseThumbnail(courseData?.chips) ||
                             courseData?.thumbnail ||
                             courseData?.image?.imageUploadedLink;
                           const youtubeThumbnail = courseData.intro_video
@@ -570,14 +630,13 @@ export default function CourseDetailsPage() {
 
                       {/* Enrollment Info */}
                       <EnrollmentInfo
-                        enrollment={courseData?.chips?.enrollment}
-                        isPrebookingMode={isPrebookingMode}
+                        chips={courseData?.chips}
                       />
 
                       {/* Course Outline Link */}
-                      {courseData?.chips?.course_outline && (
+                      {courseData?.course_outline && (
                         <a
-                          href={courseData.chips.course_outline}
+                          href={courseData.course_outline}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 text-foreground border border-border hover:border-primary/40 hover:bg-primary/5 transition-all duration-200 rounded-xl font-medium text-sm group"
@@ -598,7 +657,7 @@ export default function CourseDetailsPage() {
                         hours={hours}
                         minutes={minutes}
                         seconds={seconds}
-                        enrollment={courseData?.chips?.enrollment}
+                        chips={courseData?.chips}
                         isLive={courseData?.is_live}
                       />
 
@@ -696,7 +755,7 @@ export default function CourseDetailsPage() {
 
           </div>
 
-          <TestimonialMarquee feedbacks={courseData?.feedback_list?.feedbacks} />
+          <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
 
           <WhatsAppWidget
             phoneNumber={
@@ -705,9 +764,7 @@ export default function CourseDetailsPage() {
                     "https://wa.me/",
                     "",
                   )
-                : courseData?.chips?.whatsapp
-                  ? courseData.chips.whatsapp.replace("https://wa.me/", "")
-                  : "8801768976036"
+                : "8801768976036"
             }
             name="CoderVai Team"
             position="Online | Replies instantly"

@@ -39,9 +39,13 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col font-sans">
         <Providers>
-          <AppNavbar />
+          <div className="print:hidden">
+            <AppNavbar />
+          </div>
           {children}
-          <Footer />
+          <div className="print:hidden">
+            <Footer />
+          </div>
         </Providers>
       </body>
     </html>

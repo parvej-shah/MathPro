@@ -5,6 +5,59 @@ import lottie from "lottie-web";
 import { useEffect, useRef, type ReactNode } from "react";
 import onlineEducationAnimation from "../../../../public/assets/LottieFile/LottieOnlineEducation.json";
 
+const HIJAB_COLOR = [0.047, 0.486, 0.365, 1];
+const SLEEVE_COLOR = [0.031, 0.459, 0.969, 1];
+
+function recolorFills<T>(value: T, color: number[]): T {
+  if (Array.isArray(value)) {
+    return value.map((item) => recolorFills(item, color)) as T;
+  }
+
+  if (!value || typeof value !== "object") return value;
+
+  const object = value as Record<string, unknown>;
+  const next = Object.fromEntries(
+    Object.entries(object).map(([key, item]) => [key, recolorFills(item, color)]),
+  );
+
+  if (object.ty === "fl") {
+    next.c = { ...(object.c as Record<string, unknown>), k: color };
+  }
+
+  return next as T;
+}
+
+const authAnimationData = {
+  ...onlineEducationAnimation,
+  layers: onlineEducationAnimation.layers.map((layer) => {
+    if (layer.nm === "Girl.Hair") {
+      // This rear hair shape becomes the flowing back section of the hijab.
+      return recolorFills(layer, HIJAB_COLOR);
+    }
+
+    if (layer.nm === "Girl.Head") {
+      const shapes = (layer as unknown as { shapes: unknown[] }).shapes;
+      return {
+        ...layer,
+        shapes: shapes.map((shape, index) =>
+          // The final head group is the outer hair silhouette around the face.
+          index === shapes.length - 1 ? recolorFills(shape, HIJAB_COLOR) : shape,
+        ),
+      };
+    }
+
+    if (
+      layer.nm === "Girl.R.Arm" ||
+      layer.nm === "Girl.R.Shoulder" ||
+      layer.nm === "Girl.L.Arm"
+    ) {
+      return recolorFills(layer, SLEEVE_COLOR);
+    }
+
+    return layer;
+  }),
+};
+
 type AuthShellProps = {
   title: string;
   description: string;
@@ -29,7 +82,7 @@ function AuthLottie() {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: onlineEducationAnimation,
+      animationData: authAnimationData,
       rendererSettings: {
         preserveAspectRatio: "xMidYMid meet",
       },

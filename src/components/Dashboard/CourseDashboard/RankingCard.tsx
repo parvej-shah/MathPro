@@ -102,7 +102,7 @@ const RankingCard: React.FC<RankingCardProps> = ({ courseId, loading = false }) 
               </svg>
             </div>
             <div>
-              <div className="text-white/80 text-sm font-medium">
+              <div className="text-white/80 text-sm font-medium whitespace-nowrap">
                 তোমার বর্তমান র‍্যাংক
               </div>
               <div className="flex items-center gap-2">

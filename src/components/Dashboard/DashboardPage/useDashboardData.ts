@@ -7,6 +7,8 @@ import {
   BundlePurchase,
   BundleCourse,
 } from "@/hooks/usePaymentHistory";
+import { useMyDashboard } from "@/hooks/useMyDashboard";
+import { getCourseThumbnail } from "@/features/course-details/_lib/chips";
 import { EnrolledCourse } from "./types";
 
 export function useDashboardData() {
@@ -15,6 +17,10 @@ export function useDashboardData() {
     loading: apiLoading,
     error: historyError,
   } = usePaymentHistory();
+
+  // Real thumbnails (+ slug) for cards, keyed by course id. /payment/history has
+  // no chips, so we enrich from the purpose-built /my-dashboard endpoint.
+  const { data: myDashboard } = useMyDashboard();
   const [resumeCourseProgress, setResumeCourseProgress] = useState<any>(null);
   const [progressLoading, setProgressLoading] = useState(false);
 
@@ -265,6 +271,34 @@ export function useDashboardData() {
     fetchProgress();
   }, [mostRecentCourseId, historyData]);
 
+  // courseId -> real thumbnail / slug / progress, from /my-dashboard.
+  const enrichmentById = useMemo(() => {
+    const map = new Map<
+      number,
+      { thumbnail: string | null; slug: string | null; progress: number }
+    >();
+    if (!myDashboard) return map;
+    myDashboard.individual_courses.forEach((c) => {
+      map.set(c.id, {
+        thumbnail: getCourseThumbnail(c.chips),
+        slug: c.slug,
+        progress: c.progress_percentage,
+      });
+    });
+    myDashboard.bundle_purchases.forEach((b) =>
+      b.courses.forEach((c) => {
+        if (!map.has(c.id)) {
+          map.set(c.id, {
+            thumbnail: getCourseThumbnail(c.chips),
+            slug: c.slug,
+            progress: c.progress_percentage,
+          });
+        }
+      }),
+    );
+    return map;
+  }, [myDashboard]);
+
   // Process courses directly from payment history (no heavy calculations)
   const courses = useMemo(() => {
     if (!historyData) return [];
@@ -283,14 +317,16 @@ export function useDashboardData() {
           course.instructor_list.instructors?.[0]?.name || "Instructor";
       }
 
-      // Use placeholder thumbnail (actual thumbnails require getfull API which impacts performance)
-      const thumbnail = generatePlaceholderThumbnail(course.title);
+      // Real thumbnail from /my-dashboard when available; else content-aware placeholder.
+      const enrich = enrichmentById.get(course.course_id);
+      const thumbnail =
+        enrich?.thumbnail || generatePlaceholderThumbnail(course.title);
 
       processedCourses.push({
         id: course.course_id,
         title: course.title,
         thumbnail,
-        progress: 0,
+        progress: enrich?.progress ?? 0,
         lastAccessed: new Date(course.enrollment_date * 1000).toISOString(),
         status: "Ongoing",
         totalLessons: 0,
@@ -331,7 +367,7 @@ export function useDashboardData() {
     });
 
     return processedCourses;
-  }, [historyData, generatePlaceholderThumbnail]);
+  }, [historyData, generatePlaceholderThumbnail, enrichmentById]);
 
   // Get all individual courses for resume banner
   const allIndividualCourses = useMemo(() => {
@@ -364,9 +400,10 @@ export function useDashboardData() {
       }
 
       const thumbnail =
-        isResumeCourse && (resumeCourseProgress?.thumbnails?.course_thumbnail_link_16_9 || resumeCourseProgress?.thumbnails?.course_thumbnail_link)
-          ? (resumeCourseProgress.thumbnails.course_thumbnail_link_16_9 || resumeCourseProgress.thumbnails.course_thumbnail_link)
-          : generatePlaceholderThumbnail(course.title);
+        (isResumeCourse &&
+          resumeCourseProgress?.thumbnails?.course_thumbnail_16_9) ||
+        enrichmentById.get(course.course_id)?.thumbnail ||
+        generatePlaceholderThumbnail(course.title);
 
       individualCourses.push({
         id: course.course_id,
@@ -405,20 +442,27 @@ export function useDashboardData() {
               };
 
         const thumbnail =
-          isResumeCourse && (resumeCourseProgress?.thumbnails?.course_thumbnail_link_16_9 || resumeCourseProgress?.thumbnails?.course_thumbnail_link)
-            ? (resumeCourseProgress.thumbnails.course_thumbnail_link_16_9 || resumeCourseProgress.thumbnails.course_thumbnail_link)
-            : generatePlaceholderThumbnail(bundleCourse.title);
+          (isResumeCourse &&
+            resumeCourseProgress?.thumbnails?.course_thumbnail_16_9) ||
+          enrichmentById.get(bundleCourse.id)?.thumbnail ||
+          generatePlaceholderThumbnail(bundleCourse.title);
+
+        // Resume course has detailed module counts; others use the server-computed
+        // progress_percentage from /my-dashboard.
+        const effectiveProgress = isResumeCourse
+          ? progressInfo.progress
+          : enrichmentById.get(bundleCourse.id)?.progress ?? 0;
 
         individualCourses.push({
           id: bundleCourse.id,
           title: bundleCourse.title,
           thumbnail,
-          progress: progressInfo.progress,
+          progress: effectiveProgress,
           lastAccessed: new Date(bundle.purchase_date * 1000).toISOString(),
           status:
-            progressInfo.progress === 100
+            effectiveProgress === 100
               ? "Completed"
-              : progressInfo.progress === 0
+              : effectiveProgress === 0
                 ? "Not Started"
                 : "Ongoing",
           totalLessons: progressInfo.totalLessons,
@@ -438,6 +482,7 @@ export function useDashboardData() {
     resumeCourseProgress,
     calculateProgress,
     generatePlaceholderThumbnail,
+    enrichmentById,
   ]);
 
   return {

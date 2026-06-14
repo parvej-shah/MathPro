@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Link from "next/link";
 import { FaCopy, FaCheck } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { PurchaseData } from "./types";
@@ -99,6 +100,18 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ data }) => {
                             <p className="text-xs text-center text-muted-foreground mt-2">
                                 কপি করতে ক্লিক করুন • ফেসবুক গ্রুপে জয়েন করার জন্য এই কোড ব্যবহার করুন
                             </p>
+                        </div>
+                    )}
+
+                    {/* Invoice Link */}
+                    {data.transaction_id && (
+                        <div className="mt-6 text-center">
+                            <Link
+                                href={`/billing/invoice/${data.transaction_id}`}
+                                className="inline-block bg-linear-to-r from-primary to-teal text-white px-6 py-3 rounded-xl hover:opacity-90 transition-opacity font-semibold"
+                            >
+                                ইনভয়েস ডাউনলোড করো
+                            </Link>
                         </div>
                     )}
                 </div>

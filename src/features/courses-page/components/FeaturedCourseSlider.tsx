@@ -3,13 +3,12 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BsChevronRight, BsChevronLeft, BsPlayCircle } from "react-icons/bs";
-import { Course, Bundle } from "../_lib/types";
-import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
+import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
+import { englishToBanglaNumbers } from "@/helpers";
+import { Course } from "../_lib/types";
 
 interface FeaturedCourseSliderProps {
-  featuredBundle: Bundle | null;
-  recentCourse: Course | null;
+  courses: Course[];
 }
 
 const truncateText = (text: string, maxLength: number): string => {
@@ -30,38 +29,15 @@ const getPlaceholderSrc = (title: string): string => {
 
 function getCourseThumbnail(course: Course): string {
   return (
-    course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
-    course.chips?.course_thumbnail_link ||
+    course.chips?.thumbnails?.course_thumbnail_16_9 ||
     getPlaceholderSrc(course.title)
   );
 }
 
-function getBundleThumbnail(bundle: Bundle): string {
-  if (bundle.intro_video) {
-    const yt = getYouTubeThumbnail(bundle.intro_video);
-    if (yt) return yt;
-  }
-  return (
-    bundle.chips?.thumbnails?.bundle_thumb_16_9 ||
-    bundle.chips?.thumbnails?.bundle_thumb_4_3 ||
-    getPlaceholderSrc(bundle.title)
-  );
-}
-
-type Slide =
-  | { type: "bundle"; data: Bundle }
-  | { type: "course"; data: Course };
-
 export default function FeaturedCourseSlider({
-  featuredBundle,
-  recentCourse,
+  courses,
 }: FeaturedCourseSliderProps) {
-  const slides = useMemo<Slide[]>(() => {
-    const items: Slide[] = [];
-    if (featuredBundle) items.push({ type: "bundle", data: featuredBundle });
-    if (recentCourse) items.push({ type: "course", data: recentCourse });
-    return items;
-  }, [featuredBundle, recentCourse]);
+  const slides = useMemo<Course[]>(() => courses, [courses]);
 
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
@@ -102,17 +78,9 @@ export default function FeaturedCourseSlider({
   if (slides.length === 0) return null;
 
   const slide = slides[active];
-  const isBundle = slide.type === "bundle";
-  const data = slide.data;
-  const thumb = isBundle
-    ? getBundleThumbnail(data as Bundle)
-    : getCourseThumbnail(data as Course);
-  const href = isBundle
-    ? (data as Bundle).url || `/combos/${data.id}`
-    : `/course-details/${data.id}`;
-  const desc = truncateText((data as Course | Bundle).short_description || "", 150);
-  const label = isBundle ? "Combo" : "কোর্স";
-  const isVideo = isBundle && !!(data as Bundle).intro_video;
+  const thumb = getCourseThumbnail(slide);
+  const href = `/courses/${slide.slug || slide.id}`;
+  const desc = truncateText(slide.short_description || "", 150);
 
   // Progress bar key forces remount on slide change
   const progressKey = `${active}-${paused}`;
@@ -160,7 +128,7 @@ export default function FeaturedCourseSlider({
         >
           <Image
             src={thumb}
-            alt={data.title}
+            alt={slide.title}
             fill
             className="object-cover object-center"
             sizes="(max-width: 1024px) 100vw, 1440px"
@@ -169,8 +137,8 @@ export default function FeaturedCourseSlider({
           />
 
           {/* Multi-layer gradient */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/30 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-black/10" />
 
           {/* Content */}
           <Link
@@ -181,18 +149,12 @@ export default function FeaturedCourseSlider({
             {/* Badge row */}
             <div className="flex items-center gap-3 mb-3 sm:mb-4">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-primary/80 text-white backdrop-blur-sm border border-primary/30 shadow-lg">
-                {isVideo && <BsPlayCircle className="w-3 h-3" />}
-                {label}
+                ফিচার্ড কোর্স
               </span>
-              {isBundle && (data as Bundle).course_count > 0 && (
-                <span className="text-[11px] sm:text-xs text-white/60 font-medium">
-                  {(data as Bundle).course_count}টি কোর্স
-                </span>
-              )}
             </div>
 
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white mb-2 sm:mb-3 leading-tight drop-shadow-lg max-w-[65%] tracking-tight">
-              {data.title}
+              {slide.title}
             </h2>
 
             {desc && (
@@ -262,7 +224,7 @@ export default function FeaturedCourseSlider({
         {/* Slide counter top-right */}
         {slides.length > 1 && (
           <div className="absolute top-4 right-4 z-20 text-[11px] font-semibold text-white/50 tabular-nums tracking-wide select-none">
-            {active + 1} / {slides.length}
+            {englishToBanglaNumbers(active + 1)} / {englishToBanglaNumbers(slides.length)}
           </div>
         )}
       </div>

@@ -145,7 +145,7 @@ export default function BundleCard({
 
         {/* Action Button */}
         {showPurchaseButton && (
-          <Link href={`/combos/${bundle.id}`}>
+          <Link href={`/combos/${bundle.url || bundle.id}`}>
             <button className="w-full bg-linear-to-r from-primary to-teal text-primary-foreground py-3 px-4 rounded-lg font-semibold hover:from-teal hover:to-primary transition-all duration-300 flex items-center justify-center gap-2 group">
               Combo দেখো
               <BsChevronRight className="group-hover:translate-x-1 transition-transform" />

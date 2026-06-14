@@ -22,6 +22,10 @@ import SEO from "@/components/SEO";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
 import { FAQSection } from "@/features/courses-page/components";
+import {
+  mapPublicTestimonialsToFeedbacks,
+  usePublicTestimonials,
+} from "@/hooks/usePublicTestimonials";
 
 const TestimonialMarquee = dynamic(
   () =>
@@ -342,6 +346,8 @@ function CombosLoading() {
 }
 
 export default function CombosPage() {
+  const { testimonials } = usePublicTestimonials();
+
   const {
     data: combos = [],
     isLoading: loading,
@@ -632,7 +638,7 @@ export default function CombosPage() {
           </div>
         </section>
 
-        <TestimonialMarquee />
+        <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
         <FAQSection />
       </main>
       <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />

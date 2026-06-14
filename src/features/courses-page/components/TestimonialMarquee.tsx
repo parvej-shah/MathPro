@@ -5,95 +5,6 @@ import Image from "next/image";
 import { Star, Quote } from "lucide-react";
 import { Feedback } from "../_lib/types";
 
-// ─── Static fallback ───────────────────────────────────────────────────────────
-
-const staticTestimonials: Feedback[] = [
-  {
-    name: "Tahmid Mahmud",
-    bio: "CP101 Student",
-    description:
-      "The course was a whole itself. I still managed to get a decent knowledge about the problems, processes of thinking a way, making the solution efficient and much more.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Israt Tamanna",
-    bio: "CP101 Student",
-    description:
-      "The instructors are incredibly supportive and the content is top-notch. Highly recommended!",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Salman Farsi",
-    bio: "CP101 Student",
-    description:
-      "Learnt some tricks, got familiar with some resources & could figure out my weaknesses.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Minara Munmun",
-    bio: "CP101 Student",
-    description:
-      "I managed to get a decent knowledge about the problems, processes of thinking a way and making the solution efficient.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Tohidur Mujahid",
-    bio: "CP101 Student",
-    description:
-      "Your course design was the best. Everything was well structured and easy to follow.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Nadia Akter",
-    bio: "Web Development Student",
-    description:
-      "Best investment I made for my career. The live classes and community support are exceptional!",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Tanvir Ahmed",
-    bio: "CP101 Student",
-    description:
-      "From zero to hero in competitive programming. This course changed my approach to problem-solving completely.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Fahmida Khatun",
-    bio: "App Development Student",
-    description:
-      "The structured approach and real-world projects helped me land my dream internship. Forever grateful!",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Rakib Hassan",
-    bio: "CP101 Student",
-    description:
-      "The problem-solving techniques taught here are world-class. I've improved my Codeforces rating significantly!",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Sumaiya Akter",
-    bio: "CP101 Student",
-    description:
-      "Finally found a course that explains complex algorithms in Bengali. Made learning so much easier for me.",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Mehedi Hasan",
-    bio: "CP101 Student",
-    description:
-      "The contest practice sessions were amazing. I feel prepared for ICPC now!",
-    imageUploadedLink: "",
-  },
-  {
-    name: "Sadia Rahman",
-    bio: "CP101 Student",
-    description:
-      "Amazing experience! The practice problems were challenging but helped me grow as a programmer.",
-    imageUploadedLink: "",
-  },
-];
-
 // ─── Single card ───────────────────────────────────────────────────────────────
 
 function TestimonialCard({ feedback }: { feedback: Feedback }) {
@@ -185,14 +96,16 @@ export default function TestimonialMarquee({
 }: TestimonialMarqueeProps) {
   const [paused, setPaused] = useState(false);
 
-  const hasProperNames =
-    feedbacks.filter(
-      (f) => f.name && !f.name.toLowerCase().includes("anonymous"),
-    ).length >
-    feedbacks.length / 2;
+  const source = feedbacks.filter(
+    (feedback) =>
+      Boolean(feedback.name?.trim()) &&
+      Boolean(feedback.bio?.trim()) &&
+      Boolean(feedback.description?.trim()),
+  );
 
-  const source =
-    feedbacks.length > 0 && hasProperNames ? feedbacks : staticTestimonials;
+  if (source.length === 0) {
+    return null;
+  }
 
   const row1 = source.filter((_, i) => i % 2 === 0);
   const row2 = source.filter((_, i) => i % 2 === 1);

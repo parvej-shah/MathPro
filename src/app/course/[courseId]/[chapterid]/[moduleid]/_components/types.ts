@@ -9,7 +9,6 @@ export type ModuleCategory =
   | "PDF"
   | "TEXT"
   | "QUIZ"
-  | "ASSIGNMENT"
   | "CODE";
 
 export interface ModuleData {
@@ -31,6 +30,11 @@ export interface CourseModule {
   is_live?: boolean;
   description?: string;
   data?: ModuleData;
+  // Live-Class toggle (live overlay on a VIDEO module)
+  live_status?: "SCHEDULED" | "LIVE" | "ENDED" | null;
+  live_meeting_id?: string | null;
+  live_meeting_pass?: string | null;
+  live_scheduled_at?: number | null;
   [key: string]: unknown;
 }
 

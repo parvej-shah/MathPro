@@ -11,7 +11,11 @@ import {
   Bundle,
   BundleResponse,
   InstructorResponse,
+  CourseCategory,
+  DirectoryResponse,
 } from "../_lib/types";
+import { getStatSections } from "@/features/course-details/_lib/chips";
+import { useFeaturedCourses } from "./useFeaturedCourses";
 
 /**
  * Extract number from Bengali/English mixed strings
@@ -26,6 +30,10 @@ const extractNumber = (value: string | undefined): number => {
 export function useCoursesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const {
+    featuredCourses,
+    isLoading: featuredCoursesLoading,
+  } = useFeaturedCourses();
   
   // Debounce search term for better performance
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -53,6 +61,28 @@ export function useCoursesPage() {
   });
 
   const courses: Course[] = useMemo(() => coursesData || [], [coursesData]);
+
+  // Server-side category grouping for the directory layout (COURSE_DIRECTORY_API_SPEC.md).
+  const { data: directoryData } = useQuery({
+    queryKey: ["course-directory"],
+    queryFn: async (): Promise<CourseCategory[]> => {
+      const response = await axios.get<DirectoryResponse>(
+        `${BACKEND_URL}/user/course/directory`,
+      );
+      if (!response.data.success) {
+        throw new Error("Failed to fetch course directory");
+      }
+      return response.data.data;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+  });
+
+  const courseCategories: CourseCategory[] = useMemo(
+    () => directoryData || [],
+    [directoryData],
+  );
 
   // Fetch instructors with React Query caching
   const {
@@ -110,7 +140,8 @@ export function useCoursesPage() {
     });
   }, [bundlesData]);
 
-  const loading = coursesLoading || instructorsLoading || bundlesLoading;
+  const loading =
+    coursesLoading || instructorsLoading || bundlesLoading || featuredCoursesLoading;
   const error =
     coursesError || instructorsError
       ? "Failed to fetch data"
@@ -150,17 +181,18 @@ export function useCoursesPage() {
     const totalStudents = courses.reduce((sum, c) => sum + (c.enrolled || 0), 0);
     const totalCourses = courses.length;
 
-    // Use regex to extract numbers from Bengali text (e.g., "10 টি" -> 10)
-    const totalLiveClasses = courses.reduce((sum, c) => {
-      const liveClassValue = c.chips?.sections?.liveClass?.value;
-      return sum + extractNumber(liveClassValue);
-    }, 0);
+    // chips.sections is now a flat [{label,value}] array (frontend-guide-user.md §4).
+    // Match the relevant stat by its Bengali/English label, then extract its number.
+    const sumByLabel = (needles: string[]) =>
+      courses.reduce((sum, c) => {
+        const sec = getStatSections(c.chips).find((s) =>
+          needles.some((n) => s.label.toLowerCase().includes(n)),
+        );
+        return sum + extractNumber(sec ? String(sec.value) : undefined);
+      }, 0);
 
-    // Use regex to extract numbers from Bengali text (e.g., "100+ ঘণ্টা" -> 100)
-    const totalRecordedVideos = courses.reduce((sum, c) => {
-      const videoValue = c.chips?.sections?.video?.value;
-      return sum + extractNumber(videoValue);
-    }, 0);
+    const totalLiveClasses = sumByLabel(["লাইভ", "live"]);
+    const totalRecordedVideos = sumByLabel(["ভিডিও", "video"]);
 
     // Return calculated values (no fallback when courses exist)
     return {
@@ -171,6 +203,19 @@ export function useCoursesPage() {
       totalRecordedVideos: totalRecordedVideos,
     };
   }, [courses]);
+
+  // Category-tab selection is keyed as `cat-${slug}` for directory categories.
+  const CATEGORY_PREFIX = "cat-";
+  const activeCategorySlug = selectedCategory.startsWith(CATEGORY_PREFIX)
+    ? selectedCategory.slice(CATEGORY_PREFIX.length)
+    : null;
+
+  // Course ids belonging to the currently selected directory category (if any).
+  const activeCategoryCourseIds = useMemo(() => {
+    if (!activeCategorySlug) return null;
+    const category = courseCategories.find((cat) => cat.slug === activeCategorySlug);
+    return category ? new Set(category.courses.map((c) => c.id)) : new Set<number>();
+  }, [courseCategories, activeCategorySlug]);
 
   // Filter courses based on search and category (using debounced search)
   const filteredCourses = useMemo(() => {
@@ -183,57 +228,46 @@ export function useCoursesPage() {
 
       const matchesCategory =
         selectedCategory === "all" ||
-        (selectedCategory === "live" && course.is_live) ||
-        (selectedCategory === "upcoming" && !course.is_live);
+        (activeCategoryCourseIds !== null && activeCategoryCourseIds.has(course.id));
 
       return matchesSearch && matchesCategory;
     });
-  }, [courses, debouncedSearchTerm, selectedCategory]);
+  }, [courses, debouncedSearchTerm, selectedCategory, activeCategoryCourseIds]);
 
   // Filter bundles based on search and category (using debounced search)
   const filteredBundles = useMemo(() => {
-    if (selectedCategory === "bundles") {
-      return bundles.filter((bundle) => {
-        const matchesSearch =
-          debouncedSearchTerm === "" ||
-          bundle.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-          bundle.short_description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
-        return matchesSearch;
-      });
-    }
+    if (activeCategorySlug) return [];
     return bundles.filter((bundle) => {
       const matchesSearch =
         debouncedSearchTerm === "" ||
         bundle.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
         bundle.short_description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
-      const matchesCategory =
-        selectedCategory === "all" ||
-        (selectedCategory === "live" && bundle.is_live) ||
-        (selectedCategory === "upcoming" && !bundle.is_live);
+      const matchesCategory = selectedCategory === "all" || selectedCategory === "bundles";
 
       return matchesSearch && matchesCategory;
     });
-  }, [bundles, debouncedSearchTerm, selectedCategory]);
+  }, [bundles, debouncedSearchTerm, selectedCategory, activeCategorySlug]);
 
-  // Get categories for filtering (includes both courses and bundles)
+  // Get categories for filtering: "all", "Combo", and one tab per course directory category.
   const categories = useMemo(() => {
-    const liveCourses = courses.filter((c) => c.is_live).length;
-    const upcomingCourses = courses.filter((c) => !c.is_live).length;
-    const liveBundles = bundles.filter((b) => b.is_live).length;
-    const upcomingBundles = bundles.filter((b) => !b.is_live).length;
-
-    const totalLive = liveCourses + liveBundles;
-    const totalUpcoming = upcomingCourses + upcomingBundles;
     const total = courses.length + bundles.length;
 
-    return [
+    const tabs = [
       { id: "all", label: "সব কোর্স", count: total },
       { id: "bundles", label: "Combo", count: bundles.length },
-      { id: "live", label: "লাইভ কোর্স", count: totalLive },
-      { id: "upcoming", label: "আপকামিং", count: totalUpcoming },
     ];
-  }, [courses, bundles]);
+
+    courseCategories.forEach((cat) => {
+      tabs.push({
+        id: `${CATEGORY_PREFIX}${cat.slug}`,
+        label: cat.category_name,
+        count: cat.courses.length,
+      });
+    });
+
+    return tabs;
+  }, [courses, bundles, courseCategories]);
 
   // Aggregate all feedbacks from courses
   const allFeedbacks = useMemo(() => {
@@ -253,7 +287,9 @@ export function useCoursesPage() {
     stats,
     instructors: finalInstructors,
     bundles,
+    featuredCourses,
     categories,
+    courseCategories,
     allFeedbacks,
     searchTerm,
     setSearchTerm,

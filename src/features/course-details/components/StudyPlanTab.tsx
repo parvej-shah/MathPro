@@ -1,16 +1,15 @@
-import { Chapter, CourseData } from '@/features/course-details/_lib/types';
-import { englishToBanglaNumbers, countModulesAssignmentsVideos } from '@/helpers';
+import { Chapter } from '@/features/course-details/_lib/types';
 import ChapterAccordion from './ChapterAccordion';
 import { useState } from 'react';
 
 interface StudyPlanTabProps {
     chapters: Chapter[];
-    courseData: CourseData;
     courseId: string;
 }
 
-export default function StudyPlanTab({ chapters, courseData, courseId }: StudyPlanTabProps) {
+export default function StudyPlanTab({ chapters, courseId }: StudyPlanTabProps) {
     const [openChapterItems, setOpenChapterItems] = useState<{ [key: number]: boolean }>({ 0: true });
+    const hasChapters = Array.isArray(chapters) && chapters.length > 0;
 
     const toggleChapterItem = (index: number) => {
         setOpenChapterItems((prev) => ({
@@ -19,86 +18,20 @@ export default function StudyPlanTab({ chapters, courseData, courseId }: StudyPl
         }));
     };
 
-    const stats = countModulesAssignmentsVideos(courseData);
-
     return (
-        <div>
-            <div className="my-8 flex lg:items-center gap-8 flex-col lg:flex-row">
-                <p className="text-2xl lg:text-3xl font-semibold">স্টাডি প্ল্যান</p>
-                <div className="flex items-center px-4 py-2 text-lg border border-primary/50 bg-primary/5 gap-4 rounded flex-wrap">
-                    <p>{englishToBanglaNumbers(stats.totalModules)} টি মডিউল</p>
-                    <svg
-                        width="5"
-                        height="5"
-                        viewBox="0 0 5 5"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect
-                            x="0.829956"
-                            y="0.5"
-                            width="4"
-                            height="4"
-                            rx="2"
-                            fill="#FFA500"
-                        />
-                    </svg>
-                    <p>{englishToBanglaNumbers(stats.totalVideos)} টি ভিডিও</p>
-                    <svg
-                        width="5"
-                        height="5"
-                        viewBox="0 0 5 5"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect
-                            x="0.829956"
-                            y="0.5"
-                            width="4"
-                            height="4"
-                            rx="2"
-                            fill="#FFA500"
-                        />
-                    </svg>
-                    <p>{englishToBanglaNumbers(stats.totalQuiz)} টি কুইজ</p>
-                    <svg
-                        width="5"
-                        height="5"
-                        viewBox="0 0 5 5"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect
-                            x="0.829956"
-                            y="0.5"
-                            width="4"
-                            height="4"
-                            rx="2"
-                            fill="#FFA500"
-                        />
-                    </svg>
-                    <p>{englishToBanglaNumbers(stats.totalCodes)} টি কোডিং চ্যালেঞ্জ</p>
-                    <svg
-                        width="5"
-                        height="5"
-                        viewBox="0 0 5 5"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect
-                            x="0.829956"
-                            y="0.5"
-                            width="4"
-                            height="4"
-                            rx="2"
-                            fill="#FFA500"
-                        />
-                    </svg>
-                    <p>{englishToBanglaNumbers(stats.totalPDF)} টি পিডিএফ</p>
-                </div>
+        <section className="py-12">
+            <div className="mb-6 flex flex-col gap-2">
+                <p className="text-2xl font-semibold tracking-tight text-foreground lg:text-3xl">
+                    সিলেবাস
+                </p>
+                <p className="text-sm text-muted-foreground">
+                    কোর্সে কী কী অধ্যায় ও কনটেন্ট থাকবে, এখানে দেখে নাও।
+                </p>
             </div>
-            <div>
-                {chapters && chapters.length > 0 && chapters.map((chapter, index) => (
+
+            {hasChapters ? (
+                <div>
+                {chapters.map((chapter, index) => (
                     <ChapterAccordion
                         key={chapter.id}
                         chapter={chapter}
@@ -108,7 +41,14 @@ export default function StudyPlanTab({ chapters, courseData, courseId }: StudyPl
                         courseId={courseId}
                     />
                 ))}
-            </div>
-        </div>
+                </div>
+            ) : (
+                <div className="rounded-2xl border border-border/60 bg-card/70 px-4 py-8 text-center">
+                    <p className="text-muted-foreground">
+                        সিলেবাসের তথ্য শীঘ্রই আপডেট করা হবে
+                    </p>
+                </div>
+            )}
+        </section>
     );
 }

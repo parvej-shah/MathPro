@@ -13,13 +13,13 @@ interface Course {
     instructors?: Array<{ name: string }>;
   };
   chips?: {
-    course_thumbnail_link?: string; // Old field (backward compatibility)
     thumbnails?: {
-      course_thumbnail_link_16_9?: string;
+      course_thumbnail_16_9?: string;
       trailer_video_thumb_16_9?: string;
       facebook_community_thumb_16_9?: string;
     };
   };
+  slug?: string | null;
   thumbnail?: string;
   instructor?: string;
   rating?: string | number;
@@ -126,8 +126,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                   <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/80 to-transparent z-10" />
                   <img
                     src={
-                      course.chips?.thumbnails?.course_thumbnail_link_16_9 ||
-                      course.chips?.course_thumbnail_link ||
+                      course.chips?.thumbnails?.course_thumbnail_16_9 ||
                       "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1740&q=80"
                     }
                     alt={course.title}

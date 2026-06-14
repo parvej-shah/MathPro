@@ -10,7 +10,6 @@ import CourseDashboardLoadingSkeleton from "@/components/Dashboard/CourseDashboa
 
 import { useCourseDashboard } from "@/hooks/useCourseDashboard";
 import { usePaymentHistory } from "@/hooks/usePaymentHistory";
-import { useAllCourses } from "@/hooks/useAllCourses";
 import { useCourseRoutine } from "@/hooks/useCourseRoutine";
 import { useLiveClasses } from "@/hooks/useLiveClasses";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
@@ -22,7 +21,6 @@ import {
     LiveClassesSection,
     AnnouncementsCard,
     CommunityCard,
-    RecommendedCourses,
     FeedbackCard,
     StreakCountCard,
     RankingCard,
@@ -42,7 +40,6 @@ export default function CourseDashboardPage() {
         error: courseError,
     } = useCourseDashboard(shouldFetch ? courseId : undefined);
     const { historyData, loading: historyLoading } = usePaymentHistory();
-    const { courses: allCourses } = useAllCourses();
     const { routineData } = useCourseRoutine(shouldFetch ? courseId : undefined);
     const {
         liveClasses,
@@ -69,49 +66,14 @@ export default function CourseDashboardPage() {
         if (routineData?.routine_image_url) {
             return routineData.routine_image_url;
         }
-        // Priority 2: Course thumbnail from new API structure
-        if (courseData?.thumbnails?.course_thumbnail_link_16_9) {
-            return courseData.thumbnails.course_thumbnail_link_16_9;
-        }
-        if (courseData?.thumbnails?.course_thumbnail_link) {
-            return courseData.thumbnails.course_thumbnail_link;
+        // Priority 2: Course thumbnail from new API structure (frontend-guide-user.md §5)
+        if (courseData?.thumbnails?.course_thumbnail_16_9) {
+            return courseData.thumbnails.course_thumbnail_16_9;
         }
         // Priority 3: Placeholder with course name
         const courseName = courseData?.title || "Course";
         return generatePlaceholderThumbnail(courseName, courseId as string);
     }, [routineData, courseData, courseId]);
-
-    // Get 2 random courses for recommendations (excluding current course and all purchased courses)
-    const recommendedCourses = React.useMemo(() => {
-        if (!historyData) return [];
-
-        // Get all purchased course IDs (individual courses + courses from bundles)
-        const purchasedCourseIds = new Set<number>();
-
-        // Add individual courses
-        historyData.individual_courses?.forEach((course) => {
-            purchasedCourseIds.add(course.course_id);
-        });
-
-        // Add courses from bundles
-        historyData.bundle_purchases?.forEach((bundle) => {
-            bundle.courses?.forEach((course) => {
-                purchasedCourseIds.add(course.id);
-            });
-        });
-
-        // Filter out current course and all purchased courses
-        return allCourses
-            .filter((course) => {
-                const courseIdNum =
-                    typeof course.id === "string" ? parseInt(course.id) : course.id;
-                return (
-                    course.id.toString() !== courseId &&
-                    !purchasedCourseIds.has(courseIdNum)
-                );
-            })
-            .slice(0, 2);
-    }, [allCourses, courseId, historyData]);
 
     // Calculate REAL progress from course data (using new API structure)
     const calculateProgress = () => {
@@ -376,6 +338,42 @@ export default function CourseDashboardPage() {
                         <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                             {courseData?.title || "Course Dashboard"}
                         </h1>
+
+                        {/* Tags + capacity + outline (frontend-guide-user.md §5) */}
+                        {(courseData?.metadata?.tags?.length ||
+                            courseData?.enrollment?.total_seats ||
+                            courseData?.metadata?.course_outline) && (
+                            <div className="mt-3 flex flex-wrap items-center gap-2">
+                                {courseData?.metadata?.tags?.map((tag, i) => (
+                                    <span
+                                        key={`${tag}-${i}`}
+                                        className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+
+                                {typeof courseData?.enrollment?.total_seats === "number" && (
+                                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-muted text-muted-foreground border border-border">
+                                        {courseData.enrollment.enrolled ?? 0} / {courseData.enrollment.total_seats} আসন পূর্ণ
+                                    </span>
+                                )}
+
+                                {courseData?.metadata?.course_outline && (
+                                    <a
+                                        href={courseData.metadata.course_outline}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1 rounded-full text-xs font-semibold bg-card text-foreground border border-border hover:border-primary/40 hover:bg-primary/5 transition-all inline-flex items-center gap-1"
+                                    >
+                                        কোর্স আউটলাইন
+                                        <svg className="w-3 h-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                    </a>
+                                )}
+                            </div>
+                        )}
                     </motion.div>
 
                     {/* Section A: The Hero (The Routine) - ROUTINE IMAGE from API */}
@@ -505,18 +503,12 @@ export default function CourseDashboardPage() {
                                     courseData?.community?.facebook_private_group ||
                                     "https://www.facebook.com/groups/codervaicommunity"
                                 }
+                                telegramLink={courseData?.community?.telegram_group}
                                 accessCode={accessCode}
                             />
                         </div>
                     </motion.div>
 
-                    {/* Section C: Recommended Courses - REAL DATA from courses API */}
-                    {recommendedCourses.length > 0 && (
-                        <RecommendedCourses
-                            courses={recommendedCourses}
-                            isMockData={false}
-                        />
-                    )}
                 </div>
             </main>
         </DashboardLayout>

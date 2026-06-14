@@ -3,7 +3,6 @@ export {
   VideoPlayerSkeleton,
   ModuleContentSkeleton,
   QuizSkeleton,
-  AssignmentSkeleton,
   ModuleSidebarSkeleton,
   DiscussionSkeleton,
   ModulePageSkeleton,

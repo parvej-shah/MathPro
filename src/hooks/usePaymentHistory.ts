@@ -22,6 +22,17 @@ interface Summary {
   total_transactions: number;
 }
 
+interface Coupon {
+  id: number;
+  code: string;
+  name: string;
+  discount_type: string;
+  discount_value: number;
+  discount_amount: number | null;
+  original_price: number | null;
+  final_price: number | null;
+}
+
 interface IndividualCourse {
   user_id: number;
   course_id: number;
@@ -40,6 +51,7 @@ interface IndividualCourse {
     }>;
   } | string[] | string | null;
   purchase_type: 'individual';
+  coupon?: Coupon | null;
 }
 
 interface BundleCourse {
@@ -62,6 +74,7 @@ interface BundlePurchase {
   bundle_url: string;
   purchase_type: 'bundle';
   courses: BundleCourse[];
+  coupon?: Coupon | null;
   chips?: {
     thumbnails?: {
       bundle_thumb_16_9?: string;
@@ -96,6 +109,7 @@ interface Transaction {
   course_url?: string;
   bundle_url?: string;
   courses?: BundleCourse[];
+  coupon?: Coupon | null;
 }
 
 interface PaymentHistoryData {
@@ -177,4 +191,5 @@ export type {
   BundlePurchase,
   Transaction,
   BundleCourse,
+  Coupon,
 };

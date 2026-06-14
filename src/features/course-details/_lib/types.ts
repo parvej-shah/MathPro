@@ -18,6 +18,30 @@ export interface EnrollmentSection {
     classTime?: Section;
 }
 
+// Books attached to a course (frontend-guide-user.md §2).
+export interface AttachedBook {
+    id: number;
+    title: string;
+    image_url?: string | null;
+    price?: number;
+    class_levels?: string[];
+    tags?: string[];
+    description?: string | null;
+    [key: string]: any;
+}
+
+// Optional book inclusion selected at checkout (BOOKS_COURSE_BUNDLE_PAYMENT_FRONTEND_SPEC.md §9).
+export interface BookSelection {
+    include: true;
+    shipping: {
+        name: string;
+        phone: string;
+        address: string;
+        city?: string;
+        postcode?: string;
+    };
+}
+
 export interface CourseData {
     id: number;
     title: string;
@@ -33,6 +57,13 @@ export interface CourseData {
     intro_video?: string;
     thumbnail?: string;
     chapters?: Chapter[];
+    // New top-level fields (frontend-guide-user.md §2)
+    slug?: string | null;
+    tags?: string[] | null;
+    total_seats?: number | null;
+    course_outline?: string | null;
+    attached_books?: AttachedBook[];
+    books_total?: number;
     instructor_list?: {
         instructors?: Instructor[];
     };
@@ -45,46 +76,8 @@ export interface CourseData {
     you_get?: {
         you_get: string;
     };
-    chips?: {
-        // Bundle ID (for price billboard)
-        bundle_id?: string | number | null;
-        
-        // Thumbnails (new structure)
-        thumbnails?: {
-            course_thumbnail_link_16_9?: string;
-            trailer_video_thumb_16_9?: string;
-            facebook_community_thumb_16_9?: string;
-        };
-        
-        // Social links (new structure)
-        socials?: {
-            facebook_community?: string;
-            facebook_private_group?: string;
-            facebook_page?: string;
-            whatsapp?: string;
-            messenger?: string;
-            phone?: string;
-            email?: string;
-        };
-        
-        // Old fields (backward compatible)
-        course_thumbnail_link?: string;
-        deadline?: string;
-        total_seats?: string;
-        whatsapp?: string;
-        facebookPage?: string;
-        course_outline?: string;
-        
-        sections?: {
-            chapter?: Section;
-            video?: Section;
-            contest?: Section;
-            liveClass?: Section;
-            archiveClass?: Section;
-            codingProblem?: Section;
-        };
-        enrollment?: EnrollmentSection;
-    };
+    // New chips shape (frontend-guide-user.md §4) — see _lib/chips.ts for readers.
+    chips?: import('./chips').NewChips;
     image?: {
         imageUploadedLink?: string;
     };
@@ -103,7 +96,7 @@ export interface Module {
     id: number;
     title: string;
     data: {
-        category: 'VIDEO' | 'ASSIGNMENT' | 'PDF' | 'QUIZ' | 'CODE';
+        category: 'VIDEO' | 'PDF' | 'QUIZ' | 'CODE';
         is_free?: boolean;
         videoUrl?: string;
         video_link?: string;
