@@ -31,7 +31,7 @@ function findObjectBySerial(data: Course, targetSerial: number): CourseModule | 
 }
 
 export default function CourseDetailsPage() {
-  const [, setUser] = useContext<any>(UserContext);
+  const [, setUser] = useContext(UserContext);
   const router = useRouter();
   const params = useParams();
   const courseId = params?.courseId as string | undefined;
@@ -53,7 +53,7 @@ export default function CourseDetailsPage() {
 
   // ── Score trigger (updates header score display) ──────────────────────────
   const onScoreTrigger = useCallback(() => {
-    setUser((prev: any) => ({ ...prev, scoreTrigger: !prev.scoreTrigger }));
+    setUser((prev) => ({ ...prev, scoreTrigger: !prev.scoreTrigger }));
   }, [setUser]);
 
   // ── Progress ──────────────────────────────────────────────────────────────
@@ -69,18 +69,20 @@ export default function CourseDetailsPage() {
   const {
     quizAnswer,
     setQuizAnswer,
-    quizScore,
     quizVerdict,
     showQuizAnswer,
     justSubmitted,
     submitQuiz: submitQuizBase,
-    retakeQuiz: retakeQuizBase,
     restoreFromTimer,
-    resetQuizState,
   } = useQuiz(activeModule, submitProgress);
 
   const onTimerExpire = useCallback(() => {
-    submitQuizBase();
+    const submission = submitQuizBase();
+    return {
+      quizScore: submission.score,
+      quizAnswer: submission.answers,
+      quizVerdict: submission.verdict,
+    };
   }, [submitQuizBase]);
 
   const {
@@ -90,9 +92,8 @@ export default function CourseDetailsPage() {
     formatTime,
     getTimerColor,
     clearQuizTimer,
-    markSubmitted,
+    persistSubmission,
     restoredSubmission,
-    resetTimer,
   } = useQuizTimer(activeModule, onTimerExpire);
 
   // When the timer hook detects a quiz was previously submitted (reload), wire
@@ -110,50 +111,10 @@ export default function CourseDetailsPage() {
   const submitQuiz = useCallback(() => {
     const { score, answers, verdict } = submitQuizBase();
     if (activeModule?.id) {
-      const timerKey = `quiz_timer_${activeModule.id}`;
-      const existing = localStorage.getItem(timerKey);
-      if (existing) {
-        const parsed = JSON.parse(existing);
-        markSubmitted(activeModule.id, parsed.startTime, parsed.totalTime, score, answers, verdict);
-      }
+      persistSubmission(activeModule.id, score, answers, verdict);
     }
     clearQuizTimer();
-  }, [submitQuizBase, activeModule, markSubmitted, clearQuizTimer]);
-
-  const retakeQuiz = useCallback(() => {
-    retakeQuizBase();
-    resetQuizState();
-    if (activeModule?.data?.quiz) {
-      resetTimer(activeModule.id, (activeModule.data.quiz as unknown[]).length);
-    }
-  }, [retakeQuizBase, resetQuizState, activeModule, resetTimer]);
-
-  // ── Codeforces ────────────────────────────────────────────────────────────
-  // cfHandle lives in ModulePlayer; checkCFStatus needs submitProgress.
-  // Kept minimal here — just a thin pass-through.
-  const checkCFStatus = useCallback((handle: string) => {
-    import("axios").then(({ default: axios }) => {
-      import("@/api.config").then(({ BACKEND_URL }) => {
-        const token = localStorage.getItem("token");
-        axios
-          .post(
-            `${BACKEND_URL}/user/module/checkCfStatus`,
-            { problem: activeModule?.data?.cf_name, handle },
-            { headers: { Authorization: `Bearer ${token}` } },
-          )
-          .then((res) => {
-            if (res.data.data.solved) {
-              submitProgress(activeModule?.id as number, activeModule?.score ?? 0);
-            } else {
-              toast.error("You have not solved this problem yet!");
-            }
-          })
-          .catch(() => {
-            toast.error("Please provide a valid Codeforces handle!");
-          });
-      });
-    });
-  }, [activeModule, submitProgress]);
+  }, [submitQuizBase, activeModule, persistSubmission, clearQuizTimer]);
 
   // ── Discussions ───────────────────────────────────────────────────────────
   const {
@@ -180,7 +141,7 @@ export default function CourseDetailsPage() {
 
   const submitNewDiscussion = useCallback(() => {
     if (activeModule?.id) submitNewDiscussionBase(activeModule.id);
-  }, [activeModule?.id, submitNewDiscussionBase]);
+  }, [activeModule, submitNewDiscussionBase]);
 
   // ── Module navigation ─────────────────────────────────────────────────────
   const goToModule = useCallback((module: CourseModule) => {
@@ -459,25 +420,22 @@ export default function CourseDetailsPage() {
                   {/* Course title — desktop only (mobile shows it in the top bar above) */}
                   <h2 className="hidden lg:block text-2xl lg:text-3xl font-semibold mb-3 pb-3 border-b border-border/50">{courseData?.title}</h2>
 
-                  <ModulePlayer
-                    activeModule={activeModule as any}
-                    courseData={courseData as any}
-                    cfHandle=""
-                    setCfHandle={() => {}}
-                    checkCFStatus={checkCFStatus as any}
-                    quizAnswer={quizAnswer}
-                    setQuizAnswer={setQuizAnswer as any}
-                    quizVerdict={quizVerdict}
-                    showQuizAnswer={showQuizAnswer}
-                    justSubmitted={justSubmitted}
-                    timeRemaining={timeRemaining}
-                    timerActive={timerActive}
-                    timerExpired={timerExpired}
-                    formatTime={formatTime}
-                    getTimerColor={getTimerColor}
-                    submitQuiz={submitQuiz}
-                    retakeQuiz={retakeQuiz}
-                  />
+                  {activeModule && (
+                    <ModulePlayer
+                      activeModule={activeModule}
+                      quizAnswer={quizAnswer}
+                      setQuizAnswer={setQuizAnswer}
+                      quizVerdict={quizVerdict}
+                      showQuizAnswer={showQuizAnswer}
+                      justSubmitted={justSubmitted}
+                      timeRemaining={timeRemaining}
+                      timerActive={timerActive}
+                      timerExpired={timerExpired}
+                      formatTime={formatTime}
+                      getTimerColor={getTimerColor}
+                      submitQuiz={submitQuiz}
+                    />
+                  )}
 
                   {activeModule?.description && activeModule.description.length > 0 &&
                     activeModule?.data?.category !== "TEXT" && (

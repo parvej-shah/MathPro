@@ -5,6 +5,7 @@ import { isLoggedIn, createLoginRedirectUrl } from "@/helpers";
 import DashboardLayout from "@/components/Dashboard/DashboardLayout";
 import DashboardLoadingSkeleton from "@/components/Dashboard/DashboardLoadingSkeleton";
 import ResumeBanner from "@/components/Dashboard/ResumeBanner";
+import LiveClassBanner from "@/components/Dashboard/LiveClassBanner";
 import {
   DashboardHeader,
   StatsSection,
@@ -96,6 +97,8 @@ export default function DashboardPage() {
       <main className="pt-20 min-h-screen bg-page-bg">
         <div className="w-[90%] lg:w-[85%] max-w-[1440px] mx-auto py-12">
           <DashboardHeader />
+
+          <LiveClassBanner />
 
           <StatsSection
             totalCourses={stats.totalCourses}

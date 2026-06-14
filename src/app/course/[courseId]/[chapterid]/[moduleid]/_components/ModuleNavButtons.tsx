@@ -45,7 +45,7 @@ export default function ModuleNavButtons({
     const nextModule = findObjectBySerial(courseData, (activeModule?.serial ?? 0) + 1);
     if (nextModule && (nextModule.is_free || isTaken)) {
       const cat = nextModule.data?.category;
-      const gated = cat === "CODE" || cat === "QUIZ";
+      const gated = cat === "QUIZ";
       if (!gated || isTaken) {
         goToModule(nextModule);
       }

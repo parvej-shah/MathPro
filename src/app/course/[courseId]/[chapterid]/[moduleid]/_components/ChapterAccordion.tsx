@@ -149,11 +149,6 @@ const ChapterAccordion = memo(function ChapterAccordion({
                 accessible={isFree}
               />
               <CountChip
-                count={counts.codeCount}
-                label="টি কোডিং চ্যালেঞ্জ"
-                accessible={isFree}
-              />
-              <CountChip
                 count={counts.pdfCount}
                 label="টি পিডিএফ"
                 accessible={isFree}

@@ -2,19 +2,17 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { decryptString } from "@/helpers";
-import type { CourseModule } from "../_components/types";
+import type { CourseModule, QuizQuestionData } from "../_components/types";
 
 interface UseQuizReturn {
   quizAnswer: Record<number, string>;
-  setQuizAnswer: (answers: Record<number, string>) => void;
+  setQuizAnswer: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   quizScore: number;
   quizVerdict: boolean[];
   showQuizAnswer: boolean;
   justSubmitted: boolean;
   submitQuiz: () => { score: number; answers: Record<number, string>; verdict: boolean[] };
-  retakeQuiz: () => void;
   restoreFromTimer: (score: number, answers: Record<number, string>, verdict: boolean[]) => void;
-  resetQuizState: () => void;
 }
 
 export function useQuiz(
@@ -29,33 +27,43 @@ export function useQuiz(
 
   // Reset quiz UI state whenever the active module changes
   useEffect(() => {
-    setQuizAnswer({});
-    setQuizVerdict([]);
-    setShowQuizAnswer(false);
-    setJustSubmitted(false);
-    setQuizScore(0);
+    queueMicrotask(() => {
+      setQuizAnswer({});
+      setQuizVerdict([]);
+      setShowQuizAnswer(false);
+      setJustSubmitted(false);
+      setQuizScore(0);
+    });
   }, [activeModule?.id]);
 
   const submitQuiz = useCallback((): { score: number; answers: Record<number, string>; verdict: boolean[] } => {
-    const quizes = (activeModule?.data?.quiz as Array<{ answer?: string; correct_answer?: string }>) ?? [];
+    const quizes = (activeModule?.data?.quiz as QuizQuestionData[]) ?? [];
     const verdict: boolean[] = [];
-    let accepted = 0;
+    let acceptedPoints = 0;
+    let totalPoints = 0;
     const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "";
 
     quizes.forEach((quiz, index: number) => {
+      const questionPoints = typeof quiz.points === "number" && quiz.points > 0
+        ? quiz.points
+        : 1;
+      totalPoints += questionPoints;
+
       const decrypted = decryptString(
         quiz.answer || quiz.correct_answer || "",
         secretKey,
       );
       if (decrypted === quizAnswer[index]) {
         verdict.push(true);
-        accepted++;
+        acceptedPoints += questionPoints;
       } else {
         verdict.push(false);
       }
     });
 
-    const realScore = quizes.length > 0 ? (accepted / quizes.length) * (activeModule?.score ?? 0) : 0;
+    const realScore = totalPoints > 0
+      ? (acceptedPoints / totalPoints) * (activeModule?.score ?? 0)
+      : 0;
 
     setShowQuizAnswer(true);
     setQuizScore(realScore);
@@ -68,14 +76,6 @@ export function useQuiz(
 
     return { score: realScore, answers: quizAnswer, verdict };
   }, [activeModule, quizAnswer, onProgressSubmit]);
-
-  const retakeQuiz = useCallback(() => {
-    setQuizAnswer({});
-    setQuizVerdict([]);
-    setShowQuizAnswer(false);
-    setQuizScore(0);
-    setJustSubmitted(false);
-  }, []);
 
   // Called by the page after useQuizTimer detects a previously-submitted quiz
   // on reload — restore the persisted results directly into quiz state.
@@ -91,14 +91,6 @@ export function useQuiz(
     setJustSubmitted(false);
   }, []);
 
-  const resetQuizState = useCallback(() => {
-    setQuizAnswer({});
-    setQuizVerdict([]);
-    setShowQuizAnswer(false);
-    setQuizScore(0);
-    setJustSubmitted(false);
-  }, []);
-
   return {
     quizAnswer,
     setQuizAnswer,
@@ -107,8 +99,6 @@ export function useQuiz(
     showQuizAnswer,
     justSubmitted,
     submitQuiz,
-    retakeQuiz,
     restoreFromTimer,
-    resetQuizState,
   };
 }

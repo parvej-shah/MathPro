@@ -1,21 +1,15 @@
 "use client";
 
 import { memo } from "react";
-import Link from "next/link";
 import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import ModuleUpcoming from "@/components/ModuleUpcoming";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import { RichFieldRenderer } from "@/components/RichFieldRenderer";
 import { decryptString } from "@/helpers";
-import type { CourseModule, Course } from "./types";
+import type { CourseModule, QuizQuestionData } from "./types";
 
 interface ModulePlayerProps {
   activeModule: CourseModule;
-  courseData: Course;
-  // code/CF state
-  cfHandle: string;
-  setCfHandle: (v: string) => void;
-  checkCFStatus: () => void;
   // quiz state
   quizAnswer: Record<number, string>;
   setQuizAnswer: React.Dispatch<React.SetStateAction<Record<number, string>>>;
@@ -28,15 +22,10 @@ interface ModulePlayerProps {
   formatTime: (s: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
   submitQuiz: () => void;
-  retakeQuiz: () => void;
 }
 
 const ModulePlayer = memo(function ModulePlayer({
   activeModule,
-  courseData,
-  cfHandle,
-  setCfHandle,
-  checkCFStatus,
   quizAnswer,
   setQuizAnswer,
   quizVerdict,
@@ -48,10 +37,24 @@ const ModulePlayer = memo(function ModulePlayer({
   formatTime,
   getTimerColor,
   submitQuiz,
-  retakeQuiz,
 }: ModulePlayerProps) {
   const category = activeModule?.data?.category;
-  const totalTime = ((activeModule?.data?.quiz as any[])?.length ?? 0) * 60;
+  const quizQuestions = (activeModule?.data?.quiz as QuizQuestionData[] | undefined) ?? [];
+  const totalTime = activeModule?.quiz_time_limit && activeModule.quiz_time_limit > 0
+    ? activeModule.quiz_time_limit * 60
+    : 0;
+  const totalQuestionPoints = quizQuestions.reduce((sum, quiz) => {
+    const points = typeof quiz.points === "number" && quiz.points > 0 ? quiz.points : 1;
+    return sum + points;
+  }, 0);
+  const earnedQuestionPoints = quizQuestions.reduce((sum, quiz, index) => {
+    if (!quizVerdict[index]) return sum;
+    const points = typeof quiz.points === "number" && quiz.points > 0 ? quiz.points : 1;
+    return sum + points;
+  }, 0);
+  const earnedPercentage = totalQuestionPoints > 0
+    ? Math.round((earnedQuestionPoints / totalQuestionPoints) * 100)
+    : 0;
 
   return (
     <div className="mt-8">
@@ -138,79 +141,6 @@ const ModulePlayer = memo(function ModulePlayer({
           />
         ))}
 
-      {/* ── CODE (internal problem page) ─────────────────────── */}
-      {category === "CODE" && !activeModule?.data?.is_cf && (
-        <div className="mx-auto z-20">
-          <p className="text-lg mb-2">
-            Coding Status:{" "}
-            {(activeModule?.serial ?? 0) >=
-            (courseData?.maxModuleSerialProgress ?? 0) + 1 ? (
-              <span className="font-semibold text-xl text-destructive">
-                INCOMPLETE
-              </span>
-            ) : (
-              <span className="font-semibold text-xl text-success">
-                COMPLETED
-              </span>
-            )}
-          </p>
-          <div className="mt-6">
-            <Link
-              href={`/problem/${activeModule.id}`}
-              className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
-            >
-              Go to Problem Page
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* ── CODE (Codeforces) ────────────────────────────────── */}
-      {category === "CODE" && activeModule?.data?.is_cf && (
-        <div className="mx-auto z-20">
-          <p className="text-lg mb-2">
-            Coding Status:{" "}
-            {(activeModule?.serial ?? 0) >=
-            (courseData?.maxModuleSerialProgress ?? 0) + 1 ? (
-              <span className="font-semibold text-xl text-destructive">
-                INCOMPLETE
-              </span>
-            ) : (
-              <span className="font-semibold text-xl text-success">
-                COMPLETED
-              </span>
-            )}
-          </p>
-          <div className="w-full my-8">
-            <p className="text-lg font-semibold mb-1">Codeforces Handle</p>
-            <input
-              className="w-full px-3 py-3 rounded bg-gray-200/20 outline-none focus:ring ring-gray-300/80"
-              placeholder="Codeforces Handle"
-              value={cfHandle}
-              required
-              onChange={(e) => setCfHandle(e.target.value)}
-            />
-          </div>
-          <div className="mt-6">
-            <a
-              href={activeModule?.data?.cf_url as string}
-              target="_blank"
-              className="py-2 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
-            >
-              Go to Codeforces Problem
-            </a>
-          </div>
-          <div className="mt-12">
-            <button
-              onClick={checkCFStatus}
-              className="py-2 px-8 bg-success hover:bg-success/85 ease-in-out duration-150 focus:ring ring-success/30 rounded-lg font-semibold text-white text-lg"
-            >
-              Verify
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* ── QUIZ ─────────────────────────────────────────────── */}
       {category === "QUIZ" && (
         <div>
@@ -274,7 +204,7 @@ const ModulePlayer = memo(function ModulePlayer({
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 rounded-lg bg-linear-to-br from-teal/30 to-primary/20 flex items-center justify-center border border-teal/30">
                         <p className="text-2xl font-bold text-white">
-                          {(activeModule?.data?.quiz as any[])?.length}
+                          {quizQuestions.length}
                         </p>
                       </div>
                     </div>
@@ -335,7 +265,7 @@ const ModulePlayer = memo(function ModulePlayer({
           )}
 
           {/* Score card (returning user) */}
-          {showQuizAnswer && !justSubmitted && (
+          {showQuizAnswer && (
             <div className="mb-8 overflow-hidden rounded-xl border border-primary/30 bg-primary/10 backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center justify-between p-8 gap-8">
                 <div className="flex items-center gap-8">
@@ -345,48 +275,33 @@ const ModulePlayer = memo(function ModulePlayer({
                       <circle
                         cx="64" cy="64" r="58" stroke="oklch(0.718 0.147 159.2)" strokeWidth="8" fill="none"
                         strokeDasharray={`${2 * Math.PI * 58}`}
-                        strokeDashoffset={`${2 * Math.PI * 58 * (1 - (quizVerdict.filter(Boolean).length || 0) / ((activeModule?.data?.quiz as any[])?.length || 1))}`}
+                        strokeDashoffset={`${2 * Math.PI * 58 * (1 - earnedPercentage / 100)}`}
                         className="transition-all duration-1000 ease-out drop-shadow-[0_0_10px_oklch(0.718_0.147_159.2/0.5)]"
                         strokeLinecap="round"
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-3xl font-bold text-white">
-                        {Math.round(
-                          ((quizVerdict.filter(Boolean).length || 0) /
-                            ((activeModule?.data?.quiz as any[])?.length || 1)) * 100,
-                        )}%
+                        {earnedPercentage}%
                       </span>
                     </div>
                   </div>
                   <div className="text-left">
                     <h3 className="text-2xl font-bold text-white mb-1">Quiz Completed</h3>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-gray-400">Score:</span>
-                      <span className="text-xl font-bold text-primary">{quizVerdict.filter(Boolean).length || 0}</span>
-                      <span className="text-gray-500">/ {(activeModule?.data?.quiz as any[])?.length}</span>
+                      <span className="text-gray-400">নম্বর:</span>
+                      <span className="text-xl font-bold text-primary">{earnedQuestionPoints}</span>
+                      <span className="text-gray-500">/ {totalQuestionPoints}</span>
                     </div>
                     <p className="text-sm text-gray-400 mt-2 max-w-[200px]">
-                      {(quizVerdict.filter(Boolean).length || 0) /
-                        ((activeModule?.data?.quiz as any[])?.length || 1) >= 0.8
+                      {earnedPercentage >= 80
                         ? "Excellent work! You've mastered this topic."
                         : "Keep practicing to improve your score."}
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-4">
-                  <button
-                    onClick={retakeQuiz}
-                    className="group flex items-center gap-2 px-8 py-3 bg-primary hover:bg-primary/85 rounded-lg font-semibold text-primary-foreground transition-all duration-200 shadow-lg shadow-primary/20"
-                  >
-                    <svg
-                      className="w-5 h-5 transform group-hover:rotate-180 transition-transform duration-500"
-                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Retake Quiz
-                  </button>
+                <div className="rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 text-sm text-primary-foreground/90">
+                  এই কুইজ একবারই সাবমিট করা যাবে।
                 </div>
               </div>
             </div>

@@ -96,7 +96,7 @@ export interface Module {
     id: number;
     title: string;
     data: {
-        category: 'VIDEO' | 'PDF' | 'QUIZ' | 'CODE';
+        category: 'VIDEO' | 'PDF' | 'QUIZ';
         is_free?: boolean;
         videoUrl?: string;
         video_link?: string;

@@ -8,14 +8,24 @@ export type ModuleCategory =
   | "VIDEO"
   | "PDF"
   | "TEXT"
-  | "QUIZ"
-  | "CODE";
+  | "QUIZ";
+
+export interface QuizQuestionData {
+  question?: string;
+  question_html?: string;
+  options?: string[];
+  options_html?: string[];
+  answer?: string;
+  correct_answer?: string;
+  explanation?: string;
+  explanation_html?: string;
+  points?: number;
+  [key: string]: unknown;
+}
 
 export interface ModuleData {
   category?: ModuleCategory | string;
-  quiz?: unknown[];
-  is_cf?: boolean;
-  cf_name?: string;
+  quiz?: QuizQuestionData[];
   youtube_id?: string;
   [key: string]: unknown;
 }
@@ -30,6 +40,8 @@ export interface CourseModule {
   is_live?: boolean;
   description?: string;
   data?: ModuleData;
+  quiz_time_limit?: number | null;
+  quiz_attempt_limit?: number | null;
   // Live-Class toggle (live overlay on a VIDEO module)
   live_status?: "SCHEDULED" | "LIVE" | "ENDED" | null;
   live_meeting_id?: string | null;

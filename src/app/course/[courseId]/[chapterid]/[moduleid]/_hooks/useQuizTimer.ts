@@ -25,11 +25,9 @@ interface UseQuizTimerReturn {
   formatTime: (seconds: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
   clearQuizTimer: () => void;
-  markSubmitted: (moduleId: number, startTime: number, totalTime: number, score: number, answers: Record<number, string>, verdict: boolean[]) => void;
+  persistSubmission: (moduleId: number, score: number, answers: Record<number, string>, verdict: boolean[]) => void;
   /** Non-null when the quiz was previously submitted and the page reloaded. */
   restoredSubmission: RestoredSubmission | null;
-  /** Call after a retake to reset timer state and reinitialize. */
-  resetTimer: (moduleId: number, totalQuestions: number) => void;
 }
 
 function timerKey(moduleId: number) {
@@ -53,17 +51,9 @@ function writeTimer(moduleId: number, data: StoredTimer) {
   }
 }
 
-function removeTimer(moduleId: number) {
-  try {
-    localStorage.removeItem(timerKey(moduleId));
-  } catch {
-    // ignore
-  }
-}
-
 export function useQuizTimer(
   activeModule: CourseModule | null,
-  onExpire: () => void,
+  onExpire: () => RestoredSubmission | null,
 ): UseQuizTimerReturn {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
@@ -79,19 +69,28 @@ export function useQuizTimer(
     setTimerActive(false);
   }, []);
 
-  const markSubmitted = useCallback((
+  const persistSubmission = useCallback((
     moduleId: number,
-    startTime: number,
-    totalTime: number,
     score: number,
     answers: Record<number, string>,
     verdict: boolean[],
   ) => {
-    writeTimer(moduleId, { startTime, totalTime, submitted: true, quizScore: score, quizAnswer: answers, quizVerdict: verdict });
+    const existing = readTimer(moduleId);
+    writeTimer(moduleId, {
+      startTime: existing?.startTime ?? Math.floor(Date.now() / 1000),
+      totalTime: existing?.totalTime ?? 0,
+      submitted: true,
+      quizScore: score,
+      quizAnswer: answers,
+      quizVerdict: verdict,
+    });
   }, []);
 
-  const initTimer = useCallback((moduleId: number, totalQuestions: number) => {
-    const totalTime = totalQuestions * 60;
+  const initTimer = useCallback((module: CourseModule) => {
+    const moduleId = module.id;
+    const totalTime = module.quiz_time_limit && module.quiz_time_limit > 0
+      ? module.quiz_time_limit * 60
+      : 0;
     const existing = readTimer(moduleId);
 
     if (existing) {
@@ -107,6 +106,14 @@ export function useQuizTimer(
         return;
       }
 
+      if (existing.totalTime <= 0 || totalTime <= 0) {
+        setTimeRemaining(0);
+        setTimerActive(false);
+        setTimerExpired(false);
+        setRestoredSubmission(null);
+        return;
+      }
+
       const elapsed = Math.floor(Date.now() / 1000) - existing.startTime;
       const remaining = existing.totalTime - elapsed;
 
@@ -114,42 +121,54 @@ export function useQuizTimer(
         setTimeRemaining(0);
         setTimerExpired(true);
         setTimerActive(false);
-        writeTimer(moduleId, { ...existing, submitted: true });
-        onExpire();
+        const submission = onExpire();
+        if (submission) {
+          persistSubmission(
+            moduleId,
+            submission.quizScore,
+            submission.quizAnswer,
+            submission.quizVerdict,
+          );
+        } else {
+          writeTimer(moduleId, { ...existing, submitted: true });
+        }
       } else {
         setTimeRemaining(remaining);
         setTimerActive(true);
         setTimerExpired(false);
         setRestoredSubmission(null);
       }
-    } else {
+    } else if (totalTime > 0) {
       const startTime = Math.floor(Date.now() / 1000);
       writeTimer(moduleId, { startTime, totalTime, submitted: false });
       setTimeRemaining(totalTime);
       setTimerActive(true);
       setTimerExpired(false);
       setRestoredSubmission(null);
+    } else {
+      setTimeRemaining(0);
+      setTimerActive(false);
+      setTimerExpired(false);
+      setRestoredSubmission(null);
     }
-  }, [onExpire]);
-
-  const resetTimer = useCallback((moduleId: number, totalQuestions: number) => {
-    removeTimer(moduleId);
-    setRestoredSubmission(null);
-    setTimerExpired(false);
-    setTimerActive(false);
-    setTimeRemaining(0);
-    initTimer(moduleId, totalQuestions);
-  }, [initTimer]);
+  }, [onExpire, persistSubmission]);
 
   // Initialize / tear down timer when the active module changes
   useEffect(() => {
     if (activeModule?.data?.category === "QUIZ" && activeModule.data?.quiz) {
-      initTimer(activeModule.id, (activeModule.data.quiz as unknown[]).length);
+      queueMicrotask(() => {
+        initTimer(activeModule);
+      });
     } else {
-      clearQuizTimer();
+      queueMicrotask(() => {
+        clearQuizTimer();
+        setTimerExpired(false);
+        setRestoredSubmission(null);
+        setTimeRemaining(0);
+      });
     }
     return () => { clearQuizTimer(); };
-  }, [activeModule?.id, activeModule?.data?.category]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeModule?.id, activeModule?.data?.category, activeModule?.quiz_time_limit]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Countdown tick
   useEffect(() => {
@@ -160,7 +179,17 @@ export function useQuizTimer(
         if (prev <= 1) {
           clearQuizTimer();
           setTimerExpired(true);
-          onExpire();
+          if (activeModule?.id) {
+            const submission = onExpire();
+            if (submission) {
+              persistSubmission(
+                activeModule.id,
+                submission.quizScore,
+                submission.quizAnswer,
+                submission.quizVerdict,
+              );
+            }
+          }
           return 0;
         }
         return prev - 1;
@@ -195,8 +224,7 @@ export function useQuizTimer(
     formatTime,
     getTimerColor,
     clearQuizTimer,
-    markSubmitted,
+    persistSubmission,
     restoredSubmission,
-    resetTimer,
   };
 }

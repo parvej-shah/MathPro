@@ -52,7 +52,7 @@ export function SafeHtmlRenderer({
     if (!content || content.trim() === "") return null;
 
     // Make plain URLs clickable (http/https) in both HTML and plain-text content
-    let workingContent = linkifyUrls(content);
+    const workingContent = transformMarkdownImages(linkifyUrls(content));
 
     // If truncating, strip HTML and return plain text
     if (truncate && truncate > 0) {
@@ -191,6 +191,15 @@ function linkifyUrls(text: string): string {
     if (!/^https?:\/\//i.test(url)) return escapeHtml(match);
     const safe = escapeHtml(url);
     return `<a href="${safe}" target="_blank" rel="noopener noreferrer" class="text-purple hover:underline break-all">${safe}</a>`;
+  });
+}
+
+function transformMarkdownImages(text: string): string {
+  const markdownImageRegex = /!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g;
+  return text.replace(markdownImageRegex, (_match, altText, imageUrl) => {
+    const safeAlt = escapeHtml(altText || "Image");
+    const safeSrc = escapeHtml(imageUrl);
+    return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-auto rounded-md my-3" />`;
   });
 }
 
