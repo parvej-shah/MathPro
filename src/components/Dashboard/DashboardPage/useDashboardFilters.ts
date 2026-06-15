@@ -2,8 +2,6 @@ import { useState, useMemo } from 'react';
 import { EnrolledCourse } from './types';
 import { getMostRecentlyViewedCourse } from '@/utils/courseViewTracker';
 
-const isDev = process.env.NODE_ENV === 'development';
-
 export function useDashboardFilters(courses: EnrolledCourse[], allIndividualCourses: EnrolledCourse[]) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'Ongoing' | 'Completed' | 'Not Started'>('All');
@@ -17,11 +15,6 @@ export function useDashboardFilters(courses: EnrolledCourse[], allIndividualCour
 
   // Filter and Sort Logic
   const filteredCourses = useMemo(() => {
-    if (isDev) {
-      console.log('🔍 Filter Debug - filterType:', filterType);
-      console.log('🔍 Filter Debug - All courses:', courses.map(c => ({ title: c.title, isBundle: c.isBundle })));
-    }
-    
     let result: EnrolledCourse[] = [];
 
     // 1. Handle Type Filtering
@@ -31,31 +24,20 @@ export function useDashboardFilters(courses: EnrolledCourse[], allIndividualCour
       result = courses.filter(c => !c.isBundle);
     } else {
       // filterType is a specific bundle name - show only that bundle
-      if (isDev) {
-        console.log('🔍 Looking for bundle with title:', filterType);
-        console.log('🔍 Available bundles:', courses.filter(c => c.isBundle).map(c => ({ title: c.title, id: c.id })));
-      }
-      
       result = courses.filter(c => {
         const matches = c.isBundle && c.title === filterType;
-        if (isDev) console.log(`🔍 Checking course "${c.title}" (isBundle: ${c.isBundle}): ${matches}`);
         return matches;
       });
-      if (isDev) console.log('🔍 Filter Debug - Selected bundle result:', result.map(c => c.title));
     }
-
-    if (isDev) console.log('🔍 Filter Debug - After type filter:', result.length, 'courses');
 
     // 2. Search
     if (searchTerm) {
       result = result.filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase()));
-      if (isDev) console.log('🔍 Filter Debug - After search filter:', result.length, 'courses');
     }
 
     // 3. Filter by Status
     if (filterStatus !== 'All') {
       result = result.filter(c => c.status === filterStatus);
-      if (isDev) console.log('🔍 Filter Debug - After status filter:', result.length, 'courses');
     }
 
     // 4. Sort
@@ -65,7 +47,6 @@ export function useDashboardFilters(courses: EnrolledCourse[], allIndividualCour
       return new Date(b.lastAccessed || 0).getTime() - new Date(a.lastAccessed || 0).getTime();
     });
 
-    if (isDev) console.log('🔍 Filter Debug - Final result:', result.length, 'courses');
     return result;
   }, [courses, searchTerm, filterStatus, filterType, sortBy]);
 

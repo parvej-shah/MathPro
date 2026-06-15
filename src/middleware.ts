@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Centralized route protection (per conventions.md § Auth & State).
+//
+// Runs BEFORE any client JS, so it can only read the `token` cookie — not
+// localStorage or the `#token=` hash used by cross-LMS redirects. It is
+// therefore the *primary* gate; each protected page keeps a thin client-side
+// `isLoggedIn()` check as a fallback for the cookie-not-yet-written case
+// (hash/localStorage-only sessions). Keep the two in sync.
+//
+// NOTE: this repo uses a `src/` directory, so this file MUST live at
+// `src/middleware.ts` (same level as `app`). A root-level file is ignored by
+// Next when `src/` exists — which is why the previous root `middleware.ts`
+// silently never ran, leaving protection to the flaky per-page checks.
+
 const AUTH_ROUTES = new Set([
   "/auth/login",
   "/auth/register",
@@ -20,6 +33,8 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
   }
 }
 
+// Mirrors helpers/index.ts `checkTokenValidity`: an identity claim + a
+// non-expired `exp` (tokens without `exp` are treated as valid).
 function hasValidToken(token: string | undefined): boolean {
   if (!token) return false;
   const payload = decodeJwtPayload(token);
@@ -45,7 +60,11 @@ function isProtectedPath(pathname: string): boolean {
     pathname === "/course" ||
     pathname.startsWith("/course/") ||
     pathname === "/profile" ||
-    pathname.startsWith("/profile/")
+    pathname.startsWith("/profile/") ||
+    pathname === "/billing" ||
+    pathname.startsWith("/billing/") ||
+    pathname === "/ranking" ||
+    pathname.startsWith("/ranking/")
   );
 }
 
@@ -72,5 +91,12 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/course/:path*", "/profile/:path*", "/auth/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/course/:path*",
+    "/profile/:path*",
+    "/billing/:path*",
+    "/ranking/:path*",
+    "/auth/:path*",
+  ],
 };

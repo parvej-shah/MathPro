@@ -2,6 +2,22 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '@/api.config';
 
+export interface UserProfileDetails {
+  email: string | null;
+  phone: string | null;
+  facebookId: string | null;
+  address: string | null;
+  schoolCollege: string | null;
+  group: 'Science' | 'Arts' | 'Commerce' | null;
+  guardianName: string | null;
+  guardianMobile: string | null;
+  relationWithGuardian: string | null;
+  gender: 'Male' | 'Female' | 'Other' | null;
+  classLevel: 'JSC' | 'SSC' | 'HSC' | null;
+  version: 'Bangla' | 'English' | null;
+  department: string | null;
+}
+
 export interface UserProfile {
   id: number;
   name: string;
@@ -11,13 +27,7 @@ export interface UserProfile {
   login_type?: 'email' | 'phone';
   auth_providers?: string[];
   has_password?: boolean;
-  profile: {
-    email: string | null;
-    phone: string | null;
-    currentInstitution: string | null;
-    department: string | null;
-    currentAcademicLevel: 'SSC' | 'HSC' | 'UNIVERSITY' | 'OTHERS' | null;
-  };
+  profile: UserProfileDetails;
 }
 
 interface UseUserProfileReturn {

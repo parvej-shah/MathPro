@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { isLoggedIn } from "@/helpers";
+import { isLoggedIn, redirectToLogin } from "@/helpers";
 import DashboardLayout from "@/components/Dashboard/DashboardLayout";
 import CourseDashboardLoadingSkeleton from "@/components/Dashboard/CourseDashboardLoadingSkeleton";
 
@@ -38,6 +38,7 @@ export default function CourseDashboardPage() {
         courseData,
         loading: courseLoading,
         error: courseError,
+        authExpired,
     } = useCourseDashboard(shouldFetch ? courseId : undefined);
     const { historyData, loading: historyLoading } = usePaymentHistory();
     const { routineData } = useCourseRoutine(shouldFetch ? courseId : undefined);
@@ -247,6 +248,15 @@ export default function CourseDashboardPage() {
         }
     }, [router]);
 
+    // Token was present but the backend rejected it as expired/invalid: clear it
+    // and bounce to login (returning here after re-auth) instead of showing the
+    // dead-end "Error Loading Course" card.
+    useEffect(() => {
+        if (authExpired) {
+            redirectToLogin();
+        }
+    }, [authExpired]);
+
     // Check if user has access to this course and get transaction_id
     const courseAccess = historyData?.individual_courses?.find(
         (course) => course.course_id.toString() === courseId,
@@ -270,6 +280,16 @@ export default function CourseDashboardPage() {
         (historyLoading && !historyData);
 
     if (showInitialLoading) {
+        return (
+            <DashboardLayout>
+                <CourseDashboardLoadingSkeleton />
+            </DashboardLayout>
+        );
+    }
+
+    // An expired/invalid session redirects to login (effect above). Show the
+    // loading skeleton meanwhile instead of flashing the error card.
+    if (authExpired) {
         return (
             <DashboardLayout>
                 <CourseDashboardLoadingSkeleton />

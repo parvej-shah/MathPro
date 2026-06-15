@@ -112,7 +112,16 @@ export const useCourseDashboard = (courseId: string | string[] | undefined) => {
     const result = await response.json();
 
     if (!result.success || !result.data) {
-      throw new Error(result.error || 'Failed to fetch course data');
+      const message = result.error || 'Failed to fetch course data';
+      // The backend returns 200 + { success:false } for a bad token, with a
+      // distinct message for expired vs. invalid sessions. Flag those so the
+      // page can re-login instead of showing a dead-end error card.
+      if (/session has expired|session is invalid/i.test(message)) {
+        const err = new Error(message) as Error & { authExpired?: boolean };
+        err.authExpired = true;
+        throw err;
+      }
+      throw new Error(message);
     }
 
     return result.data;
@@ -142,6 +151,7 @@ export const useCourseDashboard = (courseId: string | string[] | undefined) => {
     progress,
     loading: isLoading,
     error: error instanceof Error ? error.message : (error ? String(error) : null),
+    authExpired: !!(error as (Error & { authExpired?: boolean }) | null)?.authExpired,
     refetch,
   };
 };

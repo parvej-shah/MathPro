@@ -26,11 +26,7 @@ export default function Nav({ mode = "default" }: NavProps) {
   const [isScrolled, setIsScrolled] = useState(mode !== "landing");
   const [loggedIn, setLoggedIn] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [loginHref, setLoginHref] = useState("/auth/login");
-
-  useEffect(() => {
-    setLoginHref(`/auth/login?redirect=${encodeURIComponent(window.location.href)}`);
-  }, [pathname]);
+  const loginHref = `/auth/login?redirect=${encodeURIComponent(pathname || "/")}`;
 
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
@@ -57,6 +53,7 @@ export default function Nav({ mode = "default" }: NavProps) {
     : "hover:text-emerald-400";
   const coursesActive = pathname?.startsWith("/courses");
   const dashboardActive = pathname?.startsWith("/dashboard");
+  const profileActive = pathname?.startsWith("/profile");
   const notificationsActive = pathname?.startsWith("/notifications");
   const billingActive = pathname?.startsWith("/billing");
   const authButtonClass = `px-4 md:px-6 py-2 md:py-3 rounded-full font-bold text-sm md:text-lg transition-all shadow-lg hover:shadow-xl ${
@@ -114,6 +111,14 @@ export default function Nav({ mode = "default" }: NavProps) {
                 className={`transition-colors ${navHoverClass} ${billingActive ? "text-emerald-600" : ""}`}
               >
                 পেমেন্ট হিস্টরি
+              </Link>
+            )}
+            {loggedIn && (
+              <Link
+                href="/profile"
+                className={`transition-colors ${navHoverClass} ${profileActive ? "text-emerald-600" : ""}`}
+              >
+                প্রোফাইল
               </Link>
             )}
             {mode === "landing" && (
@@ -251,6 +256,19 @@ export default function Nav({ mode = "default" }: NavProps) {
                         }`}
                       >
                         পেমেন্ট হিস্টরি
+                      </Link>
+                    )}
+                    {loggedIn && (
+                      <Link
+                        href="/profile"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`rounded-xl border px-4 py-3 transition-colors ${
+                          profileActive
+                            ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                            : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                        }`}
+                      >
+                        প্রোফাইল
                       </Link>
                     )}
                     {loggedIn && (

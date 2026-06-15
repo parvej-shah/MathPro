@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import toast from "react-hot-toast";
-import { useUserProfile, UserProfile } from "@/hooks/useUserProfile";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
 
 const Spinner = ({ className = "size-5" }: { className?: string }) => (
@@ -22,9 +22,17 @@ export interface CheckoutFormData {
   name: string;
   email: string;
   phone: string;
-  currentInstitution: string;
+  facebookId: string;
+  address: string;
+  schoolCollege: string;
+  group: "" | "Science" | "Arts" | "Commerce";
+  guardianName: string;
+  guardianMobile: string;
+  relationWithGuardian: string;
+  gender: "" | "Male" | "Female" | "Other";
+  classLevel: "" | "JSC" | "SSC" | "HSC";
+  version: "" | "Bangla" | "English";
   department: string;
-  currentAcademicLevel: "SSC" | "HSC" | "UNIVERSITY" | "OTHERS";
 }
 
 interface CheckoutModalProps {
@@ -79,9 +87,17 @@ export default function CheckoutModal({
     name: "",
     email: "",
     phone: "",
-    currentInstitution: "",
+    facebookId: "",
+    address: "",
+    schoolCollege: "",
+    group: "",
+    guardianName: "",
+    guardianMobile: "",
+    relationWithGuardian: "",
+    gender: "",
+    classLevel: "",
+    version: "",
     department: "",
-    currentAcademicLevel: "UNIVERSITY",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof CheckoutFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,38 +116,66 @@ export default function CheckoutModal({
 
   useEffect(() => {
     if (profile) {
-      setFormData({
-        name: profile.name || "",
-        email: profile.email || profile.profile?.email || "",
-        phone: profile.phone || profile.profile?.phone || "",
-        currentInstitution: profile.profile?.currentInstitution || "",
-        department: profile.profile?.department || "",
-        currentAcademicLevel: profile.profile?.currentAcademicLevel || "UNIVERSITY",
+      const frameId = window.requestAnimationFrame(() => {
+        setFormData({
+          name: profile.name || "",
+          email: profile.email || profile.profile?.email || "",
+          phone: profile.phone || profile.profile?.phone || "",
+          facebookId: profile.profile?.facebookId || "",
+          address: profile.profile?.address || "",
+          schoolCollege: profile.profile?.schoolCollege || "",
+          group: profile.profile?.group || "",
+          guardianName: profile.profile?.guardianName || "",
+          guardianMobile: profile.profile?.guardianMobile || "",
+          relationWithGuardian: profile.profile?.relationWithGuardian || "",
+          gender: profile.profile?.gender || "",
+          classLevel: profile.profile?.classLevel || "",
+          version: profile.profile?.version || "",
+          department: profile.profile?.department || "",
+        });
       });
+
+      return () => {
+        window.cancelAnimationFrame(frameId);
+      };
     }
   }, [profile]);
 
   useEffect(() => {
     if (isOpen && profile && !profileLoading) {
-      setFormData({
-        name: profile.name || "",
-        email: profile.email || profile.profile?.email || "",
-        phone: profile.phone || profile.profile?.phone || "",
-        currentInstitution: profile.profile?.currentInstitution || "",
-        department: profile.profile?.department || "",
-        currentAcademicLevel: profile.profile?.currentAcademicLevel || "UNIVERSITY",
+      const frameId = window.requestAnimationFrame(() => {
+        setFormData({
+          name: profile.name || "",
+          email: profile.email || profile.profile?.email || "",
+          phone: profile.phone || profile.profile?.phone || "",
+          facebookId: profile.profile?.facebookId || "",
+          address: profile.profile?.address || "",
+          schoolCollege: profile.profile?.schoolCollege || "",
+          group: profile.profile?.group || "",
+          guardianName: profile.profile?.guardianName || "",
+          guardianMobile: profile.profile?.guardianMobile || "",
+          relationWithGuardian: profile.profile?.relationWithGuardian || "",
+          gender: profile.profile?.gender || "",
+          classLevel: profile.profile?.classLevel || "",
+          version: profile.profile?.version || "",
+          department: profile.profile?.department || "",
+        });
+        setErrors({});
+        setAgreedToTerms(false);
+        setIncludeBooks(false);
+        setShipping({
+          name: profile.name || "",
+          phone: profile.phone || profile.profile?.phone || "",
+          address: "",
+          city: "",
+          postcode: "",
+        });
+        setShippingErrors({});
       });
-      setErrors({});
-      setAgreedToTerms(false);
-      setIncludeBooks(false);
-      setShipping({
-        name: profile.name || "",
-        phone: profile.phone || profile.profile?.phone || "",
-        address: "",
-        city: "",
-        postcode: "",
-      });
-      setShippingErrors({});
+
+      return () => {
+        window.cancelAnimationFrame(frameId);
+      };
     }
   }, [isOpen, profile, profileLoading]);
 
@@ -170,9 +214,15 @@ export default function CheckoutModal({
     } else if (!formData.phone.trim()) {
       newErrors.phone = "ফোন নম্বর প্রয়োজন";
     }
-    if (!formData.currentInstitution.trim()) newErrors.currentInstitution = "ইনস্টিটিউট প্রয়োজন";
-    if (!formData.department.trim()) newErrors.department = "ডিপার্টমেন্ট প্রয়োজন";
-    if (!formData.currentAcademicLevel) newErrors.currentAcademicLevel = "একাডেমিক লেভেল বেছে নিন";
+    if (!formData.schoolCollege.trim()) newErrors.schoolCollege = "স্কুল / কলেজ প্রয়োজন";
+    if (!formData.group) newErrors.group = "গ্রুপ বেছে নিন";
+    if (!formData.guardianName.trim()) newErrors.guardianName = "অভিভাবকের নাম প্রয়োজন";
+    if (!formData.guardianMobile.trim()) newErrors.guardianMobile = "অভিভাবকের মোবাইল প্রয়োজন";
+    else if (!validatePhone(formData.guardianMobile.trim())) newErrors.guardianMobile = "১১ সংখ্যার ফোন নম্বর দিন (01XXXXXXXXX)";
+    if (!formData.relationWithGuardian.trim()) newErrors.relationWithGuardian = "সম্পর্ক লিখুন";
+    if (!formData.gender) newErrors.gender = "লিঙ্গ বেছে নিন";
+    if (!formData.classLevel) newErrors.classLevel = "ক্লাস বেছে নিন";
+    if (!formData.version) newErrors.version = "ভার্সন বেছে নিন";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -204,11 +254,20 @@ export default function CheckoutModal({
     try {
       const token = localStorage.getItem("token");
       if (!token) { toast.error("Authentication required"); setIsSubmitting(false); return; }
-      const updateData: any = {
+      const updateData: Record<string, string | null | undefined> = {
         name: formData.name.trim(),
-        currentInstitution: formData.currentInstitution.trim(),
+        phone: isPhoneDisabled() ? undefined : formData.phone.trim(),
+        facebookId: formData.facebookId.trim() || null,
+        address: formData.address.trim() || null,
+        schoolCollege: formData.schoolCollege.trim(),
+        group: formData.group,
+        guardianName: formData.guardianName.trim(),
+        guardianMobile: formData.guardianMobile.trim(),
+        relationWithGuardian: formData.relationWithGuardian.trim(),
+        gender: formData.gender,
+        classLevel: formData.classLevel,
+        version: formData.version,
         department: formData.department.trim(),
-        currentAcademicLevel: formData.currentAcademicLevel,
       };
       if (!isEmailDisabled() && formData.email.trim()) updateData.email = formData.email.trim();
       if (!isPhoneDisabled() && formData.phone.trim()) updateData.phone = formData.phone.trim();
@@ -234,9 +293,12 @@ export default function CheckoutModal({
       } else {
         throw new Error(response.data.error || "Failed to update profile");
       }
-    } catch (error: any) {
-      const errorMessage =
-        error.response?.data?.error || error.response?.data?.message || error.message || "Failed to update profile.";
+    } catch (error: unknown) {
+      const errorMessage = axios.isAxiosError<{ error?: string; message?: string }>(error)
+        ? error.response?.data?.error || error.response?.data?.message || error.message
+        : error instanceof Error
+          ? error.message
+          : "Failed to update profile.";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -463,55 +525,180 @@ export default function CheckoutModal({
                     {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
                   </div>
 
-                  {/* Institute + Academic Level row */}
+                  <div>
+                    <label className="block text-xs font-semibold text-foreground mb-1.5">
+                      ঠিকানা
+                    </label>
+                    <textarea
+                      value={formData.address}
+                      onChange={(e) => handleInputChange("address", e.target.value)}
+                      placeholder="বাড়ি, রোড, এলাকা"
+                      className={`${FIELD_CLASS(!!errors.address)} min-h-24 resize-y`}
+                    />
+                  </div>
+
+                  {/* Academic profile */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        ইনস্টিটিউট <span className="text-destructive">*</span>
+                        স্কুল / কলেজ <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="text"
-                        value={formData.currentInstitution}
-                        onChange={(e) => handleInputChange("currentInstitution", e.target.value)}
+                        value={formData.schoolCollege}
+                        onChange={(e) => handleInputChange("schoolCollege", e.target.value)}
                         placeholder="আপনার প্রতিষ্ঠান"
-                        className={FIELD_CLASS(!!errors.currentInstitution)}
+                        className={FIELD_CLASS(!!errors.schoolCollege)}
                         required
                       />
-                      {errors.currentInstitution && <p className="text-destructive text-xs mt-1">{errors.currentInstitution}</p>}
+                      {errors.schoolCollege && <p className="text-destructive text-xs mt-1">{errors.schoolCollege}</p>}
                     </div>
                     <div>
                       <label className="block text-xs font-semibold text-foreground mb-1.5">
-                        একাডেমিক লেভেল <span className="text-destructive">*</span>
+                        গ্রুপ <span className="text-destructive">*</span>
                       </label>
                       <select
-                        value={formData.currentAcademicLevel}
-                        onChange={(e) => handleInputChange("currentAcademicLevel", e.target.value as any)}
-                        className={FIELD_CLASS(!!errors.currentAcademicLevel)}
+                        value={formData.group}
+                        onChange={(e) => handleInputChange("group", e.target.value)}
+                        className={FIELD_CLASS(!!errors.group)}
                         required
                       >
-                        <option value="SSC">SSC</option>
-                        <option value="HSC">HSC</option>
-                        <option value="UNIVERSITY">University</option>
-                        <option value="OTHERS">Others</option>
+                        <option value="">বেছে নিন</option>
+                        <option value="Science">Science</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Commerce">Commerce</option>
                       </select>
-                      {errors.currentAcademicLevel && <p className="text-destructive text-xs mt-1">{errors.currentAcademicLevel}</p>}
+                      {errors.group && <p className="text-destructive text-xs mt-1">{errors.group}</p>}
                     </div>
                   </div>
 
-                  {/* Department */}
-                  <div>
-                    <label className="block text-xs font-semibold text-foreground mb-1.5">
-                      ডিপার্টমেন্ট / গ্রুপ <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.department}
-                      onChange={(e) => handleInputChange("department", e.target.value)}
-                      placeholder="আপনার বিভাগ বা গ্রুপ"
-                      className={FIELD_CLASS(!!errors.department)}
-                      required
-                    />
-                    {errors.department && <p className="text-destructive text-xs mt-1">{errors.department}</p>}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        ক্লাস <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={formData.classLevel}
+                        onChange={(e) => handleInputChange("classLevel", e.target.value)}
+                        className={FIELD_CLASS(!!errors.classLevel)}
+                        required
+                      >
+                        <option value="">বেছে নিন</option>
+                        <option value="JSC">JSC</option>
+                        <option value="SSC">SSC</option>
+                        <option value="HSC">HSC</option>
+                      </select>
+                      {errors.classLevel && <p className="text-destructive text-xs mt-1">{errors.classLevel}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        ভার্সন <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={formData.version}
+                        onChange={(e) => handleInputChange("version", e.target.value)}
+                        className={FIELD_CLASS(!!errors.version)}
+                        required
+                      >
+                        <option value="">বেছে নিন</option>
+                        <option value="Bangla">Bangla</option>
+                        <option value="English">English</option>
+                      </select>
+                      {errors.version && <p className="text-destructive text-xs mt-1">{errors.version}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        অভিভাবকের নাম <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.guardianName}
+                        onChange={(e) => handleInputChange("guardianName", e.target.value)}
+                        placeholder="অভিভাবকের নাম"
+                        className={FIELD_CLASS(!!errors.guardianName)}
+                        required
+                      />
+                      {errors.guardianName && <p className="text-destructive text-xs mt-1">{errors.guardianName}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        অভিভাবকের মোবাইল <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        value={formData.guardianMobile}
+                        onChange={(e) => handleInputChange("guardianMobile", e.target.value)}
+                        placeholder="01XXXXXXXXX"
+                        className={FIELD_CLASS(!!errors.guardianMobile)}
+                        required
+                      />
+                      {errors.guardianMobile && <p className="text-destructive text-xs mt-1">{errors.guardianMobile}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        সম্পর্ক <span className="text-destructive">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.relationWithGuardian}
+                        onChange={(e) => handleInputChange("relationWithGuardian", e.target.value)}
+                        placeholder="যেমন: বাবা, মা"
+                        className={FIELD_CLASS(!!errors.relationWithGuardian)}
+                        required
+                      />
+                      {errors.relationWithGuardian && <p className="text-destructive text-xs mt-1">{errors.relationWithGuardian}</p>}
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        লিঙ্গ <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={formData.gender}
+                        onChange={(e) => handleInputChange("gender", e.target.value)}
+                        className={FIELD_CLASS(!!errors.gender)}
+                        required
+                      >
+                        <option value="">বেছে নিন</option>
+                        <option value="Male">পুরুষ</option>
+                        <option value="Female">নারী</option>
+                        <option value="Other">অন্যান্য</option>
+                      </select>
+                      {errors.gender && <p className="text-destructive text-xs mt-1">{errors.gender}</p>}
+                    </div>
+                  </div>
+
+                  {/* Optional extras */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        ফেসবুক আইডি
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.facebookId}
+                        onChange={(e) => handleInputChange("facebookId", e.target.value)}
+                        placeholder="facebook.com/..."
+                        className={FIELD_CLASS(!!errors.facebookId)}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-foreground mb-1.5">
+                        বিভাগ / ডিপার্টমেন্ট
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.department}
+                        onChange={(e) => handleInputChange("department", e.target.value)}
+                        placeholder="যেমন: বিজ্ঞান বিভাগ"
+                        className={FIELD_CLASS(!!errors.department)}
+                      />
+                    </div>
                   </div>
 
                   {/* Books inclusion */}

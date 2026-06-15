@@ -266,6 +266,18 @@ export const logout = () => {
   window.location.reload();
 };
 
+// Clear the (expired/invalid) session and send the user to login, returning to
+// the current page after they sign back in. Use when the backend reports the
+// token itself is bad — distinct from logout(), which just reloads in place.
+export const redirectToLogin = () => {
+  const loginUrl = createLoginRedirectUrl();
+  localStorage.removeItem("token");
+  deleteCookie("token");
+  deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
+  emitAuthTokenUpdate(null);
+  window.location.href = loginUrl;
+};
+
 export function capitalizeFirstWord(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
