@@ -380,12 +380,23 @@ export function countModulesAssignmentsVideos(data: CourseDataWithChapters) {
   };
 }
 
-export function decryptString(encryptedText: string, secretKey: string) {
-  console.log(encryptedText, secretKey);
-  const bytes = CryptoJS.AES.decrypt(encryptedText, secretKey);
+function tryDecrypt(encryptedText: string, key: string): string {
+  if (!key) return "";
+  try {
+    return CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+  } catch {
+    // A malformed/plaintext ciphertext or key mismatch makes toString(Utf8)
+    // throw "Malformed UTF-8 data" — treat as "this key didn't work".
+    return "";
+  }
+}
 
-  const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-  return decryptedText;
+export function decryptString(encryptedText: string, secretKey: string) {
+  // Quiz answers were authored across two key eras. Try the given key, then
+  // fall back to the alternate so the reveal/explanation renders for both.
+  const primary = tryDecrypt(encryptedText, secretKey);
+  if (primary !== "") return primary;
+  return tryDecrypt(encryptedText, process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ_ALT ?? "");
 }
 export function convertUnixTimestamp(timestamp: number) {
   const date = new Date(timestamp);

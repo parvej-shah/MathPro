@@ -1,8 +1,16 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { decryptString } from "@/helpers";
-import type { CourseModule, QuizQuestionData } from "../_components/types";
+import axios from "axios";
+import { BACKEND_URL } from "@/api.config";
+import type { CourseModule } from "../_components/types";
+
+interface SubmitResult {
+  score: number;
+  answers: Record<number, string>;
+  verdict: boolean[];
+  submitted: boolean;
+}
 
 interface UseQuizReturn {
   quizAnswer: Record<number, string>;
@@ -11,8 +19,9 @@ interface UseQuizReturn {
   quizVerdict: boolean[];
   showQuizAnswer: boolean;
   justSubmitted: boolean;
-  submitQuiz: () => { score: number; answers: Record<number, string>; verdict: boolean[] };
-  restoreFromTimer: (score: number, answers: Record<number, string>, verdict: boolean[]) => void;
+  submitting: boolean;
+  /** Grades on the server, persists the attempt, returns the server verdict. */
+  submitQuiz: () => Promise<SubmitResult>;
 }
 
 export function useQuiz(
@@ -24,72 +33,80 @@ export function useQuiz(
   const [quizVerdict, setQuizVerdict] = useState<boolean[]>([]);
   const [showQuizAnswer, setShowQuizAnswer] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Reset quiz UI state whenever the active module changes
+  // Reset quiz UI state whenever the active module changes, then ask the server
+  // whether this student already submitted this quiz. Submitted-state, chosen
+  // answers, and the verdict are owned by the backend (not localStorage), so a
+  // reload / another device shows the same revealed answers.
   useEffect(() => {
+    let cancelled = false;
     queueMicrotask(() => {
+      if (cancelled) return;
       setQuizAnswer({});
       setQuizVerdict([]);
       setShowQuizAnswer(false);
       setJustSubmitted(false);
       setQuizScore(0);
     });
-  }, [activeModule?.id]);
 
-  const submitQuiz = useCallback((): { score: number; answers: Record<number, string>; verdict: boolean[] } => {
-    const quizes = (activeModule?.data?.quiz as QuizQuestionData[]) ?? [];
-    const verdict: boolean[] = [];
-    let acceptedPoints = 0;
-    let totalPoints = 0;
-    const secretKey = process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "";
-
-    quizes.forEach((quiz, index: number) => {
-      const questionPoints = typeof quiz.points === "number" && quiz.points > 0
-        ? quiz.points
-        : 1;
-      totalPoints += questionPoints;
-
-      const decrypted = decryptString(
-        quiz.answer || quiz.correct_answer || "",
-        secretKey,
-      );
-      if (decrypted === quizAnswer[index]) {
-        verdict.push(true);
-        acceptedPoints += questionPoints;
-      } else {
-        verdict.push(false);
-      }
-    });
-
-    const realScore = totalPoints > 0
-      ? (acceptedPoints / totalPoints) * (activeModule?.score ?? 0)
-      : 0;
-
-    setShowQuizAnswer(true);
-    setQuizScore(realScore);
-    setQuizVerdict(verdict);
-    setJustSubmitted(true);
-
-    if (activeModule?.id != null) {
-      onProgressSubmit(activeModule.id, realScore);
+    const moduleId = activeModule?.id;
+    if (!moduleId || activeModule?.data?.category !== "QUIZ") {
+      return () => { cancelled = true; };
     }
 
-    return { score: realScore, answers: quizAnswer, verdict };
-  }, [activeModule, quizAnswer, onProgressSubmit]);
+    const token = localStorage.getItem("token");
+    axios
+      .get(`${BACKEND_URL}/user/module/quiz/${moduleId}/attempt`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (cancelled) return;
+        const data = res.data?.data;
+        if (data?.submitted) {
+          setQuizScore(data.score ?? 0);
+          setQuizAnswer(data.answers ?? {});
+          setQuizVerdict(data.verdict ?? []);
+          setShowQuizAnswer(true);
+        }
+      })
+      .catch(() => {});
 
-  // Called by the page after useQuizTimer detects a previously-submitted quiz
-  // on reload — restore the persisted results directly into quiz state.
-  const restoreFromTimer = useCallback((
-    score: number,
-    answers: Record<number, string>,
-    verdict: boolean[],
-  ) => {
-    setQuizScore(score);
-    setQuizAnswer(answers);
-    setQuizVerdict(verdict);
-    setShowQuizAnswer(true);
-    setJustSubmitted(false);
-  }, []);
+    return () => { cancelled = true; };
+  }, [activeModule?.id, activeModule?.data?.category]);
+
+  // Submit answers to the server, which grades against the encrypted answer key
+  // and persists the attempt. The returned verdict/score drive the reveal.
+  const submitQuiz = useCallback(async (): Promise<SubmitResult> => {
+    const moduleId = activeModule?.id;
+    const empty: SubmitResult = { score: 0, answers: quizAnswer, verdict: [], submitted: false };
+    if (!moduleId) return empty;
+
+    setSubmitting(true);
+    const token = localStorage.getItem("token");
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/user/module/quiz/${moduleId}/submit`,
+        { answers: quizAnswer },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      const data = res.data?.data ?? {};
+      const score = data.score ?? 0;
+      const verdict = data.verdict ?? [];
+
+      setShowQuizAnswer(true);
+      setQuizScore(score);
+      setQuizVerdict(verdict);
+      setJustSubmitted(true);
+
+      onProgressSubmit(moduleId, score);
+      return { score, answers: quizAnswer, verdict, submitted: true };
+    } catch {
+      return empty;
+    } finally {
+      setSubmitting(false);
+    }
+  }, [activeModule?.id, quizAnswer, onProgressSubmit]);
 
   return {
     quizAnswer,
@@ -98,7 +115,7 @@ export function useQuiz(
     quizVerdict,
     showQuizAnswer,
     justSubmitted,
+    submitting,
     submitQuiz,
-    restoreFromTimer,
   };
 }

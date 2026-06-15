@@ -66,6 +66,8 @@ export default function CourseDetailsPage() {
   );
 
   // ── Quiz ──────────────────────────────────────────────────────────────────
+  // Submitted-state, answers, verdict, and score are owned by the backend
+  // (useQuiz fetches/persists them); the timer is local countdown only.
   const {
     quizAnswer,
     setQuizAnswer,
@@ -73,16 +75,10 @@ export default function CourseDetailsPage() {
     showQuizAnswer,
     justSubmitted,
     submitQuiz: submitQuizBase,
-    restoreFromTimer,
   } = useQuiz(activeModule, submitProgress);
 
   const onTimerExpire = useCallback(() => {
-    const submission = submitQuizBase();
-    return {
-      quizScore: submission.score,
-      quizAnswer: submission.answers,
-      quizVerdict: submission.verdict,
-    };
+    submitQuizBase();
   }, [submitQuizBase]);
 
   const {
@@ -92,29 +88,12 @@ export default function CourseDetailsPage() {
     formatTime,
     getTimerColor,
     clearQuizTimer,
-    persistSubmission,
-    restoredSubmission,
-  } = useQuizTimer(activeModule, onTimerExpire);
-
-  // When the timer hook detects a quiz was previously submitted (reload), wire
-  // the restored answers/score/verdict into the quiz hook.
-  useEffect(() => {
-    if (restoredSubmission) {
-      restoreFromTimer(
-        restoredSubmission.quizScore,
-        restoredSubmission.quizAnswer,
-        restoredSubmission.quizVerdict,
-      );
-    }
-  }, [restoredSubmission]); // eslint-disable-line react-hooks/exhaustive-deps
+  } = useQuizTimer(activeModule, showQuizAnswer, onTimerExpire);
 
   const submitQuiz = useCallback(() => {
-    const { score, answers, verdict } = submitQuizBase();
-    if (activeModule?.id) {
-      persistSubmission(activeModule.id, score, answers, verdict);
-    }
+    submitQuizBase();
     clearQuizTimer();
-  }, [submitQuizBase, activeModule, persistSubmission, clearQuizTimer]);
+  }, [submitQuizBase, clearQuizTimer]);
 
   // ── Discussions ───────────────────────────────────────────────────────────
   const {

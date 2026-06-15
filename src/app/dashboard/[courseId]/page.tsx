@@ -11,7 +11,7 @@ import CourseDashboardLoadingSkeleton from "@/components/Dashboard/CourseDashboa
 import { useCourseDashboard } from "@/hooks/useCourseDashboard";
 import { usePaymentHistory } from "@/hooks/usePaymentHistory";
 import { useCourseRoutine } from "@/hooks/useCourseRoutine";
-import { useLiveClasses } from "@/hooks/useLiveClasses";
+import { useCourseLiveModules } from "@/hooks/useCourseLiveModules";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { recordCourseView } from "@/utils/courseViewTracker";
 import { getMostRecentModule } from "@/services/moduleViewService";
@@ -42,10 +42,9 @@ export default function CourseDashboardPage() {
     const { historyData, loading: historyLoading } = usePaymentHistory();
     const { routineData } = useCourseRoutine(shouldFetch ? courseId : undefined);
     const {
-        liveClasses,
+        liveModules,
         loading: liveClassesLoading,
-        serverTime,
-    } = useLiveClasses(shouldFetch ? courseId : undefined);
+    } = useCourseLiveModules(shouldFetch ? courseId : undefined);
     const {
         announcements,
         totalCount,
@@ -413,8 +412,7 @@ export default function CourseDashboardPage() {
 
                             {/* Live Classes - REAL DATA from Live Classes API */}
                             <LiveClassesSection
-                                liveClasses={liveClasses}
-                                serverTime={serverTime}
+                                liveModules={liveModules}
                                 loading={liveClassesLoading}
                             />
 

@@ -98,13 +98,13 @@ export default function DashboardPage() {
         <div className="w-[90%] lg:w-[85%] max-w-[1440px] mx-auto py-12">
           <DashboardHeader />
 
-          <LiveClassBanner />
-
           <StatsSection
             totalCourses={stats.totalCourses}
             totalBundles={stats.totalBundles}
             totalIndividualCourses={stats.totalIndividualCourses}
           />
+
+          <LiveClassBanner />
 
           {!allProgressCalculated ? (
             <ResumeBanner isLoading={true} />

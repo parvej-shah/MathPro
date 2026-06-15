@@ -56,6 +56,9 @@ const ModulePlayer = memo(function ModulePlayer({
     ? Math.round((earnedQuestionPoints / totalQuestionPoints) * 100)
     : 0;
 
+  const liveStatus = activeModule?.live_status;
+  const isLiveOverlay = liveStatus === "LIVE" || liveStatus === "SCHEDULED";
+
   return (
     <div className="mt-8">
       {/* Module Title */}
@@ -63,17 +66,25 @@ const ModulePlayer = memo(function ModulePlayer({
         {activeModule?.title}
       </h3>
 
-      {/* ── LIVE CLASS (overlay on a VIDEO module while live) ──── */}
-      {activeModule?.live_status === "LIVE" && (
-        <div className="mb-6 rounded-xl border border-primary/30 bg-primary/[.08] p-5">
+      {/* ── LIVE CLASS (replaces the video player while scheduled/live) ──── */}
+      {category === "VIDEO" && isLiveOverlay && (
+        <div className="rounded-xl border border-primary/30 bg-primary/[.08] p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive"></span>
-            </span>
-            <span className="font-bold text-destructive tracking-wide">
-              লাইভ ক্লাস চলছে
-            </span>
+            {liveStatus === "LIVE" ? (
+              <>
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-destructive"></span>
+                </span>
+                <span className="font-bold text-destructive tracking-wide">
+                  লাইভ ক্লাস চলছে
+                </span>
+              </>
+            ) : (
+              <span className="font-bold text-primary tracking-wide">
+                লাইভ ক্লাস শীঘ্রই শুরু হবে
+              </span>
+            )}
           </div>
           {activeModule?.live_scheduled_at ? (
             <p className="text-sm text-foreground/80 mb-2">
@@ -99,11 +110,24 @@ const ModulePlayer = memo(function ModulePlayer({
               </span>
             </p>
           ) : null}
+          {liveStatus === "LIVE" && activeModule?.live_meeting_id ? (
+            <button
+              onClick={() =>
+                window.open(
+                  `https://zoom.us/j/${activeModule.live_meeting_id}`,
+                  "_blank",
+                )
+              }
+              className="mt-4 px-8 py-3 rounded-xl cursor-pointer font-bold transition-all duration-300 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-red-500/30"
+            >
+              জুম ক্লাসে যোগ দাও
+            </button>
+          ) : null}
         </div>
       )}
 
       {/* ── VIDEO ─────────────────────────────────────────────── */}
-      {category === "VIDEO" && activeModule?.data?.videoHost === "Youtube" &&
+      {category === "VIDEO" && !isLiveOverlay && activeModule?.data?.videoHost === "Youtube" &&
         (!activeModule?.data?.videoUrl ||
         (activeModule.data.videoUrl as string).trim() === "" ? (
           <ModuleUpcoming />
@@ -111,7 +135,7 @@ const ModulePlayer = memo(function ModulePlayer({
           <ReactYoutubePlayer videoUrl={activeModule.data.videoUrl as string} />
         ))}
 
-      {category === "VIDEO" && activeModule?.data?.videoHost === "BunnyCDN" &&
+      {category === "VIDEO" && !isLiveOverlay && activeModule?.data?.videoHost === "BunnyCDN" &&
         (!activeModule?.data?.videoUrl ||
         (activeModule.data.videoUrl as string).trim() === "" ? (
           <ModuleUpcoming />

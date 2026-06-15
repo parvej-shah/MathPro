@@ -3,19 +3,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import type { CourseModule } from "../_components/types";
 
+// Only the countdown is local. Submitted-state, answers, and verdict are owned
+// by the backend (see useQuiz). localStorage here just remembers when a timed
+// quiz was started so a reload resumes the same countdown instead of restarting.
 interface StoredTimer {
   startTime: number;
   totalTime: number;
-  submitted: boolean;
-  quizScore?: number;
-  quizAnswer?: Record<number, string>;
-  quizVerdict?: boolean[];
-}
-
-interface RestoredSubmission {
-  quizScore: number;
-  quizAnswer: Record<number, string>;
-  quizVerdict: boolean[];
 }
 
 interface UseQuizTimerReturn {
@@ -25,9 +18,6 @@ interface UseQuizTimerReturn {
   formatTime: (seconds: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
   clearQuizTimer: () => void;
-  persistSubmission: (moduleId: number, score: number, answers: Record<number, string>, verdict: boolean[]) => void;
-  /** Non-null when the quiz was previously submitted and the page reloaded. */
-  restoredSubmission: RestoredSubmission | null;
 }
 
 function timerKey(moduleId: number) {
@@ -53,12 +43,12 @@ function writeTimer(moduleId: number, data: StoredTimer) {
 
 export function useQuizTimer(
   activeModule: CourseModule | null,
-  onExpire: () => RestoredSubmission | null,
+  alreadySubmitted: boolean,
+  onExpire: () => void,
 ): UseQuizTimerReturn {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerExpired, setTimerExpired] = useState(false);
-  const [restoredSubmission, setRestoredSubmission] = useState<RestoredSubmission | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const clearQuizTimer = useCallback(() => {
@@ -69,89 +59,49 @@ export function useQuizTimer(
     setTimerActive(false);
   }, []);
 
-  const persistSubmission = useCallback((
-    moduleId: number,
-    score: number,
-    answers: Record<number, string>,
-    verdict: boolean[],
-  ) => {
-    const existing = readTimer(moduleId);
-    writeTimer(moduleId, {
-      startTime: existing?.startTime ?? Math.floor(Date.now() / 1000),
-      totalTime: existing?.totalTime ?? 0,
-      submitted: true,
-      quizScore: score,
-      quizAnswer: answers,
-      quizVerdict: verdict,
-    });
-  }, []);
-
   const initTimer = useCallback((module: CourseModule) => {
     const moduleId = module.id;
     const totalTime = module.quiz_time_limit && module.quiz_time_limit > 0
       ? module.quiz_time_limit * 60
       : 0;
+
+    // Already-submitted quizzes (server says so) show the reveal, no timer.
+    if (alreadySubmitted) {
+      setTimeRemaining(0);
+      setTimerActive(false);
+      setTimerExpired(false);
+      return;
+    }
+
+    if (totalTime <= 0) {
+      setTimeRemaining(0);
+      setTimerActive(false);
+      setTimerExpired(false);
+      return;
+    }
+
     const existing = readTimer(moduleId);
-
-    if (existing) {
-      if (existing.submitted) {
-        // Quiz was already submitted — restore results, don't show timer
-        setTimerExpired(false);
-        setTimerActive(false);
-        setRestoredSubmission({
-          quizScore: existing.quizScore ?? 0,
-          quizAnswer: existing.quizAnswer ?? {},
-          quizVerdict: existing.quizVerdict ?? [],
-        });
-        return;
-      }
-
-      if (existing.totalTime <= 0 || totalTime <= 0) {
-        setTimeRemaining(0);
-        setTimerActive(false);
-        setTimerExpired(false);
-        setRestoredSubmission(null);
-        return;
-      }
-
+    if (existing && existing.totalTime > 0) {
       const elapsed = Math.floor(Date.now() / 1000) - existing.startTime;
       const remaining = existing.totalTime - elapsed;
-
       if (remaining <= 0) {
         setTimeRemaining(0);
         setTimerExpired(true);
         setTimerActive(false);
-        const submission = onExpire();
-        if (submission) {
-          persistSubmission(
-            moduleId,
-            submission.quizScore,
-            submission.quizAnswer,
-            submission.quizVerdict,
-          );
-        } else {
-          writeTimer(moduleId, { ...existing, submitted: true });
-        }
+        onExpire();
       } else {
         setTimeRemaining(remaining);
         setTimerActive(true);
         setTimerExpired(false);
-        setRestoredSubmission(null);
       }
-    } else if (totalTime > 0) {
+    } else {
       const startTime = Math.floor(Date.now() / 1000);
-      writeTimer(moduleId, { startTime, totalTime, submitted: false });
+      writeTimer(moduleId, { startTime, totalTime });
       setTimeRemaining(totalTime);
       setTimerActive(true);
       setTimerExpired(false);
-      setRestoredSubmission(null);
-    } else {
-      setTimeRemaining(0);
-      setTimerActive(false);
-      setTimerExpired(false);
-      setRestoredSubmission(null);
     }
-  }, [onExpire, persistSubmission]);
+  }, [alreadySubmitted, onExpire]);
 
   // Initialize / tear down timer when the active module changes
   useEffect(() => {
@@ -163,12 +113,11 @@ export function useQuizTimer(
       queueMicrotask(() => {
         clearQuizTimer();
         setTimerExpired(false);
-        setRestoredSubmission(null);
         setTimeRemaining(0);
       });
     }
     return () => { clearQuizTimer(); };
-  }, [activeModule?.id, activeModule?.data?.category, activeModule?.quiz_time_limit]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeModule?.id, activeModule?.data?.category, activeModule?.quiz_time_limit, alreadySubmitted]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Countdown tick
   useEffect(() => {
@@ -179,17 +128,7 @@ export function useQuizTimer(
         if (prev <= 1) {
           clearQuizTimer();
           setTimerExpired(true);
-          if (activeModule?.id) {
-            const submission = onExpire();
-            if (submission) {
-              persistSubmission(
-                activeModule.id,
-                submission.quizScore,
-                submission.quizAnswer,
-                submission.quizVerdict,
-              );
-            }
-          }
+          onExpire();
           return 0;
         }
         return prev - 1;
@@ -224,7 +163,5 @@ export function useQuizTimer(
     formatTime,
     getTimerColor,
     clearQuizTimer,
-    persistSubmission,
-    restoredSubmission,
   };
 }
