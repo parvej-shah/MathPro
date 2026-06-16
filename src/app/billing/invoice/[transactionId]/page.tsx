@@ -38,6 +38,25 @@ const MOCK_USER_INFO: UserInfo = {
   profile: { email: "test@example.com", address: "ঢাকা, বাংলাদেশ" },
 };
 
+function PurchaseSuccessBanner({ title }: { title: string }) {
+  return (
+    <section className="print:hidden rounded-[28px] border border-primary/20 bg-card px-6 py-8 sm:px-8 sm:py-10 shadow-[0_18px_50px_rgba(0,0,0,0.18)] overflow-hidden relative">
+      <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
+      <div className="relative">
+        <p className="text-[2.8rem] leading-none sm:text-7xl font-black tracking-tight text-primary">
+          অভিনন্দন!
+        </p>
+        <h1 className="mt-4 text-2xl sm:text-4xl font-extrabold text-foreground">
+          তোমার কোর্স কেনা সফল হয়েছে
+        </h1>
+        <p className="mt-3 text-base sm:text-xl text-muted-foreground">
+          {title}
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function InvoicePage() {
   const params = useParams<{ transactionId: string }>();
   const router = useRouter();
@@ -60,6 +79,13 @@ export default function InvoicePage() {
       : historyData?.all_transactions.find(
           (t) => t.transaction_id === params.transactionId,
         );
+
+  const classLink =
+    transaction?.item_type === "bundle" && transaction.bundle_id != null
+      ? `/dashboard/bundle/${transaction.bundle_id}`
+      : transaction?.item_type === "course" && transaction.course_id != null
+        ? `/dashboard/${transaction.course_id}`
+        : null;
 
   useEffect(() => {
     if (!transaction) return;
@@ -104,8 +130,17 @@ export default function InvoicePage() {
               >
                 প্রিন্ট / ডাউনলোড
               </button>
+              {classLink && (
+                <button
+                  onClick={() => router.push(classLink)}
+                  className="bg-teal text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-all"
+                >
+                  ক্লাস দেখো
+                </button>
+              )}
             </div>
 
+            <PurchaseSuccessBanner title={MOCK_TRANSACTION.title} />
             <InvoiceDocument transaction={MOCK_TRANSACTION} userInfo={MOCK_USER_INFO} />
           </div>
         </main>
@@ -154,8 +189,17 @@ export default function InvoicePage() {
             >
               প্রিন্ট / ডাউনলোড
             </button>
+            {classLink && (
+              <button
+                onClick={() => router.push(classLink)}
+                className="bg-teal text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90 transition-all"
+              >
+                ক্লাস দেখো
+              </button>
+            )}
           </div>
 
+          <PurchaseSuccessBanner title={transaction.title} />
           <InvoiceDocument transaction={transaction} userInfo={historyData.user_info} />
         </div>
       </main>

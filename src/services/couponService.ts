@@ -4,7 +4,7 @@ import { BACKEND_URL } from "@/api.config";
 export interface Coupon {
   id: number;
   name: string;
-  code: string;
+  code?: string;
   description?: string;
   discount_type: "percentage" | "fixed";
   discount_value: number;
@@ -39,6 +39,22 @@ export interface ActiveCouponsResponse {
   error?: string;
 }
 
+const getCouponErrorMessage = (error: unknown, fallback: string): string => {
+  if (axios.isAxiosError(error)) {
+    return (
+      error.response?.data?.error ||
+      error.message ||
+      fallback
+    );
+  }
+
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  return fallback;
+};
+
 /**
  * Validate a coupon code for a course or bundle
  */
@@ -70,7 +86,12 @@ export const validateCoupon = async (
       };
     }
 
-    const requestBody: any = {
+    const requestBody: {
+      coupon_code: string;
+      course_id?: number;
+      bundle_id?: number;
+      user_id?: number;
+    } = {
       coupon_code: couponCode.trim(),
     };
 
@@ -97,14 +118,14 @@ export const validateCoupon = async (
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error validating coupon:", error);
     return {
       valid: false,
-      error:
-        error.response?.data?.error ||
-        error.message ||
+      error: getCouponErrorMessage(
+        error,
         "Failed to validate coupon. Please try again.",
+      ),
     };
   }
 };
@@ -148,9 +169,13 @@ export const applyCoupon = async (
       };
     }
 
-    const requestBody: any = {
+    const requestBody: {
+      coupon_code: string;
+      course_id?: number;
+      bundle_id?: number;
+      user_id?: number;
+    } = {
       coupon_code: couponCode.trim(),
-      original_price: originalPrice,
     };
 
     if (courseId) {
@@ -176,14 +201,14 @@ export const applyCoupon = async (
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error applying coupon:", error);
     return {
       success: false,
-      error:
-        error.response?.data?.error ||
-        error.message ||
+      error: getCouponErrorMessage(
+        error,
         "Failed to apply coupon. Please try again.",
+      ),
     };
   }
 };
@@ -212,14 +237,14 @@ export const getActiveCouponsForCourse = async (
     );
 
     return response.data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching active coupons:", error);
     return {
       success: false,
-      error:
-        error.response?.data?.error ||
-        error.message ||
+      error: getCouponErrorMessage(
+        error,
         "Failed to fetch coupons. Please try again.",
+      ),
     };
   }
 };
@@ -247,14 +272,14 @@ export const getActiveCouponsForBundle = async (
       success: false,
       error: "Bundle coupons are included in bundle details response",
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching bundle coupons:", error);
     return {
       success: false,
-      error:
-        error.response?.data?.error ||
-        error.message ||
+      error: getCouponErrorMessage(
+        error,
         "Failed to fetch coupons. Please try again.",
+      ),
     };
   }
 };

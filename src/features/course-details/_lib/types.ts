@@ -108,6 +108,7 @@ export interface Module {
 }
 
 export interface Instructor {
+    id?: number;
     name: string;
     credibility: string;
     imageUploadedLink?: string;

@@ -11,7 +11,6 @@ type ProfileFormState = {
   facebookId: string;
   address: string;
   schoolCollege: string;
-  group: "" | "Science" | "Arts" | "Commerce";
   guardianName: string;
   guardianMobile: string;
   relationWithGuardian: string;
@@ -40,7 +39,6 @@ const emptyProfileForm: ProfileFormState = {
   facebookId: "",
   address: "",
   schoolCollege: "",
-  group: "",
   guardianName: "",
   guardianMobile: "",
   relationWithGuardian: "",
@@ -83,7 +81,6 @@ export default function ProfilePage() {
         facebookId: profile.profile?.facebookId || "",
         address: profile.profile?.address || "",
         schoolCollege: profile.profile?.schoolCollege || "",
-        group: profile.profile?.group || "",
         guardianName: profile.profile?.guardianName || "",
         guardianMobile: profile.profile?.guardianMobile || "",
         relationWithGuardian: profile.profile?.relationWithGuardian || "",
@@ -139,7 +136,6 @@ export default function ProfilePage() {
           facebookId: profileForm.facebookId.trim() || null,
           address: profileForm.address.trim() || null,
           schoolCollege: profileForm.schoolCollege.trim() || null,
-          group: profileForm.group || null,
           guardianName: profileForm.guardianName.trim() || null,
           guardianMobile: cleanedGuardianMobile || null,
           relationWithGuardian: profileForm.relationWithGuardian.trim() || null,
@@ -343,40 +339,16 @@ export default function ProfilePage() {
 
             <div className="space-y-4 border-t border-border pt-6">
               <h3 className="text-sm font-semibold text-heading">শিক্ষাগত তথ্য</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className={labelClass} htmlFor="profile-school">
-                    স্কুল / কলেজ
-                  </label>
-                  <input
-                    id="profile-school"
-                    className={inputClass}
-                    value={profileForm.schoolCollege}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, schoolCollege: e.target.value }))}
-                  />
-                </div>
-
-                <div>
-                  <label className={labelClass} htmlFor="profile-group">
-                    গ্রুপ
-                  </label>
-                  <select
-                    id="profile-group"
-                    className={selectClass}
-                    value={profileForm.group}
-                    onChange={(e) =>
-                      setProfileForm((prev) => ({
-                        ...prev,
-                        group: e.target.value as ProfileFormState["group"],
-                      }))
-                    }
-                  >
-                    <option value="">বেছে নাও</option>
-                    <option value="Science">Science</option>
-                    <option value="Arts">Arts</option>
-                    <option value="Commerce">Commerce</option>
-                  </select>
-                </div>
+              <div>
+                <label className={labelClass} htmlFor="profile-school">
+                  স্কুল / কলেজ
+                </label>
+                <input
+                  id="profile-school"
+                  className={inputClass}
+                  value={profileForm.schoolCollege}
+                  onChange={(e) => setProfileForm((prev) => ({ ...prev, schoolCollege: e.target.value }))}
+                />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
