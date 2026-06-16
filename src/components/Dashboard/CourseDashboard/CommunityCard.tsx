@@ -4,13 +4,18 @@ import { FaCopy, FaCheck } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 interface CommunityCardProps {
-    communityLink: string;
+    communityLink?: string;
     accessCode?: string;
     telegramLink?: string; // enrolled-only, frontend-guide-user.md §5
 }
 
 export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, accessCode, telegramLink }) => {
     const [copied, setCopied] = useState(false);
+
+    // No Facebook group link from the API → hide the whole section (no hardcoded fallback).
+    if (!communityLink) {
+        return null;
+    }
 
     const copyAccessCode = () => {
         if (accessCode) {
@@ -30,7 +35,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ communityLink, acc
                     <BsFacebook className="text-3xl" />
                 </div>
                 <h3 className="font-bold text-xl text-[#1877F2] mb-2">
-                    Join the Private Facebook Group!
+                    প্রাইভেট ফেসবুক গ্রুপে যোগ দাও!
                 </h3>
                 <p className="text-sm text-muted-foreground mb-6 px-4">
                     তোমার প্রশ্ন, কনফিউশন এবং যেকোনো প্রবলেম সলভ করতে অবশ্যই যুক্ত হয়ে যাও! এখানে কোর্সের সকল আপডেট ও তুমি পেয়ে যাবে!

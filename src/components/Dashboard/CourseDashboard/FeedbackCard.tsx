@@ -314,15 +314,16 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     if (hasSubmitted && existingFeedback && !isEditing) {
         return (
             <>
-            <div className="bg-background p-6 rounded-3xl shadow-lg border border-border relative overflow-hidden hover:shadow-xl transition-all duration-300">
+            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
                 {/* Decorative gradient background */}
-                <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-green-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
-                
+                <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+
                 <div className="relative z-10">
                     {/* Header with actions */}
                     <div className="flex justify-between items-start mb-4">
                         <div>
-                            <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-1">
+                            <h3 className="text-xl font-bold text-foreground mb-1">
                                 তোমার মতামত
                             </h3>
                             <p className="text-sm text-muted-foreground">
@@ -332,7 +333,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="p-2 text-muted-foreground hover:text-purple hover:bg-purple/10 rounded-lg transition-all"
+                                className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                                 title="Edit feedback"
                             >
                                 <BiEdit className="text-lg" />
@@ -371,7 +372,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                         <p className="text-sm font-semibold text-foreground mb-2">
                             বিভাগ
                         </p>
-                        <span className="inline-block bg-purple/10 text-purple px-3 py-1 rounded-full text-sm font-medium">
+                        <span className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
                             {getCategoryLabel(existingFeedback.category)}
                         </span>
                     </div>
@@ -419,15 +420,16 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     // Show feedback form (new submission or editing)
     return (
         <>
-        <div className="bg-background p-6 rounded-3xl shadow-lg border border-border relative overflow-hidden hover:shadow-xl transition-all duration-300">
+        <div className="bg-card p-6 rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
             {/* Decorative gradient background */}
-            <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-purple/5 to-blue-500/5 rounded-full blur-3xl"></div>
-            
+            <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+
             <div className="relative z-10">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                     <div>
-                        <h3 className="text-xl font-bold text-heading dark:text-darkHeading mb-1">
+                        <h3 className="text-xl font-bold text-foreground mb-1">
                             {isEditing ? 'মতামত সম্পাদনা করো' : 'তোমার মতামত দাও'}
                         </h3>
                         <p className="text-sm text-muted-foreground">
@@ -494,7 +496,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
                             disabled={submitting}
-                            className="w-full px-4 py-3 pr-10 rounded-xl border border-border bg-background dark:bg-muted/40 text-foreground focus:outline-none focus:ring-2 focus:ring-purple/50 focus:border-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer hover:border-purple/30 dark:hover:border-purple/30"
+                            className="w-full px-4 py-3 pr-10 rounded-xl border border-border bg-background dark:bg-muted/40 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed appearance-none cursor-pointer hover:border-primary/30 dark:hover:border-primary/30"
                         >
                             {CATEGORIES.map((cat) => (
                                 <option 
@@ -536,7 +538,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                             onChange={(e) => setComment(e.target.value)}
                             disabled={submitting}
                             placeholder="এই কোর্স সম্পর্কে তোমার অভিজ্ঞতা শেয়ার করো..."
-                            className="w-full px-4 py-3 rounded-xl border border-border bg-background dark:bg-muted/40 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-purple/50 focus:border-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:border-purple/30 dark:hover:border-purple/30"
+                            className="w-full px-4 py-3 rounded-xl border border-border bg-background dark:bg-muted/40 text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary/30 dark:hover:border-primary/30"
                             rows={4}
                             maxLength={500}
                         />
@@ -562,7 +564,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 <button
                     onClick={isEditing ? handleUpdateFeedback : handleSubmitFeedback}
                     disabled={submitting || selectedRating === 0}
-                    className="w-full bg-linear-to-r from-purple to-indigo-600 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-purple/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-purple/30 hover:scale-[1.02] active:scale-[0.98] group"
+                    className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] group"
                 >
                     {submitting ? (
                         <div className="flex items-center justify-center gap-3">

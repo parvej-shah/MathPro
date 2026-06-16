@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { isLoggedIn, redirectToLogin } from "@/helpers";
 import DashboardLayout from "@/components/Dashboard/DashboardLayout";
@@ -463,64 +462,9 @@ export default function CourseDashboardPage() {
                                 />
                             </div>
 
-                            {/* Important Messages Link - Link to post-payment success page */}
-                            {courseData?.id && (
-                                <Link
-                                    href={`/post-payment/success?type=course&courseId=${courseData.id}`}
-                                    className="block"
-                                >
-                                    <div className="bg-card border border-primary/25 rounded-2xl p-6 hover:bg-primary/10 transition-all duration-300 group cursor-pointer shadow-sm hover:shadow-lg hover:shadow-primary/10">
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex-shrink-0 w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                                                <svg
-                                                    className="w-6 h-6 text-primary"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                                    />
-                                                </svg>
-                                            </div>
-                                            <div className="flex-1">
-                                                <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
-                                                    গুরুত্বপূর্ণ বার্তা দেখুন
-                                                </h3>
-                                                <p className="text-sm text-muted-foreground">
-                                                    এনরোলমেন্টের পরের গুরুত্বপূর্ণ তথ্য এবং নির্দেশাবলী
-                                                    দেখুন
-                                                </p>
-                                            </div>
-                                            <div className="flex-shrink-0">
-                                                <svg
-                                                    className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M9 5l7 7-7 7"
-                                                    />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Link>
-                            )}
-
                             {/* Community Access - REAL ACCESS CODE from payment history */}
                             <CommunityCard
-                                communityLink={
-                                    courseData?.community?.facebook_private_group ||
-                                    "https://www.facebook.com/groups/codervaicommunity"
-                                }
+                                communityLink={courseData?.community?.facebook_private_group}
                                 telegramLink={courseData?.community?.telegram_group}
                                 accessCode={accessCode}
                             />
