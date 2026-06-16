@@ -68,6 +68,20 @@ function getCookie(name: string) {
   return null;
 }
 
+/**
+ * True when the `domain` attribute is usable on the current host. The browser
+ * silently drops a cookie whose `domain` the page isn't under (e.g. setting
+ * `domain=.mathpro.org` while on `*.vercel.app`), so in those cases — and on
+ * localhost — we must fall back to a host-only cookie (no domain attribute).
+ */
+function canUseCookieDomain(domain: string): boolean {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") return false;
+  const bare = domain.replace(/^\./, "");
+  return host === bare || host.endsWith(`.${bare}`);
+}
+
 /** Set cookie with domain for cross-subdomain auth (e.g. .mathpro.org). */
 export function setCookieWithDomain(
   name: string,
@@ -77,11 +91,8 @@ export function setCookieWithDomain(
 ) {
   if (typeof document === "undefined") return;
   const secure = typeof window !== "undefined" && window.location?.protocol === "https:" ? "; secure" : "";
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
-  if (isLocalhost) {
+  if (!canUseCookieDomain(domain)) {
     document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secure}`;
     return;
   }
