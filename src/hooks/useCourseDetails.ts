@@ -119,8 +119,9 @@ export const useCourseDetails = (
         setUser({ ...user, loading: true });
         const token = localStorage.getItem('token');
 
-        // Prepare request body
-        const requestBody: any = { eventId: courseData!.price * 6251 };
+        // Prepare request body. Price is determined server-side from the course
+        // record — the client must not send it.
+        const requestBody: any = {};
 
         // Add coupon code if provided
         if (couponCode && couponCode.trim()) {

@@ -4,12 +4,14 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import PremiumCourseCard from "@/features/courses-page/components/PremiumCourseCard";
 import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
 import FAQSection from "@/features/courses-page/components/FAQSection";
+import AboutSection from "@/features/courses-page/components/AboutSection";
 import type { CourseCategory } from "@/features/courses-page/_lib/types";
 import { useCourseDirectory } from "@/hooks/useCourseDirectory";
 import {
   mapPublicTestimonialsToFeedbacks,
   usePublicTestimonials,
 } from "@/hooks/usePublicTestimonials";
+import { usePublicInstructors } from "@/hooks/usePublicInstructors";
 import { englishToBanglaNumbers } from "@/helpers";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -416,6 +418,7 @@ export function LandingPage() {
   // Live category sections from GET /user/course/directory (COURSE_DIRECTORY_API_SPEC.md).
   const { categories: courseCategories, loading: coursesLoading } = useCourseDirectory();
   const { testimonials } = usePublicTestimonials();
+  const { instructors } = usePublicInstructors();
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -628,6 +631,9 @@ export function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* --- ABOUT SECTION --- */}
+      <AboutSection instructors={instructors} />
 
       {/* --- FEATURED COURSES (Grouped) --- */}
       <section id="courses" className="py-28 bg-section-b relative overflow-hidden">

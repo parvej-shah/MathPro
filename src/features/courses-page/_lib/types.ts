@@ -29,7 +29,7 @@ export interface Instructor {
   image: string | null;
   role: string | null;
   university: string | null;
-  bio: string | null;
+  credibility: string | null;
   achievements: string[];
   social: {
     facebook?: string;
