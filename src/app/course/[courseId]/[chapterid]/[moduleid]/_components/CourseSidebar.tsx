@@ -41,19 +41,6 @@ export default function CourseSidebar({
     [courseData],
   );
 
-  // Progress: furthest module serial reached / total live modules.
-  const { percent } = useMemo(() => {
-    const total = liveChapters.reduce(
-      (sum, ch) => sum + (ch.modules?.length ?? 0),
-      0,
-    );
-    const done = Math.min(courseData?.maxModuleSerialProgress ?? 0, total);
-    return {
-      total,
-      percent: total > 0 ? Math.round((done / total) * 100) : 0,
-    };
-  }, [liveChapters, courseData]);
-
   // Filter chapters by module/chapter title against the search query.
   const filteredChapters = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -62,9 +49,11 @@ export default function CourseSidebar({
       .map((ch) => {
         const chapterMatches = ch.title?.toLowerCase().includes(q);
         if (chapterMatches) return ch;
-        const modules = ch.modules.filter((m) =>
-          m.title?.toLowerCase().includes(q),
-        );
+        const modules = ch.modules.filter((m) => {
+          const cat = (m.data?.category as string) ?? "";
+          const searchText = `${cat} ${m.title ?? ""}`.toLowerCase();
+          return searchText.includes(q);
+        });
         return modules.length ? { ...ch, modules } : null;
       })
       .filter((ch): ch is Chapter => ch !== null);
@@ -74,34 +63,10 @@ export default function CourseSidebar({
     <div
       className={`flex flex-col overflow-hidden border border-border/60 rounded-2xl bg-card/30 ${className}`}
     >
-      {/* Compact header: title + progress + search */}
+      {/* Search header */}
       <div className="shrink-0 px-3 pt-3.5 pb-3 border-b border-border/50">
-        <div className="flex items-center justify-between gap-3 mb-2.5">
-          <h3 className="text-sm font-semibold text-foreground">Course Content</h3>
-          <div className="flex items-center gap-2 shrink-0 ml-auto">
-            <div className="h-1.5 w-20 rounded-full bg-muted overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${percent}%` }}
-              />
-            </div>
-            <span className="text-xs font-semibold text-muted-foreground tabular-nums">
-              {percent}%
-            </span>
-          </div>
-          {onClose && (
-            <button
-              onClick={onClose}
-              aria-label="Close sidebar"
-              className="grid place-items-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors shrink-0"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-              </svg>
-            </button>
-          )}
-        </div>
-        <div className="relative">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
@@ -122,6 +87,18 @@ export default function CourseSidebar({
             aria-label="Search lessons"
             className="w-full pl-8 pr-3 py-2 text-sm rounded-lg bg-muted/40 border border-border/40 text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 focus:bg-muted/60 transition-colors"
           />
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              aria-label="Close sidebar"
+              className="grid place-items-center w-7 h-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors shrink-0"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -142,7 +119,7 @@ export default function CourseSidebar({
               liveChapters.findIndex((c) => c.id === chapter.id) + 1;
             return (
               <ChapterAccordion
-                key={chapter.id}
+                key={`${chapter.id}-${query.trim() ? "search" : "default"}`}
                 chapter={chapter}
                 index={displayIndex}
                 isTaken={isTaken}

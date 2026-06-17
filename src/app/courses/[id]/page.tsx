@@ -18,6 +18,7 @@ import { useCountdown } from "@/hooks/useCountdown";
 import Image from "next/image";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 import { getEnrollmentDates, getCourseThumbnail } from "@/features/course-details/_lib/chips";
+import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 
 // Components
 import {
@@ -440,6 +441,31 @@ export default function CourseDetailsPage() {
                     </p>
                   )}
 
+                  {/* What you get */}
+                  {(() => {
+                    const youGetItems = courseData?.you_get?.you_get
+                      ? courseData.you_get.you_get.split(",").map((s: string) => s.trim()).filter(Boolean)
+                      : [];
+                    return youGetItems.length > 0 ? (
+                      <div className="mt-6 mb-2">
+                        <p className="text-lg font-bold mb-4">এই কোর্সে তুমি পাচ্ছো</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {youGetItems.map((item: string, idx: number) => (
+                            <div
+                              key={idx}
+                              className="flex items-center gap-2.5 bg-primary/5 border border-primary/15 rounded-lg px-3 py-2.5 text-sm"
+                            >
+                              <svg className="w-4 h-4 text-primary shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-foreground">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
+
                   <CourseStats chips={courseData?.chips} />
 
                   {/* Tags (frontend-guide-user.md §2) */}
@@ -522,7 +548,6 @@ export default function CourseDetailsPage() {
                         (enrollmentDates.enrollmentEnd ??
                           enrollmentDates.prebookingEnd)?.toISOString()
                       }
-                      youGet={courseData?.you_get?.you_get}
                     />
                   )}
                 </div>
@@ -534,20 +559,10 @@ export default function CourseDetailsPage() {
                     {/* Course Thumbnail/Video */}
                     <div className="w-full aspect-video relative bg-muted">
                       {courseData.intro_video ? (
-                        <iframe
-                          className="rounded-t-2xl w-full h-full absolute inset-0"
-                          src={
-                            courseData.intro_video +
-                            "?rel=0&modestbranding=1&autohide=1&showinfo=0"
-                          }
-                          title={courseData?.title}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                          allowFullScreen
-                        ></iframe>
+                        <ReactYoutubePlayer videoUrl={courseData.intro_video} />
                       ) : (
                         (() => {
                           const thumbnail =
-                            courseData?.chips?.thumbnails?.trailer_video_thumb_16_9 ||
                             getCourseThumbnail(courseData?.chips) ||
                             courseData?.thumbnail ||
                             courseData?.image?.imageUploadedLink;

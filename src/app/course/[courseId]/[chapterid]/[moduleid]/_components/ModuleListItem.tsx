@@ -85,6 +85,29 @@ function CategoryIcon({
           />
         </svg>
       );
+    case "TEXT":
+      return (
+        <svg {...base}>
+          <path
+            d="M10 20.5C15.5228 20.5 20 16.0228 20 10.5C20 4.97715 15.5228 0.5 10 0.5C4.47715 0.5 0 4.97715 0 10.5C0 16.0228 4.47715 20.5 10 20.5Z"
+            fill={fill}
+          />
+          <path
+            d="M10 6.5V8M10 8H7.5V14.5H12.5V8H10Z"
+            stroke="white"
+            strokeWidth="1.1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+          <path
+            d="M9 10.5H11M9 12.5H11"
+            stroke="white"
+            strokeWidth="1"
+            strokeLinecap="round"
+          />
+        </svg>
+      );
     default:
       return null;
   }

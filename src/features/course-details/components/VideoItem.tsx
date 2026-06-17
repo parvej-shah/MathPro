@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FreeVideoModal from "./FreeVideoModal";
 import { useFreeContentAccess } from "../hooks/useFreeContentAccess";
+import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 
 interface VideoItemProps {
   module: any;
@@ -33,10 +34,13 @@ export default function VideoItem({
     externalIsExpanded !== undefined ? externalIsExpanded : internalIsExpanded;
 
   // Backend may put is_free on module root when stripping data for unauthenticated users
+  const liveStatus = module.live_status || module.data?.live_status;
+  const isLiveClassNotEnded = liveStatus && liveStatus !== "ENDED";
   const isFreeVideo =
-    module.data?.is_free === true ||
-    (module as any).is_free === true ||
-    isFreeChapter;
+    !isLiveClassNotEnded &&
+    (module.data?.is_free === true ||
+      (module as any).is_free === true ||
+      isFreeChapter);
   const videoUrl =
     module.data?.videoUrl || module.data?.video_link || module.data?.videoLink;
 
@@ -74,23 +78,6 @@ export default function VideoItem({
         setInternalIsExpanded(true);
       }
     }, 200);
-  };
-
-  const getYouTubeEmbedUrl = (url: string) => {
-    if (!url) return "";
-
-    // Extract video ID from various YouTube URL formats
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    const videoId = match && match[2].length === 11 ? match[2] : null;
-
-    if (videoId) {
-      // Return embed URL without timestamp to prevent re-rendering
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
-    }
-
-    return url;
   };
 
   return (
@@ -165,19 +152,7 @@ export default function VideoItem({
               animation: "slideDown 0.3s ease-in-out",
             }}
           >
-            <div
-              className="relative w-full"
-              style={{ paddingBottom: "56.25%" }}
-            >
-              <iframe
-                key={`video-${module.id}`}
-                src={getYouTubeEmbedUrl(videoUrl)}
-                title={module.title}
-                className="absolute top-0 left-0 w-full h-full rounded-lg"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+            <ReactYoutubePlayer videoUrl={videoUrl} />
           </div>
         )}
       </div>

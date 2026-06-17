@@ -295,10 +295,10 @@ export const useCourseDetails = (
 
     // Check prebook status
     const checkPrebookStatus = async () => {
-        if (!courseId) return;
+        if (!courseData?.id) return;
 
         // Priority 1: Check if course itself was prebooked (localStorage)
-        const courseLocalStorageKey = `course_${courseId}_prebooked`;
+        const courseLocalStorageKey = `course_${courseData.id}_prebooked`;
         const courseLocalPrebook = localStorage.getItem(courseLocalStorageKey);
 
         if (courseLocalPrebook === 'true') {
@@ -335,7 +335,7 @@ export const useCourseDetails = (
                 // Check course prebook status via API
                 try {
                     const courseResponse = await axios.get(
-                        `${BACKEND_URL}/user/course/${courseId}/check-prebook/${userId}`,
+                        `${BACKEND_URL}/user/course/${courseData.id}/check-prebook/${userId}`,
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`,

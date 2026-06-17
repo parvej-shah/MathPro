@@ -218,6 +218,14 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
     else p.playVideo();
   }, [playing, ended]);
 
+  const skipBy = useCallback((seconds: number) => {
+    const p = playerRef.current;
+    if (!p?.getCurrentTime) return;
+    const t = Math.max(0, Math.min(p.getCurrentTime() + seconds, duration));
+    setCurrent(t);
+    p.seekTo(t, true);
+  }, [duration]);
+
   const handleSeek = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const p = playerRef.current;
     if (!p) return;
@@ -361,12 +369,28 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
         />
 
         <div className="mt-1 flex items-center gap-3 text-white">
-          <button type="button" onClick={togglePlay} aria-label="play-pause">
+          <button type="button" onClick={() => skipBy(-10)} aria-label="skip back 10s" className="flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 4v6h6" />
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+              <text x="12" y="15.5" textAnchor="middle" fill="currentColor" stroke="none" fontSize="8" fontWeight="700" fontFamily="sans-serif">10</text>
+            </svg>
+          </button>
+
+          <button type="button" onClick={togglePlay} aria-label="play-pause" className="flex items-center justify-center">
             {playing ? (
               <BsPauseFill className="text-2xl" />
             ) : (
               <BsPlayFill className="text-2xl" />
             )}
+          </button>
+
+          <button type="button" onClick={() => skipBy(10)} aria-label="skip forward 10s" className="flex items-center justify-center">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M23 4v6h-6" />
+              <path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10" />
+              <text x="12" y="15.5" textAnchor="middle" fill="currentColor" stroke="none" fontSize="8" fontWeight="700" fontFamily="sans-serif">10</text>
+            </svg>
           </button>
 
           <div className="flex items-center gap-2">
@@ -387,17 +411,18 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
             />
           </div>
 
-          <span className="text-xs tabular-nums">
+          <span className="flex-1 text-xs tabular-nums">
             {formatTime(current)} / {formatTime(duration)}
           </span>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex items-center gap-3">
             {/* Quality / settings */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setShowSettings((s) => !s)}
                 aria-label="settings"
+                className="flex items-center justify-center"
               >
                 <BsGear className="text-lg" />
               </button>
@@ -420,7 +445,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
               )}
             </div>
 
-            <button type="button" onClick={goFullscreen} aria-label="fullscreen">
+            <button type="button" onClick={goFullscreen} aria-label="fullscreen" className="flex items-center justify-center">
               <BsArrowsFullscreen className="text-base" />
             </button>
           </div>

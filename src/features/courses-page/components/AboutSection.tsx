@@ -53,109 +53,84 @@ function SocialLinks({ social }: { social: Instructor["social"] }) {
   );
 }
 
-function InstructorPhoto({ instructor, size }: { instructor: Instructor; size: "lg" | "sm" }) {
-  const sizeClass = size === "lg" ? "h-72 w-72 md:h-80 md:w-80" : "h-52 w-full";
-  const textSize = size === "lg" ? "text-7xl" : "text-5xl";
-  return (
-    <div className={`relative ${sizeClass} rounded-2xl overflow-hidden bg-muted shrink-0`}>
-      {instructor.image ? (
-        <Image
-          src={instructor.image}
-          alt={instructor.name}
-          fill
-          className="object-cover object-top"
-          sizes={size === "lg" ? "320px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-        />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center">
-          <span className={`${textSize} font-extrabold text-muted-foreground/30`}>
-            {instructor.name.charAt(0)}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function SingleInstructor({ instructor }: { instructor: Instructor }) {
   return (
-    <section className="py-24 bg-section-a relative overflow-hidden">
-      <div className="container mx-auto px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-16 xl:gap-24 items-center max-w-5xl mx-auto">
-
-          {/* Left — section label */}
-          <div className="flex flex-col">
-            <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
-              আমাদের সম্পর্কে
+    <section className="bg-section-a relative overflow-hidden py-10 sm:py-14 lg:py-20">
+      <div className="container mx-auto px-6 sm:px-12 lg:px-24 xl:px-36 grid lg:grid-cols-[1fr_40%] gap-6 lg:gap-10 items-stretch min-h-125">
+        {/* Left — content */}
+        <div className="flex flex-col justify-center order-2 lg:order-1">
+          <div className="max-w-xl">
+            <div className="h-1 w-16 bg-primary rounded-full mb-4" />
+            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">
+              আমার সম্পর্কে
             </p>
-            <h2 className="text-4xl md:text-5xl xl:text-6xl font-extrabold tracking-tighter leading-[1.1] text-heading font-heading mb-6">
-              About Me
+
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-heading font-heading mb-2">
+              {instructor.name}
             </h2>
-            <p className="text-muted-foreground text-lg font-medium leading-relaxed">
-              দেশের সেরা শিক্ষকদের সাথে গণিতের ভয় জয় করুন। আমরা শুধু পড়াই না — আমরা বোঝাই।
-            </p>
+            {instructor.role && (
+              <p className="text-lg md:text-xl font-semibold text-primary mb-5">{instructor.role}</p>
+            )}
+            {instructor.credibility && (
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-5">
+                {instructor.credibility}
+              </p>
+            )}
 
-            {/* Stats row */}
-            <div className="flex flex-wrap gap-8 mt-10">
-              {instructor.coursesCount > 0 && (
-                <div>
-                  <div className="text-3xl font-extrabold text-heading font-heading leading-none mb-1">
-                    {instructor.coursesCount}+
-                  </div>
-                  <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    কোর্স
-                  </div>
-                </div>
-              )}
-              {instructor.totalStudents > 0 && (
-                <div>
-                  <div className="text-3xl font-extrabold text-heading font-heading leading-none mb-1">
-                    {instructor.totalStudents.toLocaleString()}+
-                  </div>
-                  <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    শিক্ষার্থী
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            {instructor.achievements && instructor.achievements.length > 0 && (
+              <ul className="flex flex-col gap-2.5 mb-5">
+                {instructor.achievements.slice(0, 4).map((a, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <span className="mt-0.5 size-4 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 text-[10px] font-bold">✓</span>
+                    {a}
+                  </li>
+                ))}
+              </ul>
+            )}
 
-          {/* Right — instructor card */}
-          <div className="bg-card border border-border rounded-3xl p-8 shadow-sm flex flex-col sm:flex-row gap-8 items-start">
-            <InstructorPhoto instructor={instructor} size="lg" />
-
-            <div className="flex flex-col flex-1 min-w-0">
-              <h3 className="text-2xl font-extrabold text-heading font-heading leading-snug mb-1">
-                {instructor.name}
-              </h3>
-              {instructor.role && (
-                <p className="text-sm font-semibold text-primary mb-3">{instructor.role}</p>
-              )}
+            <div className="flex flex-col gap-2.5">
               {instructor.university && (
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-4">
-                  <GraduationCap className="size-3.5 shrink-0 text-primary/70" />
+                <div className="flex items-center gap-2.5 text-base text-muted-foreground">
+                  <GraduationCap className="size-5 shrink-0 text-primary" />
                   <span>{instructor.university}</span>
                 </div>
               )}
-              {instructor.credibility && (
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                  {instructor.credibility}
-                </p>
+              {instructor.coursesCount > 0 && (
+                <div className="flex items-center gap-2.5 text-base text-muted-foreground">
+                  <BookOpen className="size-5 shrink-0 text-primary" />
+                  <span>{instructor.coursesCount} টি কোর্স</span>
+                </div>
               )}
-              {instructor.achievements && instructor.achievements.length > 0 && (
-                <ul className="flex flex-col gap-2 mb-2">
-                  {instructor.achievements.slice(0, 4).map((a, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <span className="mt-0.5 size-4 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 text-[10px] font-bold">✓</span>
-                      {a}
-                    </li>
-                  ))}
-                </ul>
+              {instructor.totalStudents > 0 && (
+                <div className="flex items-center gap-2.5 text-base text-muted-foreground">
+                  <Users className="size-5 shrink-0 text-primary" />
+                  <span>{instructor.totalStudents.toLocaleString()} জন শিক্ষার্থী</span>
+                </div>
               )}
-              <SocialLinks social={instructor.social} />
             </div>
-          </div>
 
+            <SocialLinks social={instructor.social} />
+          </div>
+        </div>
+
+        {/* Right — photo */}
+        <div className="relative aspect-[3/4] sm:aspect-square lg:aspect-auto lg:min-h-full rounded-2xl overflow-hidden bg-muted order-1 lg:order-2">
+          {instructor.image ? (
+            <Image
+              src={instructor.image}
+              alt={instructor.name}
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 1024px) 100vw, 30vw"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-8xl font-extrabold text-muted-foreground/30">
+                {instructor.name.charAt(0)}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -169,14 +144,11 @@ function MultipleInstructors({ instructors }: { instructors: Instructor[] }) {
 
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-heading leading-tight mb-4">
             আমাদের সম্পর্কে
-          </p>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tighter leading-tight text-heading font-heading mb-4">
-            About Us
           </h2>
-          <p className="text-muted-foreground text-lg font-medium leading-relaxed">
-            দেশের সেরা শিক্ষকদের সাথে গণিতের ভয় জয় করুন। আমাদের বিশেষজ্ঞ শিক্ষকমণ্ডলী সবসময় তোমার পাশে।
+          <p className="text-base text-muted-foreground max-w-xl mx-auto">
+            দেশের সেরা শিক্ষকদের সাথে গণিতের ভয় জয় করো। আমাদের বিশেষজ্ঞ শিক্ষকমণ্ডলী সবসময় তোমার পাশে।
           </p>
         </div>
 

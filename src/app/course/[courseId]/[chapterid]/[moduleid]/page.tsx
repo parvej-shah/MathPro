@@ -14,6 +14,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import CourseSidebar from "./_components/CourseSidebar";
 import ModulePlayer from "./_components/ModulePlayer";
 import ModuleNavButtons from "./_components/ModuleNavButtons";
+import PdfAttachment from "./_components/PdfAttachment";
 import type { Chapter, Course, CourseModule } from "./_components/types";
 import { useCourseData } from "./_hooks/useCourseData";
 import { useModuleProgress } from "./_hooks/useModuleProgress";
@@ -425,6 +426,13 @@ export default function CourseDetailsPage() {
                         className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-lg text-muted-foreground border-t border-border/50 pt-2"
                       />
                     </div>
+                  )}
+
+                  {activeModule?.data?.category === "VIDEO" &&
+                    !!(activeModule?.pdf_drive_link || activeModule?.data?.pdf_drive_link || activeModule?.data?.pdf_attachment) && (
+                    <PdfAttachment
+                      url={String(activeModule.pdf_drive_link || activeModule.data?.pdf_drive_link || activeModule.data?.pdf_attachment)}
+                    />
                   )}
 
                   <ModuleNavButtons
