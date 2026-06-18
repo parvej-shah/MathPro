@@ -51,8 +51,8 @@ export function SafeHtmlRenderer({
     // Handle null/undefined/empty content
     if (!content || content.trim() === "") return null;
 
-    // Make plain URLs clickable (http/https) in both HTML and plain-text content
-    const workingContent = transformMarkdownImages(linkifyUrls(content));
+    // Transform markdown images first (before linkify mangles URLs inside ![](…))
+    const workingContent = linkifyUrls(transformMarkdownImages(content));
 
     // If truncating, strip HTML and return plain text
     if (truncate && truncate > 0) {
@@ -185,9 +185,10 @@ function escapeHtml(text: string): string {
  * Only allows http and https protocols for security.
  */
 function linkifyUrls(text: string): string {
-  const urlRegex = /(https?:\/\/[^\s<>\[\]"']+)/g;
-  return text.replace(urlRegex, (match) => {
-    const url = match.replace(/[.,;:!?)\]]+$/, "");
+  const urlRegex = /(["'=]?)(https?:\/\/[^\s<>\[\]"']+)/g;
+  return text.replace(urlRegex, (match, prefix: string, rawUrl: string) => {
+    if (prefix === '"' || prefix === "'" || prefix === "=") return match;
+    const url = rawUrl.replace(/[.,;:!?)\]]+$/, "");
     if (!/^https?:\/\//i.test(url)) return escapeHtml(match);
     const safe = escapeHtml(url);
     return `<a href="${safe}" target="_blank" rel="noopener noreferrer" class="text-purple hover:underline break-all">${safe}</a>`;
@@ -199,7 +200,7 @@ function transformMarkdownImages(text: string): string {
   return text.replace(markdownImageRegex, (_match, altText, imageUrl) => {
     const safeAlt = escapeHtml(altText || "Image");
     const safeSrc = escapeHtml(imageUrl);
-    return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-auto rounded-md my-3" />`;
+    return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-64 object-contain rounded-md my-3" />`;
   });
 }
 

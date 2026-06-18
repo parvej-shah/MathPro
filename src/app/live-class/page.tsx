@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast";
 import { convertUnixTimestamp } from "@/helpers";
 import axios from "axios";
 import { UserContext } from "@/Contexts/UserContext";
-import { BACKEND_URL, COURSE_ID } from "@/api.config";
+import { BACKEND_URL } from "@/api.config";
 import VideoPlayer from "@/components/ReactYoutubePlayer";
 
 type LiveClassItem = {
@@ -66,7 +66,7 @@ export default function LiveClass() {
   const [liveClasses, setLiveClasses] = useState<{ list?: LiveClassItem[]; serverTimeStamp?: number }>({});
   const [isMeeting, setMeeting] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
-  const [selectedCourseId, setSelectedCourseId] = useState<string>(COURSE_ID);
+  const [selectedCourseId, setSelectedCourseId] = useState<string>("1");
   const [activeClassId, setActiveClassId] = useState<number | null>(null);
 
   const fetchEnrolledCourses = () => {
@@ -241,7 +241,7 @@ export default function LiveClass() {
                     </option>
                   ))
                 ) : (
-                  <option value={COURSE_ID}>Default Course</option>
+                  <option value={"1"}>Default Course</option>
                 )}
               </select>
             </div>

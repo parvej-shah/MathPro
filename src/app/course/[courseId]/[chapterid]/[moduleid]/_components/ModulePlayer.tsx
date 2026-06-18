@@ -62,9 +62,17 @@ const ModulePlayer = memo(function ModulePlayer({
   return (
     <div className="mt-8">
       {/* Module Title */}
-      <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-6">
+      <h3 className="text-xl lg:text-2xl font-semibold text-foreground mb-4">
         {activeModule?.title}
       </h3>
+
+      {/* Quiz description — rendered as rich text right below the title */}
+      {category === "QUIZ" && activeModule?.description && activeModule.description.trim() !== "" && (
+        <SafeHtmlRenderer
+          content={activeModule.description}
+          className="prose prose-sm md:prose-base dark:prose-invert max-w-none text-muted-foreground mb-6"
+        />
+      )}
 
       {/* ── LIVE CLASS (replaces the video player while scheduled/live) ──── */}
       {category === "VIDEO" && isLiveOverlay && (
@@ -290,54 +298,47 @@ const ModulePlayer = memo(function ModulePlayer({
 
           {/* Score card (returning user) */}
           {showQuizAnswer && (
-            <div className="mb-8 overflow-hidden rounded-xl border border-primary/30 bg-primary/10 backdrop-blur-sm">
-              <div className="flex flex-col md:flex-row items-center justify-between p-8 gap-8">
-                <div className="flex items-center gap-8">
-                  <div className="relative w-32 h-32">
-                    <svg className="w-full h-full transform -rotate-90">
-                      <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="none" className="text-gray-700/30" />
-                      <circle
-                        cx="64" cy="64" r="58" stroke="oklch(0.718 0.147 159.2)" strokeWidth="8" fill="none"
-                        strokeDasharray={`${2 * Math.PI * 58}`}
-                        strokeDashoffset={`${2 * Math.PI * 58 * (1 - earnedPercentage / 100)}`}
-                        className="transition-all duration-1000 ease-out drop-shadow-[0_0_10px_oklch(0.718_0.147_159.2/0.5)]"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-bold text-white">
-                        {earnedPercentage}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-2xl font-bold text-white mb-1">Quiz Completed</h3>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-gray-400">নম্বর:</span>
-                      <span className="text-xl font-bold text-primary">{earnedQuestionPoints}</span>
-                      <span className="text-gray-500">/ {totalQuestionPoints}</span>
-                    </div>
-                    <p className="text-sm text-gray-400 mt-2 max-w-[200px]">
-                      {earnedPercentage >= 80
-                        ? "Excellent work! You've mastered this topic."
-                        : "Keep practicing to improve your score."}
-                    </p>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-primary/20 bg-primary/5 px-5 py-4 text-sm text-primary-foreground/90">
-                  এই কুইজ একবারই সাবমিট করা যাবে।
-                </div>
+            <div className="mb-6 flex items-center gap-4 rounded-xl border border-primary/30 bg-primary/10 px-5 py-4">
+              <div className="relative w-14 h-14 shrink-0">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15" stroke="currentColor" strokeWidth="3" fill="none" className="text-gray-700/30" />
+                  <circle
+                    cx="18" cy="18" r="15" stroke="oklch(0.718 0.147 159.2)" strokeWidth="3" fill="none"
+                    strokeDasharray={`${2 * Math.PI * 15}`}
+                    strokeDashoffset={`${2 * Math.PI * 15 * (1 - earnedPercentage / 100)}`}
+                    className="transition-all duration-1000 ease-out"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
+                  {earnedPercentage}%
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-lg font-semibold text-foreground leading-tight">
+                  {earnedPercentage >= 80 ? "🎉 দারুণ করেছো!" : earnedPercentage >= 50 ? "👍 ভালো চেষ্টা!" : "আবার চেষ্টা করো"}
+                </p>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  নম্বর: <span className="font-bold text-primary">{earnedQuestionPoints}</span> / {totalQuestionPoints}
+                </p>
               </div>
             </div>
           )}
 
-          {/* Quiz questions (taking or just submitted) */}
-          {(!showQuizAnswer || justSubmitted) &&
-            (activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => (
+          {/* Quiz questions */}
+          {(activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => {
+            const correctAnswerRaw = decryptString(
+              String(quiz.answer || quiz.correct_answer || ""),
+              process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
+            );
+            return (
               <div
                 key={`quiz-question-${index}`}
                 className="my-6 bg-primary/10 border border-primary/40 dark:bg-muted/10 rounded-lg p-6"
               >
+                <p className="text-xs font-semibold text-muted-foreground mb-2">
+                  প্রশ্ন {index + 1}
+                </p>
                 <RichFieldRenderer
                   htmlContent={quiz.question_html as string | undefined}
                   plainContent={quiz.question as string | undefined}
@@ -347,14 +348,29 @@ const ModulePlayer = memo(function ModulePlayer({
                   {(quiz.options as string[] | undefined)?.map((elem: string, optIndex: number) => {
                     const optionContent = (quiz.options_html as string[] | undefined)?.[optIndex] || elem;
                     const isSelected = elem === quizAnswer[index];
-                    const isCorrect = showQuizAnswer && isSelected && quizVerdict[index];
-                    const isWrong = showQuizAnswer && isSelected && !quizVerdict[index];
-                    const accentColor = isCorrect ? "oklch(0.65 0.15 145)" : isWrong ? "oklch(0.577 0.245 27)" : "oklch(0.718 0.147 159.2)";
+                    const isCorrectOption = showQuizAnswer && elem === correctAnswerRaw;
+                    const isWrongSelection = showQuizAnswer && isSelected && !quizVerdict[index];
+
+                    let optColor: string | undefined;
+                    let optBorder = "border-transparent";
+                    let optBgColor = "";
+                    if (showQuizAnswer) {
+                      if (isCorrectOption) {
+                        optColor = "oklch(0.65 0.15 145)";
+                        optBorder = "border-green-500/30";
+                        optBgColor = "bg-green-500/10";
+                      } else if (isWrongSelection) {
+                        optColor = "oklch(0.577 0.245 27)";
+                        optBorder = "border-red-500/30";
+                        optBgColor = "bg-red-500/10";
+                      }
+                    }
+
                     return (
                       <label
                         key={`option-${index}-${optIndex}`}
-                        className="flex items-center gap-3 cursor-pointer"
-                        style={{ color: showQuizAnswer && isSelected ? accentColor : undefined }}
+                        className={`flex items-center gap-3 cursor-pointer rounded-lg border px-3 py-2 ${optBorder} ${optBgColor}`}
+                        style={{ color: optColor }}
                       >
                         <input
                           type="radio"
@@ -367,34 +383,42 @@ const ModulePlayer = memo(function ModulePlayer({
                               setQuizAnswer((prev) => ({ ...prev, [index]: elem }));
                             }
                           }}
-                          style={{ accentColor }}
+                          style={{ accentColor: optColor ?? "oklch(0.718 0.147 159.2)" }}
                           className="shrink-0 w-4 h-4"
                         />
                         <SafeHtmlRenderer content={optionContent} />
+                        {showQuizAnswer && isCorrectOption && (
+                          <svg className="shrink-0 w-5 h-5 ml-auto" viewBox="0 0 20 20" fill="oklch(0.65 0.15 145)">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.06l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        {showQuizAnswer && isWrongSelection && (
+                          <svg className="shrink-0 w-5 h-5 ml-auto" viewBox="0 0 20 20" fill="oklch(0.577 0.245 27)">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                          </svg>
+                        )}
                       </label>
                     );
                   })}
                 </div>
-                {showQuizAnswer && (
-                  <div>
-                    <p className="text-foreground text-xl mt-2">Answer:</p>
-                    <p className="text-success">
-                      {decryptString(
-                        String(quiz.answer || quiz.correct_answer || ""),
-                        process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
-                      )}
-                    </p>
-                    {(quiz.explanation_html != null || quiz.explanation != null) && (
+                {showQuizAnswer && (() => {
+                  const expHtml = quiz.explanation_html ? decryptString(String(quiz.explanation_html), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : "";
+                  const expPlain = quiz.explanation ? decryptString(String(quiz.explanation), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : "";
+                  if (!expHtml?.trim() && !expPlain?.trim()) return null;
+                  return (
+                    <div className="mt-4 p-4 rounded-lg bg-muted/20 border border-border/40">
+                      <p className="text-sm font-semibold text-foreground mb-2">ব্যাখ্যা:</p>
                       <RichFieldRenderer
-                        htmlContent={quiz.explanation_html ? decryptString(String(quiz.explanation_html), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : undefined}
-                        plainContent={quiz.explanation ? decryptString(String(quiz.explanation), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : undefined}
-                        className="text-muted-foreground mt-2"
+                        htmlContent={expHtml || undefined}
+                        plainContent={expPlain || undefined}
+                        className="text-muted-foreground"
                       />
-                    )}
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
               </div>
-            ))}
+            );
+          })}
 
           {!showQuizAnswer && (
             <button

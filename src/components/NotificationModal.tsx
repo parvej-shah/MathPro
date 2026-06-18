@@ -7,6 +7,7 @@ import { BACKEND_URL } from "@/api.config";
 import { useRouter } from "next/navigation";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { SyncLoader } from "react-spinners";
+import { Megaphone } from "lucide-react";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 
 interface NotificationModuleData {
@@ -23,6 +24,7 @@ interface NotificationModuleData {
 interface NotificationData {
   title?: string;
   body?: string;
+  html?: string;
   scheduled_at?: number;
   scheduledAt?: number;
   moduleData?: NotificationModuleData;
@@ -119,6 +121,14 @@ const getNotificationDisplayTitle = (notification: Notification): string => {
   }
   return raw ?? "Notification";
 };
+
+const isRichBodyNotification = (notification: Notification) =>
+  notification.type === "ADMIN_SIDE" ||
+  notification.type === "ANNOUNCEMENT" ||
+  Boolean(notification.data?.body || notification.data?.html);
+
+const isAnnouncementNotification = (notification: Notification) =>
+  notification.type === "ANNOUNCEMENT";
 
 export default function NotificationModal({
   isOpen,
@@ -244,7 +254,7 @@ export default function NotificationModal({
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    if (notification.type === "ADMIN_SIDE") {
+    if (isRichBodyNotification(notification)) {
       setSelectedNotification(notification);
       setExpandedId(String(notification.id));
       if (!notification.is_read) {
@@ -424,8 +434,8 @@ export default function NotificationModal({
                                   return;
                                 }
                                 if (notification.type !== "COURSE_UPDATE") {
-                                  if (notification.type === "ADMIN_SIDE") {
-                                    // For ADMIN_SIDE, toggle expand on click
+                                  if (isRichBodyNotification(notification)) {
+                                    // Rich announcement-style notifications expand in place.
                                     e.preventDefault();
                                     e.stopPropagation();
                                     if (isExpanded) {
@@ -473,7 +483,13 @@ export default function NotificationModal({
                                   {/* Notification Content */}
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-start justify-between gap-2">
-                                      <div className="flex-1">
+                                    <div className="flex-1">
+                                        {isAnnouncementNotification(notification) && (
+                                          <span className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-1 text-[11px] font-semibold text-warning">
+                                            <Megaphone className="size-3.5" aria-hidden="true" />
+                                            ঘোষণা
+                                          </span>
+                                        )}
                                         <p
                                           className={`text-base font-semibold ${
                                             isRead
@@ -494,7 +510,7 @@ export default function NotificationModal({
 
                                     {/* Expanded Content */}
                                     {isExpanded &&
-                                      notification.type === "ADMIN_SIDE" && (
+                                      isRichBodyNotification(notification) && (
                                         <div className="mt-4 pt-4 border-t border-border animate-in slide-in-from-top-2 duration-200">
                                           <div className="space-y-3">
                                             <p className="text-xs font-medium text-paragraph dark:text-darkParagraph">
@@ -505,7 +521,9 @@ export default function NotificationModal({
                                             <div className="text-sm text-paragraph dark:text-darkParagraph leading-relaxed">
                                               <SafeHtmlRenderer
                                                 content={
-                                                  notification.data.body || ""
+                                                  notification.data.html ||
+                                                  notification.data.body ||
+                                                  ""
                                                 }
                                               />
                                             </div>
@@ -513,8 +531,8 @@ export default function NotificationModal({
                                         </div>
                                       )}
                                     
-                                    {/* Expand/Collapse Indicator for ADMIN_SIDE */}
-                                    {notification.type === "ADMIN_SIDE" && (
+                                    {/* Expand/Collapse Indicator for rich body notifications */}
+                                    {isRichBodyNotification(notification) && (
                                       <button
                                         type="button"
                                         onClick={(e) => {

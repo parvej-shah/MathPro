@@ -2,7 +2,7 @@ import { Anek_Bangla } from "next/font/google";
 import { jwtDecode } from 'jwt-decode';
 import CryptoJS from "crypto-js";
 
-const AUTH_COOKIE_DOMAIN = ".mathpro.org";
+const AUTH_COOKIE_DOMAIN = ".mathpro.academy";
 const AUTH_EVENT_NAME = "tokenUpdated";
 
 interface JwtPayload {
@@ -230,6 +230,87 @@ export const createRegisterRedirectUrl = () => {
   const currentDomain = window.location.href;
   return `/auth/register?redirect=${encodeURIComponent(currentDomain)}`;
 };
+
+/**
+ * Whether a redirect target is safe to send the auth token to. Same-origin is
+ * always allowed; cross-origin is allowed only for our own subdomains
+ * (*.mathpro.academy) so the `#token` hash is never handed to a foreign host.
+ */
+export function isAllowedRedirectTarget(rawUrl: string): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const url = new URL(rawUrl, window.location.origin);
+    if (url.origin === window.location.origin) return true;
+    if (url.hostname === "localhost" || url.hostname === "127.0.0.1") return true;
+    if (url.protocol !== "https:") return false;
+    const bare = AUTH_COOKIE_DOMAIN.replace(/^\./, "");
+    if (url.hostname === bare || url.hostname.endsWith(`.${bare}`)) return true;
+    // TODO: remove once production domains are live
+    if (url.hostname.endsWith(".vercel.app")) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Decode the `type` claim from a JWT (1=admin, 2=moderator, 3=regular student).
+ */
+export function getTokenType(token: string): number | null {
+  try {
+    const decoded = jwtDecode<{ type?: number }>(token);
+    return typeof decoded.type === "number" ? decoded.type : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Central post-login redirect. Persists the token (shared .mathpro.academy
+ * cookie + localStorage), then routes the user:
+ *  - Admins/moderators (type 1/2): always to the admin app. If `redirectUrl`
+ *    is an allowed external admin URL, go there with the token in the `#hash`
+ *    (so the admin app can read it before the cookie propagates); otherwise
+ *    fall back to the configured admin base.
+ *  - Students (type 3) and unknown: to `redirectUrl` if same-origin, else
+ *    `/dashboard`. Uses the supplied router for same-origin SPA navigation.
+ */
+export function handlePostLoginRedirect(
+  token: string,
+  redirectUrl: string,
+  router: { replace: (url: string) => void },
+) {
+  persistAuthToken(token);
+
+  const type = getTokenType(token);
+  const isAdmin = type === 1 || type === 2;
+  const adminBase = process.env.NEXT_PUBLIC_ADMIN_URL || "https://admin.mathpro.academy";
+
+  if (isAdmin) {
+    const target =
+      redirectUrl && isAllowedRedirectTarget(redirectUrl) && redirectUrl.startsWith("http")
+        ? redirectUrl
+        : adminBase;
+    window.location.href = appendTokenToUrl(target, token);
+    return;
+  }
+
+  // Student / unknown: same-origin SPA navigation, else default dashboard.
+  if (redirectUrl && isAllowedRedirectTarget(redirectUrl)) {
+    try {
+      const url = new URL(redirectUrl, window.location.origin);
+      if (url.origin === window.location.origin) {
+        router.replace(url.pathname + url.search + url.hash);
+        return;
+      }
+      window.location.href = url.toString();
+      return;
+    } catch {
+      // fall through
+    }
+  }
+  router.replace("/dashboard");
+}
 
 /**
  * Get authentication token from multiple sources (URL, cookies, localStorage)

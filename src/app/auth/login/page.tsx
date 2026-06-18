@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
-import { isLoggedIn, persistAuthToken } from "@/helpers";
+import { isLoggedIn, handlePostLoginRedirect } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
 
 declare global {
@@ -69,7 +69,11 @@ function LoginPageContent() {
 
   useEffect(() => {
     if (isLoggedIn()) {
-      router.replace(redirectUrl);
+      const existing =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (existing) {
+        handlePostLoginRedirect(existing, redirectUrl, router);
+      }
     }
   }, [redirectUrl, router]);
 
@@ -87,8 +91,7 @@ function LoginPageContent() {
       if (!token) {
         throw new Error("Missing token in login response");
       }
-      persistAuthToken(token);
-      router.replace(redirectUrl);
+      handlePostLoginRedirect(token, redirectUrl, router);
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
         ? err.response?.data?.error
@@ -121,8 +124,7 @@ function LoginPageContent() {
         if (!token) {
           throw new Error("Missing token in Google login response");
         }
-        persistAuthToken(token);
-        routerRef.current.replace(redirectUrlRef.current);
+        handlePostLoginRedirect(token, redirectUrlRef.current, routerRef.current);
       } catch (err: unknown) {
         const message = axios.isAxiosError<{ error?: string }>(err)
           ? err.response?.data?.error

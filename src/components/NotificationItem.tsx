@@ -2,7 +2,7 @@
 
 import { BACKEND_URL } from "@/api.config";
 import axios from "axios";
-import { Bell, CheckCircle2 } from "lucide-react";
+import { Bell, CheckCircle2, Megaphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -21,6 +21,7 @@ type NotificationRecord = {
   data?: {
     title?: string;
     body?: string;
+    html?: string;
     scheduled_at?: number;
     scheduledAt?: number;
     moduleData?: {
@@ -83,6 +84,14 @@ const getNotificationDisplayTitle = (notification: NotificationRecord): string =
   return raw ?? "নোটিফিকেশন";
 };
 
+const isRichBodyNotification = (notification: NotificationRecord) =>
+  notification.type === "ADMIN_SIDE" ||
+  notification.type === "ANNOUNCEMENT" ||
+  Boolean(notification.data?.body || notification.data?.html);
+
+const isAnnouncementNotification = (notification: NotificationRecord) =>
+  notification.type === "ANNOUNCEMENT";
+
 export default function NotificationItem({ populateFn: populate, notification }: Props) {
   const router = useRouter();
   const [readOverride, setReadOverride] = useState(false);
@@ -137,7 +146,7 @@ export default function NotificationItem({ populateFn: populate, notification }:
           className="min-w-0"
           onClick={(): void => {
             // Always show modal first for details
-            if (notification.type === "ADMIN_SIDE" || notification.data?.body) {
+            if (isRichBodyNotification(notification)) {
               populate(notification);
             } else if (notification.type === "LIVE") {
               // Show modal first, then redirect
@@ -173,6 +182,12 @@ export default function NotificationItem({ populateFn: populate, notification }:
           {notification.courseName && (
             <span className="mb-2 inline-flex max-w-full items-center rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
               {notification.courseName}
+            </span>
+          )}
+          {isAnnouncementNotification(notification) && (
+            <span className="mb-2 ml-2 inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning">
+              <Megaphone className="size-3.5" aria-hidden="true" />
+              ঘোষণা
             </span>
           )}
           <p className="text-base font-semibold leading-snug text-foreground sm:text-lg">

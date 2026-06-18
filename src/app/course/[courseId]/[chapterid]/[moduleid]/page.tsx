@@ -418,7 +418,8 @@ export default function CourseDetailsPage() {
                   )}
 
                   {activeModule?.description && activeModule.description.length > 0 &&
-                    activeModule?.data?.category !== "TEXT" && (
+                    activeModule?.data?.category !== "TEXT" &&
+                    activeModule?.data?.category !== "QUIZ" && (
                     <div className="mt-12">
                       <p className="font-semibold text-2xl pb-4 border-b border-gray-300/10">Description</p>
                       <SafeHtmlRenderer

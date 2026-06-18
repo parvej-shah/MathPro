@@ -4,7 +4,7 @@ type Props = { children: React.ReactNode };
 
 import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
-import { BACKEND_URL, COURSE_ID } from "@/api.config";
+import { BACKEND_URL } from "@/api.config";
 import { HindSiliguri, logout } from "@/helpers";
 import Link from "next/link";
 import { ProtectedRoute } from "@/components/ProtectedRoute";

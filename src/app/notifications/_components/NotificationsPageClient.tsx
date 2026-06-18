@@ -36,6 +36,7 @@ type NotificationRecord = {
   data?: {
     title?: string;
     body?: string;
+    html?: string;
     scheduled_at?: number;
     scheduledAt?: number;
     moduleData?: {
@@ -106,6 +107,7 @@ const getNotificationDisplayTitle = (notification: NotificationRecord): string =
 };
 
 const getNotificationBody = (notification: NotificationRecord) => {
+  if (notification.data?.html) return notification.data.html;
   if (notification.data?.body) return notification.data.body;
   if (notification.type === "LIVE") return "লাইভ ক্লাসে যোগ দিতে নোটিফিকেশনটি খুলে দেখো।";
   if (notification.type === "ASSIGNMENT") return "নতুন অ্যাসাইনমেন্ট দেওয়া হয়েছে। এখনই দেখে নাও।";
