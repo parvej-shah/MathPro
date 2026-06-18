@@ -72,7 +72,16 @@ function LoginPageContent() {
   }, [redirectUrl, router]);
 
   useEffect(() => {
-    if (searchParams.get("force_logout") === "1" || forcedLogoutRef.current) {
+    // Read force_logout from the live URL, not useSearchParams(): during
+    // hydration the hook can return empty params on the first effect run, losing
+    // the race to the isLoggedIn() branch below — which would fire
+    // handlePostLoginRedirect and bounce a still-logged-in admin straight back
+    // to the admin app, defeating the logout. window.location.search is always
+    // populated synchronously.
+    const liveForceLogout =
+      typeof window !== "undefined" &&
+      new URLSearchParams(window.location.search).get("force_logout") === "1";
+    if (liveForceLogout || forcedLogoutRef.current) {
       forcedLogoutRef.current = true;
       clearAuthToken();
       const url = new URL(window.location.href);
