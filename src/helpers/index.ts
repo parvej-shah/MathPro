@@ -247,6 +247,7 @@ export function isAllowedRedirectTarget(rawUrl: string): boolean {
     if (url.hostname === bare || url.hostname.endsWith(`.${bare}`)) return true;
     // TODO: remove once production domains are live
     if (url.hostname.endsWith(".vercel.app")) return true;
+    if (url.hostname.endsWith(".onrender.com")) return true;
     return false;
   } catch {
     return false;
