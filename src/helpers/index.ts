@@ -350,11 +350,21 @@ export const getAuthToken = (): string | null => {
   return null;
 };
 
-export const logout = () => {
+/**
+ * Clear the auth session everywhere it lives: localStorage, the host-only
+ * cookie, and the shared cross-subdomain (`.mathpro.academy`) cookie. Use this
+ * for cross-origin logout hand-off (e.g. the `force_logout=1` flow), where a
+ * page reload is not wanted. `logout()` wraps this and adds the reload.
+ */
+export const clearAuthToken = () => {
   localStorage.removeItem("token");
   deleteCookie("token");
   deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
   emitAuthTokenUpdate(null);
+};
+
+export const logout = () => {
+  clearAuthToken();
   window.location.reload();
 };
 

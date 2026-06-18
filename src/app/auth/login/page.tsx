@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
-import { isLoggedIn, handlePostLoginRedirect } from "@/helpers";
+import { isLoggedIn, handlePostLoginRedirect, clearAuthToken } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
 
 declare global {
@@ -69,8 +69,7 @@ function LoginPageContent() {
 
   useEffect(() => {
     if (searchParams.get("force_logout") === "1") {
-      localStorage.removeItem("token");
-      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      clearAuthToken();
       const url = new URL(window.location.href);
       url.searchParams.delete("force_logout");
       window.history.replaceState({}, "", url.pathname + url.search);
