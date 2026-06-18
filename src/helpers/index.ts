@@ -296,7 +296,8 @@ export function handlePostLoginRedirect(
     return;
   }
 
-  // Student / unknown: same-origin SPA navigation, else default dashboard.
+  // Student / unknown: same-origin navigation only. Cross-origin redirects
+  // (e.g. to the admin app) are ignored — students land on /dashboard instead.
   if (redirectUrl && isAllowedRedirectTarget(redirectUrl)) {
     try {
       const url = new URL(redirectUrl, window.location.origin);
@@ -304,8 +305,6 @@ export function handlePostLoginRedirect(
         router.replace(url.pathname + url.search + url.hash);
         return;
       }
-      window.location.href = url.toString();
-      return;
     } catch {
       // fall through
     }

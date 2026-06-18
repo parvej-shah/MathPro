@@ -68,6 +68,14 @@ function LoginPageContent() {
   }, [redirectUrl, router]);
 
   useEffect(() => {
+    if (searchParams.get("force_logout") === "1") {
+      localStorage.removeItem("token");
+      document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      const url = new URL(window.location.href);
+      url.searchParams.delete("force_logout");
+      window.history.replaceState({}, "", url.pathname + url.search);
+      return;
+    }
     if (isLoggedIn()) {
       const existing =
         typeof window !== "undefined" ? localStorage.getItem("token") : null;
@@ -75,7 +83,7 @@ function LoginPageContent() {
         handlePostLoginRedirect(existing, redirectUrl, router);
       }
     }
-  }, [redirectUrl, router]);
+  }, [redirectUrl, router, searchParams]);
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
