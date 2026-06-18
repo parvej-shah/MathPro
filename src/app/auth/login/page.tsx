@@ -57,6 +57,10 @@ function LoginPageContent() {
   const redirectUrl = useMemo(() => searchParams.get("redirect") || "/dashboard", [searchParams]);
   const redirectUrlRef = useRef(redirectUrl);
   const routerRef = useRef(router);
+  // Once a force_logout has been honored, stay on the form for the rest of this
+  // navigation. Prevents a re-adopted token (shared cookie / SSO re-mirror) from
+  // silently bouncing the user back to the app they just logged out of.
+  const forcedLogoutRef = useRef(false);
   const registerHref = useMemo(
     () => `/auth/register?redirect=${encodeURIComponent(redirectUrl)}`,
     [redirectUrl],
@@ -68,7 +72,8 @@ function LoginPageContent() {
   }, [redirectUrl, router]);
 
   useEffect(() => {
-    if (searchParams.get("force_logout") === "1") {
+    if (searchParams.get("force_logout") === "1" || forcedLogoutRef.current) {
+      forcedLogoutRef.current = true;
       clearAuthToken();
       const url = new URL(window.location.href);
       url.searchParams.delete("force_logout");
