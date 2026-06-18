@@ -80,9 +80,29 @@ export function middleware(req: NextRequest) {
   }
 
   if (AUTH_ROUTES.has(pathname) && loggedIn) {
+    // `force_logout=1` means another app (e.g. admin) is tearing down a session
+    // it can't clear cross-origin. Let the page render so its client code drops
+    // the token and shows the form — do NOT auto-redirect a "logged in" user.
+    if (req.nextUrl.searchParams.get("force_logout") === "1") {
+      return NextResponse.next();
+    }
+
     const redirectTarget = req.nextUrl.searchParams.get("redirect");
     if (redirectTarget) {
-      return NextResponse.redirect(new URL(redirectTarget, req.url));
+      // Only handle SAME-ORIGIN redirects here. Cross-origin targets (e.g. the
+      // admin app) need the client-side handler, which checks the user's type
+      // and appends the token in the URL `#hash` for the cross-LMS hand-off.
+      // Redirecting cross-origin here would strip the token and ignore type,
+      // bouncing the user straight back — an infinite loop.
+      try {
+        const target = new URL(redirectTarget, req.url);
+        if (target.origin === req.nextUrl.origin) {
+          return NextResponse.redirect(target);
+        }
+        return NextResponse.next();
+      } catch {
+        return NextResponse.next();
+      }
     }
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
