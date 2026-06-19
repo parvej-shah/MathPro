@@ -50,7 +50,6 @@ const PaymentBundles: React.FC<PaymentBundlesProps> = ({ bundles }) => {
       <div className="p-6">
         {bundles.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-muted-foreground text-6xl mb-4">📦</div>
             <h3 className="text-xl font-semibold text-foreground mb-2">কোনো কম্বো কেনা হয়নি</h3>
             <p className="text-muted-foreground">তুমি এখনো কোনো কম্বো কেনো নি।</p>
           </div>
@@ -169,25 +168,25 @@ const PaymentBundles: React.FC<PaymentBundlesProps> = ({ bundles }) => {
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-4 border-t border-border">
+                  <div className="grid grid-cols-1 gap-2 pt-4 border-t border-border md:flex md:flex-wrap md:items-center md:justify-between">
                     <Link
                       href={`/combos/${bundle.bundle_url || bundle.bundle_id}`}
-                      className="bg-info hover:bg-info/90 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200"
+                      className="inline-flex items-center justify-center w-full md:w-auto min-h-11 bg-info hover:bg-info/90 text-white text-sm font-medium py-3 px-4 rounded-lg transition duration-200"
                     >
                       বিস্তারিত দেখো
                     </Link>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-1 gap-2 md:flex">
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(bundle.transaction_id);
                         }}
-                        className="bg-muted hover:bg-muted/80 text-foreground text-sm font-medium py-2 px-3 rounded-lg border border-border transition duration-200"
+                        className="inline-flex items-center justify-center w-full md:w-auto min-h-11 bg-muted hover:bg-muted/80 text-foreground text-sm font-medium py-3 px-3 rounded-lg border border-border transition duration-200"
                       >
                         আইডি কপি করো
                       </button>
                       <Link
                         href={`/dashboard/bundle/${bundle.bundle_id}`}
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium py-2 px-3 rounded-lg transition duration-200"
+                        className="inline-flex items-center justify-center w-full md:w-auto min-h-11 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium py-3 px-3 rounded-lg transition duration-200"
                       >
                         শেখা চালিয়ে যাও
                       </Link>

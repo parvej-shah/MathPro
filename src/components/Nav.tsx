@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
 import { BellIcon, MenuIcon, XIcon } from "lucide-react";
-import { isLoggedIn, logout } from "@/helpers";
+import { BACKEND_URL } from "@/api.config";
+import { getUserIdFromToken, isLoggedIn, logout } from "@/helpers";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   Sheet,
@@ -21,12 +23,115 @@ type NavProps = {
   mode?: NavMode;
 };
 
+type CourseSummary = {
+  id: string | number;
+};
+
+type NotificationCountResponse = {
+  data?: Array<{ count?: string | number }>;
+};
+
 export default function Nav({ mode = "default" }: NavProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(mode !== "landing");
   const [loggedIn, setLoggedIn] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const loginHref = `/auth/login?redirect=${encodeURIComponent(pathname || "/")}`;
+
+  const fetchNotificationCount = useCallback(async () => {
+    if (!isLoggedIn()) {
+      setNotificationCount(0);
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const userId = getUserIdFromToken();
+    if (!token || !userId) {
+      setNotificationCount(0);
+      return;
+    }
+
+    try {
+      const coursesResponse = await axios.get<{ data?: CourseSummary[] }>(
+        `${BACKEND_URL}/user/bundle/all-courses/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const courses = coursesResponse.data.data || [];
+      if (courses.length === 0) {
+        setNotificationCount(0);
+        return;
+      }
+
+      const countResponses = await Promise.all(
+        courses.map((course) =>
+          axios
+            .get<NotificationCountResponse>(
+              `${BACKEND_URL}/user/notification/count?courseId=${course.id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+            .catch(() => ({ data: { data: [] } } as { data: NotificationCountResponse }))
+        )
+      );
+
+      const totalCount = countResponses.reduce((total, response) => {
+        const courseCount = Number(response.data.data?.[0]?.count ?? 0);
+        return total + (Number.isNaN(courseCount) ? 0 : courseCount);
+      }, 0);
+
+      setNotificationCount(totalCount);
+    } catch (error) {
+      console.warn("Failed to fetch notification count:", error);
+      setNotificationCount(0);
+    }
+  }, []);
+
+  const markBellClicked = useCallback(async () => {
+    if (!isLoggedIn()) return;
+
+    const token = localStorage.getItem("token");
+    const userId = getUserIdFromToken();
+    if (!token || !userId) return;
+
+    try {
+      const coursesResponse = await axios.get<{ data?: CourseSummary[] }>(
+        `${BACKEND_URL}/user/bundle/all-courses/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const courses = coursesResponse.data.data || [];
+      await Promise.all(
+        courses.map((course) =>
+          axios.post(
+            `${BACKEND_URL}/user/notification/bellIconClicked?courseId=${course.id}`,
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+        )
+      );
+
+      setNotificationCount(0);
+    } catch (error) {
+      console.warn("Failed to mark notification bell as clicked:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
@@ -38,6 +143,15 @@ export default function Nav({ mode = "default" }: NavProps) {
       window.removeEventListener("tokenUpdated", sync as EventListener);
     };
   }, []);
+
+  useEffect(() => {
+    if (!loggedIn) {
+      setNotificationCount(0);
+      return;
+    }
+
+    void fetchNotificationCount();
+  }, [fetchNotificationCount, loggedIn]);
 
   useEffect(() => {
     if (mode !== "landing") return;
@@ -133,13 +247,22 @@ export default function Nav({ mode = "default" }: NavProps) {
             {loggedIn && (
               <Link
                 href="/notifications"
+                onClick={() => {
+                  void markBellClicked();
+                }}
                 className={notificationButtonClass}
                 aria-label="নোটিফিকেশন"
-                title="নোটিফিকেশন"
+                title={
+                  notificationCount > 0
+                    ? `নোটিফিকেশন (${notificationCount})`
+                    : "নোটিফিকেশন"
+                }
               >
                 <BellIcon className="size-5" aria-hidden="true" />
-                {notificationsActive && (
-                  <span className="absolute right-2 top-2 size-2 rounded-full bg-primary" />
+                {notificationCount > 0 && (
+                  <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow">
+                    {notificationCount > 99 ? "99+" : notificationCount}
+                  </span>
                 )}
               </Link>
             )}
@@ -165,13 +288,22 @@ export default function Nav({ mode = "default" }: NavProps) {
             {loggedIn && (
               <Link
                 href="/notifications"
+                onClick={() => {
+                  void markBellClicked();
+                }}
                 className={notificationButtonClass}
                 aria-label="নোটিফিকেশন"
-                title="নোটিফিকেশন"
+                title={
+                  notificationCount > 0
+                    ? `নোটিফিকেশন (${notificationCount})`
+                    : "নোটিফিকেশন"
+                }
               >
                 <BellIcon className="size-5" aria-hidden="true" />
-                {notificationsActive && (
-                  <span className="absolute right-2 top-2 size-2 rounded-full bg-primary" />
+                {notificationCount > 0 && (
+                  <span className="absolute -right-1 -top-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold leading-none text-primary-foreground shadow">
+                    {notificationCount > 99 ? "99+" : notificationCount}
+                  </span>
                 )}
               </Link>
             )}

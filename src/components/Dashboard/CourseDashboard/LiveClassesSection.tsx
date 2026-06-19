@@ -26,24 +26,24 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
     if (loading) {
         return (
-            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-destructive animate-pulse">
-                <div className="h-24 bg-muted rounded"></div>
+            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-destructive animate-pulse">
+                <div className="h-20 sm:h-24 bg-muted rounded"></div>
             </div>
         );
     }
 
     if (!liveModules || liveModules.length === 0) {
         return (
-            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-border">
-                <div className="flex items-center gap-4">
-                    <div className="bg-muted p-4 rounded-2xl text-muted-foreground">
-                        <BsCalendarEvent className="text-2xl" />
+            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-border">
+                <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="bg-muted p-3 sm:p-4 rounded-xl sm:rounded-2xl text-muted-foreground">
+                        <BsCalendarEvent className="text-xl sm:text-2xl" />
                     </div>
                     <div>
-                        <h4 className="text-muted-foreground font-bold uppercase text-xs tracking-wider mb-1">
+                        <h4 className="text-muted-foreground font-bold uppercase text-[10px] sm:text-xs tracking-wider mb-1">
                             লাইভ ক্লাস
                         </h4>
-                        <p className="text-lg font-semibold text-foreground">
+                        <p className="text-base sm:text-lg font-semibold text-foreground">
                             এখনো কোনো লাইভ ক্লাস নির্ধারিত নেই
                         </p>
                     </div>
@@ -60,14 +60,14 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
     return (
         <div className="space-y-4">
             {/* Featured Live/Upcoming Class - Large Prominent Card */}
-            <div className={`bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 ${
+            <div className={`bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 ${
                 isFeaturedLive ? 'border-l-destructive' : 'border-l-primary'
-            } flex flex-col sm:flex-row items-center justify-between gap-6`}>
-                <div className="flex items-center gap-4 flex-1">
+            } flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6`}>
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
                     <div className={`${
                         isFeaturedLive ? 'bg-destructive/15 text-destructive' : 'bg-primary/10 text-primary'
-                    } p-4 rounded-2xl`}>
-                        <BsCalendarEvent className="text-2xl" />
+                    } p-3 sm:p-4 rounded-xl sm:rounded-2xl shrink-0`}>
+                        <BsCalendarEvent className="text-xl sm:text-2xl" />
                     </div>
                     <div className="flex-1">
                         <h4 className={`${
@@ -91,14 +91,14 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     {isFeaturedLive ? (
                         <button
                             onClick={() => window.open(`https://zoom.us/j/${featured.live_meeting_id}`, '_blank')}
-                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-red-500/30"
+                            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-red-500/30"
                         >
                             লাইভ ক্লাসে যোগ দাও
                         </button>
                     ) : (
                         <button
                             disabled
-                            className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 bg-muted text-muted-foreground cursor-not-allowed"
+                            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 bg-muted text-muted-foreground cursor-not-allowed"
                         >
                             এখনো শুরু হয়নি
                         </button>
@@ -108,9 +108,9 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
             {/* Other Live/Upcoming Classes - Compact List */}
             {remaining.length > 0 && (
-                <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-bold text-foreground">
+                <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <h3 className="text-base sm:text-lg font-bold text-foreground">
                             অন্যান্য লাইভ ক্লাস
                         </h3>
                         <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">

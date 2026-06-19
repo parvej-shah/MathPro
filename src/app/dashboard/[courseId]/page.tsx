@@ -345,7 +345,7 @@ export default function CourseDashboardPage() {
     return (
         <DashboardLayout key={courseId as string}>
             <main className="pt-20 bg-page-bg min-h-screen">
-                <div className="w-[95%] lg:w-[90%] xl:w-[85%] mx-auto py-8 lg:py-12">
+                <div className="w-[95%] sm:w-[92%] lg:w-[90%] xl:w-[85%] mx-auto py-5 sm:py-8 lg:py-12">
                     {/* Course Title Section - REAL DATA */}
                     <motion.div
                         variants={sectionVariants}
@@ -353,30 +353,13 @@ export default function CourseDashboardPage() {
                         animate="show"
                         className="mb-8"
                     >
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground">
                             {courseData?.title || "Course Dashboard"}
                         </h1>
 
-                        {/* Tags + capacity + outline (frontend-guide-user.md §5) */}
-                        {(courseData?.metadata?.tags?.length ||
-                            courseData?.enrollment?.total_seats ||
-                            courseData?.metadata?.course_outline) && (
+                        {/* Outline link (frontend-guide-user.md §5) */}
+                        {courseData?.metadata?.course_outline && (
                             <div className="mt-3 flex flex-wrap items-center gap-2">
-                                {courseData?.metadata?.tags?.map((tag, i) => (
-                                    <span
-                                        key={`${tag}-${i}`}
-                                        className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
-                                    >
-                                        {tag}
-                                    </span>
-                                ))}
-
-                                {typeof courseData?.enrollment?.total_seats === "number" && (
-                                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-muted text-muted-foreground border border-border">
-                                        {courseData.enrollment.enrolled ?? 0} / {courseData.enrollment.total_seats} আসন পূর্ণ
-                                    </span>
-                                )}
-
                                 {courseData?.metadata?.course_outline && (
                                     <a
                                         href={courseData.metadata.course_outline}
@@ -410,17 +393,15 @@ export default function CourseDashboardPage() {
                         initial="hidden"
                         animate="show"
                         transition={{ delay: 0.08, duration: 0.35 }}
-                        className="grid grid-cols-1 lg:grid-cols-5 gap-8"
+                        className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8"
                     >
                         {/* Left Column: Progress & Learning (60% -> col-span-3) */}
-                        <div className="lg:col-span-3 space-y-8">
-                            {/* Streak Count Card */}
+                        <div className="lg:col-span-3 space-y-6 lg:space-y-8">
                             <StreakCountCard
                                 courseId={courseId as string}
                                 loading={courseLoading}
                             />
 
-                            {/* Current Status Card - DYNAMIC PROGRESS from course data */}
                             <ProgressCard
                                 currentModule={currentModule}
                                 progress={calculatedProgress}
@@ -429,32 +410,13 @@ export default function CourseDashboardPage() {
                                 loading={courseLoading}
                             />
 
-                            {/* Live Classes - REAL DATA from Live Classes API */}
                             <LiveClassesSection
                                 liveModules={liveModules}
                                 loading={liveClassesLoading}
                             />
 
-                            {/* Feedback Card */}
-                            <FeedbackCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
-                            />
-                        </div>
-
-                        {/* Right Column: Community & Updates (40% -> col-span-2) */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Ranking Card - Shows user's current rank and score */}
-                            <RankingCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
-                            />
-
-                            {/* Announcements - REAL DATA from Announcements API
-                                Always shows latest announcement as featured
-                                Remaining announcements shown in list below (if any)
-                                Limited to 6 most recent announcements */}
-                            <div className="mt-6">
+                            {/* Announcements — after live classes on mobile, right col on desktop */}
+                            <div className="lg:hidden">
                                 <AnnouncementsCard
                                     announcements={announcements}
                                     loading={announcementsLoading}
@@ -462,7 +424,43 @@ export default function CourseDashboardPage() {
                                 />
                             </div>
 
-                            {/* Community Access - REAL ACCESS CODE from payment history */}
+                            {/* Ranking — before feedback on mobile, right col on desktop */}
+                            <div className="lg:hidden">
+                                <RankingCard
+                                    courseId={courseId as string}
+                                    loading={courseLoading}
+                                />
+                            </div>
+
+                            {/* Community — before feedback on mobile */}
+                            <div className="lg:hidden">
+                                <CommunityCard
+                                    communityLink={courseData?.community?.facebook_private_group}
+                                    telegramLink={courseData?.community?.telegram_group}
+                                    accessCode={accessCode}
+                                />
+                            </div>
+
+                            {/* Feedback Card — always last on mobile */}
+                            <FeedbackCard
+                                courseId={courseId as string}
+                                loading={courseLoading}
+                            />
+                        </div>
+
+                        {/* Right Column: Community & Updates (40% -> col-span-2) — desktop only */}
+                        <div className="hidden lg:block lg:col-span-2 space-y-6">
+                            <RankingCard
+                                courseId={courseId as string}
+                                loading={courseLoading}
+                            />
+
+                            <AnnouncementsCard
+                                announcements={announcements}
+                                loading={announcementsLoading}
+                                totalCount={totalCount}
+                            />
+
                             <CommunityCard
                                 communityLink={courseData?.community?.facebook_private_group}
                                 telegramLink={courseData?.community?.telegram_group}

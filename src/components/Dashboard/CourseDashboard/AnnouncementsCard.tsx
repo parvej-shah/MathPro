@@ -57,20 +57,20 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (loading) {
     return (
-      <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-xl text-foreground">
+      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative z-0">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className="font-bold text-lg sm:text-xl text-foreground">
             ইন্সট্রাক্টর আপডেট
           </h3>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="animate-pulse p-4 rounded-2xl bg-muted"
+              className="animate-pulse p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-muted"
             >
               <div className="flex gap-3">
-                <div className="w-8 h-8 bg-muted rounded-xl" />
+                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-muted rounded-xl" />
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-muted rounded w-3/4" />
                   <div className="h-3 bg-muted rounded w-1/4" />
@@ -85,15 +85,15 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (announcements.length === 0) {
     return (
-      <div className="w-full self-start !h-auto bg-card p-6 rounded-3xl shadow-sm border border-border relative z-0">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="font-bold text-xl text-foreground">
+      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative z-0">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h3 className="font-bold text-lg sm:text-xl text-foreground">
             ইন্সট্রাক্টর আপডেট
           </h3>
         </div>
-        <div className="h-[220px] text-center py-6 flex flex-col items-center justify-center">
-          <div className="bg-muted w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
-            <BsBell size={24} className="text-muted-foreground" />
+        <div className="h-44 sm:h-55 text-center py-6 flex flex-col items-center justify-center">
+          <div className="bg-muted w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+            <BsBell size={20} className="text-muted-foreground sm:text-2xl" />
           </div>
           <p className="text-muted-foreground text-sm">
             এখনো কোনো আপডেট নেই
@@ -119,10 +119,10 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
   return (
     <div className="space-y-4">
       {/* Featured Latest Announcement */}
-      <div className="bg-card p-6 rounded-3xl shadow-sm border border-border border-l-4 border-l-warning">
-        <div className="flex items-start gap-4">
-          <div className="bg-warning/15 text-warning p-3 rounded-2xl shrink-0">
-            <BsBell className="text-xl" />
+      <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-warning">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <div className="bg-warning/15 text-warning p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0">
+            <BsBell className="text-lg sm:text-xl" />
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-warning font-bold uppercase text-xs tracking-wider mb-1">
@@ -157,9 +157,9 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
       {/* Other Announcements - Only show if there are more than 1 announcement */}
       {remainingAnnouncements.length > 0 && (
-        <div className="bg-card p-6 rounded-3xl shadow-sm border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-foreground">
+        <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-bold text-foreground">
               আগের আপডেট
             </h3>
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">

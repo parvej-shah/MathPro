@@ -24,39 +24,39 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
 }) => {
     if (loading) {
         return (
-            <div className="bg-card p-8 rounded-3xl shadow-sm border border-border animate-pulse">
-                <div className="flex justify-between items-start gap-3 mb-6">
+            <div className="bg-card p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-border animate-pulse">
+                <div className="flex justify-between items-start gap-3 mb-4 sm:mb-6">
                     <div className="flex-1">
-                        <div className="h-4 w-32 bg-muted rounded mb-2"></div>
-                        <div className="h-8 w-48 bg-muted rounded"></div>
+                        <div className="h-4 w-28 sm:w-32 bg-muted rounded mb-2"></div>
+                        <div className="h-7 sm:h-8 w-40 sm:w-48 bg-muted rounded"></div>
                     </div>
-                    <div className="h-8 w-24 bg-muted rounded-full"></div>
+                    <div className="h-7 sm:h-8 w-20 sm:w-24 bg-muted rounded-full"></div>
                 </div>
-                <div className="w-full bg-muted rounded-full h-4 mb-8"></div>
-                <div className="h-16 w-full bg-muted rounded-2xl"></div>
+                <div className="w-full bg-muted rounded-full h-3 sm:h-4 mb-6 sm:mb-8"></div>
+                <div className="h-14 sm:h-16 w-full bg-muted rounded-2xl"></div>
             </div>
         );
     }
 
     return (
-        <div className="bg-card p-8 rounded-3xl shadow-sm border border-border relative overflow-hidden">
+        <div className="bg-card p-5 sm:p-8 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative overflow-hidden">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
             <div className="relative z-10">
-                <div className="flex justify-between items-start gap-3 mb-6">
+                <div className="flex justify-between items-start gap-3 mb-4 sm:mb-6">
                     <div className="flex-1 min-w-0">
-                        <span className="text-primary font-bold tracking-wider uppercase text-xs sm:text-sm mb-1 block">
+                        <span className="text-primary font-bold tracking-wider uppercase text-[10px] sm:text-xs mb-1 block">
                             বর্তমান অগ্রগতি
                         </span>
-                        <h3 className="text-lg sm:text-2xl md:text-3xl font-bold text-foreground leading-tight">
+                        <h3 className="text-base sm:text-2xl md:text-3xl font-bold text-foreground leading-tight">
                             তুমি এখন Module <span className="text-primary">{currentModule}</span>-এ আছো
                         </h3>
                     </div>
-                    <div className="bg-primary/10 text-primary px-2 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-[10px] sm:text-sm whitespace-nowrap shrink-0">
+                    <div className="bg-primary/10 text-primary px-2 py-1 sm:px-4 sm:py-2 rounded-full font-bold text-[10px] sm:text-sm whitespace-nowrap shrink-0">
                         {progress}% সম্পন্ন
                     </div>
                 </div>
 
-                <div className="w-full bg-muted rounded-full h-4 mb-8 overflow-hidden">
+                <div className="w-full bg-muted rounded-full h-3 sm:h-4 mb-5 sm:mb-8 overflow-hidden">
                     <div
                         className="bg-linear-to-r from-primary to-teal h-full rounded-full transition-all duration-1000 ease-out relative"
                         style={{ width: `${progress}%` }}
@@ -72,9 +72,9 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
                             : `/course/${courseId}`
                     }
                 >
-                    <button className="w-full bg-linear-to-r from-primary to-teal hover:opacity-95 text-primary-foreground text-xl font-bold py-5 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 shadow-xl shadow-primary/20 group transform hover:-translate-y-1">
-                        <div className="bg-white/20 p-2 rounded-full group-hover:scale-110 transition-transform">
-                            <BsPlay className="text-2xl" />
+                    <button className="w-full bg-linear-to-r from-primary to-teal hover:opacity-95 text-primary-foreground text-base sm:text-xl font-bold py-3.5 sm:py-5 rounded-xl sm:rounded-2xl flex items-center justify-center gap-3 sm:gap-4 transition-all duration-300 shadow-xl shadow-primary/20 group transform hover:-translate-y-1">
+                        <div className="bg-white/20 p-1.5 sm:p-2 rounded-full group-hover:scale-110 transition-transform">
+                            <BsPlay className="text-xl sm:text-2xl" />
                         </div>
                         শেখা চালিয়ে যাও
                     </button>

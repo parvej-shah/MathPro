@@ -14,12 +14,16 @@ export default function BillingPage() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-
     if (typeof window !== "undefined" && !isLoggedIn()) {
       const loginUrl = createLoginRedirectUrl();
       window.location.href = loginUrl;
     }
+
+    const frame = window.requestAnimationFrame(() => {
+      setMounted(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   const { historyData, loading, error } = usePaymentHistory();
@@ -59,7 +63,7 @@ export default function BillingPage() {
   return (
     <DashboardLayout>
       <main className="pt-20 min-h-screen bg-page-bg">
-        <div className="w-[90%] lg:w-[85%] max-w-[1440px] mx-auto py-12 space-y-8">
+        <div className="w-full px-4 sm:w-[90%] sm:px-0 lg:w-[85%] max-w-[1440px] mx-auto py-6 sm:py-12 space-y-6 sm:space-y-8">
           <PaymentSummary
             summary={historyData.summary}
             userInfo={historyData.user_info}

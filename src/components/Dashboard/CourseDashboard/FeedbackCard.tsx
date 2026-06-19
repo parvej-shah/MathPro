@@ -291,7 +291,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
     if (loading || checkingFeedback) {
         return (
-            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border animate-pulse relative overflow-hidden">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border animate-pulse relative overflow-hidden">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
                 <div className="space-y-4">
                     <div className="h-5 bg-muted rounded w-40" />
@@ -314,10 +314,10 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     if (hasSubmitted && existingFeedback && !isEditing) {
         return (
             <>
-            <div className="bg-card p-6 rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
                 {/* Decorative gradient background */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
 
                 <div className="relative z-10">
                     {/* Header with actions */}
@@ -358,9 +358,9 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <div key={star}>
                                     {star <= existingFeedback.rating ? (
-                                        <BsStarFill className="text-3xl text-warning" />
+                                        <BsStarFill className="text-2xl sm:text-3xl text-warning" />
                                     ) : (
-                                        <BsStar className="text-3xl text-muted-foreground" />
+                                        <BsStar className="text-2xl sm:text-3xl text-muted-foreground" />
                                     )}
                                 </div>
                             ))}
@@ -420,10 +420,10 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     // Show feedback form (new submission or editing)
     return (
         <>
-        <div className="bg-card p-6 rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+        <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
             {/* Decorative gradient background */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
 
             <div className="relative z-10">
                 {/* Header */}
@@ -468,9 +468,9 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                                 className="transition-all duration-200 transform hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed p-1 rounded-lg hover:bg-warning/10"
                             >
                                 {star <= (hoveredStar || selectedRating) ? (
-                                    <BsStarFill className="text-3xl text-warning drop-shadow-sm" />
+                                    <BsStarFill className="text-2xl sm:text-3xl text-warning drop-shadow-sm" />
                                 ) : (
-                                    <BsStar className="text-3xl text-muted-foreground hover:text-warning transition-colors" />
+                                    <BsStar className="text-2xl sm:text-3xl text-muted-foreground hover:text-warning transition-colors" />
                                 )}
                             </button>
                         ))}
@@ -564,7 +564,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                 <button
                     onClick={isEditing ? handleUpdateFeedback : handleSubmitFeedback}
                     disabled={submitting || selectedRating === 0}
-                    className="w-full bg-primary text-primary-foreground font-bold py-4 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] group"
+                    className="w-full bg-primary text-primary-foreground font-bold py-3 sm:py-4 rounded-xl text-sm sm:text-base transition-all duration-300 shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] active:scale-[0.98] group"
                 >
                     {submitting ? (
                         <div className="flex items-center justify-center gap-3">
