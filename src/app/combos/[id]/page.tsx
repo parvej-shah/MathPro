@@ -29,6 +29,10 @@ import { useBundlePayment } from "@/hooks/useBundlePayment";
 import type { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
 import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 import { FAQSection, PremiumCourseCard } from "@/features/courses-page/components";
+import {
+  mapBundleCourseToCourse,
+  type BundleCourseSource,
+} from "@/features/courses-page/_lib/mapBundleCourse";
 import type { Course } from "@/features/courses-page/_lib/types";
 import {
   mapPublicTestimonialsToFeedbacks,
@@ -43,36 +47,11 @@ const TestimonialMarquee = dynamic(
   { ssr: false },
 );
 
-interface ComboCourse {
-  id: number;
-  title: string;
-  price: number;
-  x_price?: number;
-  language?: string;
-  enrolled?: number;
-  short_description?: string;
-  url?: string;
-  is_live?: boolean;
-  chips?: {
-    course_thumbnail_link?: string;
-    thumbnails?: {
-      course_thumbnail_link_16_9?: string;
-      trailer_video_thumb_16_9?: string;
-      facebook_community_thumb_16_9?: string;
-    };
-    sections?: {
-      chapter?: { label: string; value: string };
-      video?: { label: string; value: string };
-      contest?: { label: string; value: string };
-      liveClass?: { label: string; value: string };
-      codingProblem?: { label: string; value: string };
-      archiveClass?: { label: string; value: string };
-    };
+interface ComboCourse extends BundleCourseSource {
+  chips?: BundleCourseSource["chips"] & {
     deadline?: string;
     total_seats?: string;
   };
-  instructor_list?: Course["instructor_list"];
-  feedback_list?: Course["feedback_list"];
 }
 
 interface Combo {
@@ -126,32 +105,6 @@ function calculateOriginalPrice(courses: ComboCourse[]) {
 function calculateDiscount(price: number, original: number) {
   if (!original || original <= price) return 0;
   return Math.round(((original - price) / original) * 100);
-}
-
-function toCourseGridItem(course: ComboCourse): Course {
-  return {
-    id: course.id,
-    title: course.title,
-    x_price: course.x_price || course.price,
-    price: course.price,
-    language: course.language || "bn",
-    enrolled: course.enrolled || 0,
-    short_description: course.short_description || "",
-    chips: {
-      thumbnails: {
-        course_thumbnail_16_9: course.chips?.thumbnails?.course_thumbnail_link_16_9,
-        trailer_video_thumb_16_9: course.chips?.thumbnails?.trailer_video_thumb_16_9,
-        facebook_community_thumb_16_9: course.chips?.thumbnails?.facebook_community_thumb_16_9,
-      },
-      sections: Object.values(course.chips?.sections || {}).filter(
-        (s): s is { label: string; value: string } => Boolean(s),
-      ),
-    },
-    instructor_list: course.instructor_list || { instructors: [] },
-    is_live: Boolean(course.is_live || course.chips?.sections?.liveClass),
-    url: course.url || String(course.id),
-    feedback_list: course.feedback_list,
-  };
 }
 
 function ComboBackgroundLayers() {
@@ -450,7 +403,7 @@ export default function ComboDetailsPage() {
   };
 
   const includedCourses = useMemo(
-    () => (combo?.courses || []).map(toCourseGridItem),
+    () => (combo?.courses || []).map(mapBundleCourseToCourse),
     [combo?.courses],
   );
 
@@ -619,8 +572,13 @@ export default function ComboDetailsPage() {
             </div>
 
             <div className="rounded-3xl border border-border bg-card p-5 shadow-xl">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-extrabold text-primary">Combo Snapshot</p>
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-extrabold text-primary">Combo Snapshot</p>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">
+                    এক নজরে দাম, সাশ্রয় ও সিদ্ধান্তের মূল তথ্য
+                  </p>
+                </div>
                 <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Layers3 className="size-5" />
                 </div>
@@ -638,43 +596,50 @@ export default function ComboDetailsPage() {
 
               <div className="mt-5 grid gap-3">
                 <div className="rounded-xl border border-border bg-background/80 p-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
-                    Combo Price
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2">
-                    <p className="text-4xl font-extrabold tracking-tight text-foreground">
-                      {formatPrice(discountInfo ? discountInfo.final_price : combo.price)}
-                    </p>
-                    {computed.originalPrice > combo.price && (
-                      <p className="pb-1 text-xl font-extrabold text-destructive line-through decoration-2">
-                        {formatPrice(computed.originalPrice)}
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">
+                        Combo Price
                       </p>
-                    )}
+                      <div className="mt-2 flex flex-wrap items-end gap-x-3 gap-y-2">
+                        <p className="text-4xl font-extrabold tracking-tight text-foreground">
+                          {formatPrice(discountInfo ? discountInfo.final_price : combo.price)}
+                        </p>
+                        {computed.originalPrice > combo.price && (
+                          <p className="pb-1 text-xl font-extrabold text-destructive line-through decoration-2">
+                            {formatPrice(computed.originalPrice)}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap justify-end gap-2">
+                      {computed.discount > 0 && (
+                        <span className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-sm font-extrabold text-warning">
+                          <BadgePercent className="size-4" />
+                          {toBanglaNumber(computed.discount)}% ছাড়
+                        </span>
+                      )}
+                      {computed.savings > 0 && (
+                        <span className="inline-flex rounded-full border border-success/30 bg-success/15 px-3 py-1 text-sm font-extrabold text-success">
+                          সেভ {formatPrice(computed.savings)}
+                        </span>
+                      )}
+                    </div>
                   </div>
+
                   {computed.originalPrice > combo.price && (
-                    <p className="mt-2 text-sm font-semibold text-muted-foreground">
+                    <p className="mt-3 text-sm font-semibold text-muted-foreground">
                       আলাদা কোর্সগুলোর মোট দাম:{" "}
                       <span className="font-extrabold text-destructive">
                         {formatPrice(computed.originalPrice)}
                       </span>
                     </p>
                   )}
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    {computed.discount > 0 && (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-sm font-extrabold text-warning">
-                        <BadgePercent className="size-4" />
-                        {toBanglaNumber(computed.discount)}% ছাড়
-                      </span>
-                    )}
-                    {computed.savings > 0 && (
-                      <span className="inline-flex rounded-full border border-success/30 bg-success/15 px-3 py-1 text-sm font-extrabold text-success">
-                        সেভ {formatPrice(computed.savings)}
-                      </span>
-                    )}
-                  </div>
+
                   {discountInfo && (
                     <p className="mt-2 text-sm font-semibold text-success">
-                      {`কুপনে সাশ্রয় ৳${discountInfo.discount_amount}`}
+                      কুপনে সাশ্রয় ৳{discountInfo.discount_amount}
                     </p>
                   )}
                 </div>

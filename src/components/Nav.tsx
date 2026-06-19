@@ -129,7 +129,10 @@ export default function Nav({ mode = "default" }: NavProps) {
   }, [fetchNotificationCount]);
 
   useEffect(() => {
-    if (mode !== "landing") return;
+    if (mode !== "landing") {
+      setIsScrolled(true);
+      return;
+    }
     const onScroll = () => setIsScrolled(window.scrollY > 50);
     onScroll();
     window.addEventListener("scroll", onScroll);
