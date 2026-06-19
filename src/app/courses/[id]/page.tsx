@@ -544,6 +544,7 @@ export default function CourseDetailsPage() {
                     <CourseDetailsTab
                       description={courseData.description}
                       feedbacks={courseData?.feedback_list?.feedbacks}
+                      faqs={courseData?.faq_list?.faqs}
                       deadline={
                         (enrollmentDates.enrollmentEnd ??
                           enrollmentDates.prebookingEnd)?.toISOString()

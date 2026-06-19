@@ -22,7 +22,8 @@ export default function CourseDetailsTab({
   const [expandedDescription, setExpandedDescription] = useState(false);
   const { faqs: sharedFaqs } = usePublicFaqs();
 
-  const displayFaqs = sharedFaqs.length > 0 ? sharedFaqs : (faqs ?? []);
+  const courseFaqs = faqs ?? [];
+  const displayFaqs = courseFaqs.length > 0 ? courseFaqs : sharedFaqs;
 
   return (
     <div>

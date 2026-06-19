@@ -12,7 +12,6 @@ import { Toaster } from "react-hot-toast";
 import {
   ArrowRight,
   BadgePercent,
-  BookOpenCheck,
   Layers3,
   PlayCircle,
   Sparkles,
@@ -505,9 +504,11 @@ export default function ComboDetailsPage() {
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {combo.courses.map((course) => (
-                      <div key={course.id} className="flex items-start gap-2.5">
-                        <BookOpenCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span className="text-sm font-semibold leading-snug text-muted-foreground">
+                      <div
+                        key={course.id}
+                        className="rounded-xl border border-border bg-card px-3 py-2.5"
+                      >
+                        <span className="text-sm font-semibold leading-snug text-foreground">
                           {course.title}
                         </span>
                       </div>
@@ -667,76 +668,6 @@ export default function ComboDetailsPage() {
 
         <section className="relative z-10 overflow-hidden bg-section-b px-5 py-14 sm:px-6 lg:px-12">
           <div className="mx-auto w-[90%] max-w-360">
-            <div className="mb-12 rounded-3xl border border-border bg-card/70 p-5 shadow-xl backdrop-blur-md md:p-8">
-              <div className="mb-6 text-center">
-                <p className="text-sm font-extrabold text-primary">দাম তুলনা</p>
-                <h2 className="mt-1 text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
-                  কেনো Combo নেবে?
-                </h2>
-                <p className="mt-3 text-base font-medium text-muted-foreground">
-                  আলাদা করে কিনলে বেশি খরচ, Combo নিলে একসাথে সাশ্রয়।
-                </p>
-              </div>
-
-              <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_1fr]">
-                <div className="rounded-2xl border border-border bg-background/70 p-4">
-                  <p className="mb-3 text-sm font-bold text-muted-foreground">আলাদা কিনলে</p>
-                  <div className="space-y-2">
-                    {(combo.courses || []).map((course, index) => (
-                      <div
-                        key={course.id}
-                        className="flex items-center justify-between rounded-xl border border-border bg-card px-3 py-2.5"
-                      >
-                        <p className="text-sm font-semibold text-foreground">
-                          {toBanglaNumber(index + 1)}. {course.title}
-                        </p>
-                        <p className="text-sm font-bold text-muted-foreground">
-                          {formatPrice(course.price || 0)}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 rounded-xl border border-destructive/25 bg-destructive/10 px-3 py-2.5">
-                    <p className="flex items-center justify-between text-base font-extrabold text-foreground">
-                      <span>মোট</span>
-                      <span className="text-destructive">
-                        {formatPrice(computed.originalPrice)}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary lg:h-20 lg:w-20">
-                  <span className="text-2xl font-extrabold">VS</span>
-                </div>
-
-                <div className="rounded-2xl border border-primary/30 bg-linear-to-br from-primary/10 to-teal/10 p-4 shadow-lg">
-                  <div className="mb-3 inline-flex rounded-full border border-primary/25 bg-primary/15 px-3 py-1 text-xs font-extrabold text-primary">
-                    Best Value
-                  </div>
-                  <p className="text-lg font-extrabold text-foreground">{combo.title}</p>
-                  <p className="mt-3 text-sm font-semibold text-muted-foreground">Combo দাম</p>
-                  <p className="text-4xl font-extrabold text-foreground">{formatPrice(combo.price)}</p>
-
-                  <div className="mt-4 rounded-xl border border-success/30 bg-success/15 p-3">
-                    <p className="text-sm font-bold text-success">তুমি সেভ করছো</p>
-                    <p className="text-3xl font-extrabold text-success">
-                      {formatPrice(computed.savings)}
-                    </p>
-                    {computed.discount > 0 && (
-                      <p className="text-lg font-extrabold text-success">
-                        ({toBanglaNumber(computed.discount)}% ছাড়)
-                      </p>
-                    )}
-                  </div>
-
-                  <p className="mt-4 text-sm font-bold text-foreground">
-                    {toBanglaNumber(computed.courseCount)}টি কোর্স অন্তর্ভুক্ত
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <div className="mb-6 max-w-3xl">
               <p className="mb-2 text-sm font-extrabold text-primary">এই Combo-তে যা পাচ্ছো</p>
               <h2 className="text-3xl font-extrabold leading-tight text-foreground md:text-5xl">
