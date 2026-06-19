@@ -1,9 +1,37 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { toBanglaError } from "@/app/auth/_components/error-bn";
+
+declare global {
+  interface Window {
+    google?: {
+      accounts?: {
+        id?: {
+          initialize: (options: {
+            client_id: string;
+            callback: (response: { credential?: string }) => void;
+          }) => void;
+          renderButton: (
+            element: HTMLElement,
+            options: {
+              theme?: "outline" | "filled_blue" | "filled_black";
+              size?: "large" | "medium" | "small";
+              text?: "signin_with" | "signup_with" | "continue_with" | "signin";
+              shape?: "rectangular" | "pill" | "circle" | "square";
+              width?: number;
+              logo_alignment?: "left" | "center";
+            },
+          ) => void;
+        };
+      };
+    };
+    __mathProGoogleScriptPromise?: Promise<void>;
+  }
+}
 
 type ProfileFormState = {
   name: string;
@@ -70,6 +98,20 @@ export default function ProfilePage() {
   const [passwordMessage, setPasswordMessage] = useState("");
   const [profileError, setProfileError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [googleConnecting, setGoogleConnecting] = useState(false);
+  const [googleMessage, setGoogleMessage] = useState("");
+  const [googleError, setGoogleError] = useState("");
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  const [googleChangeOpen, setGoogleChangeOpen] = useState(false);
+  const [phoneChangeOpen, setPhoneChangeOpen] = useState(false);
+  const [newPhone, setNewPhone] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
+  const [phoneChanging, setPhoneChanging] = useState(false);
+  const [phoneChangeError, setPhoneChangeError] = useState("");
+  const [phoneChangeMessage, setPhoneChangeMessage] = useState("");
 
   useEffect(() => {
     if (!profile) return;
@@ -101,17 +143,10 @@ export default function ProfilePage() {
     setProfileMessage("");
     setProfileError("");
 
-    const cleanedPhone = profileForm.phone.trim();
     const cleanedGuardianMobile = profileForm.guardianMobile.trim();
 
     if (!profileForm.name.trim()) {
       setProfileError("নাম অবশ্যই দিতে হবে।");
-      setProfileSaving(false);
-      return;
-    }
-
-    if (cleanedPhone && !isBangladeshPhone(cleanedPhone)) {
-      setProfileError("সঠিক বাংলাদেশি ফোন নম্বর দিন।");
       setProfileSaving(false);
       return;
     }
@@ -132,7 +167,6 @@ export default function ProfilePage() {
         `${BACKEND_URL}/user/profile`,
         {
           name: profileForm.name.trim(),
-          phone: cleanedPhone || null,
           facebookId: profileForm.facebookId.trim() || null,
           address: profileForm.address.trim() || null,
           schoolCollege: profileForm.schoolCollege.trim() || null,
@@ -155,7 +189,7 @@ export default function ProfilePage() {
       await refetch();
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : err instanceof Error
           ? err.message
           : undefined;
@@ -201,7 +235,7 @@ export default function ProfilePage() {
       await refetch();
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : err instanceof Error
           ? err.message
           : undefined;
@@ -210,6 +244,164 @@ export default function ProfilePage() {
       setPasswordSaving(false);
     }
   };
+
+  const sendPhoneOtp = async () => {
+    setPhoneChangeError("");
+    setPhoneChangeMessage("");
+    const cleaned = newPhone.trim();
+    if (!cleaned || !isBangladeshPhone(cleaned)) {
+      setPhoneChangeError("সঠিক বাংলাদেশি ফোন নম্বর দাও (০১ দিয়ে শুরু)।");
+      return;
+    }
+    setPhoneChanging(true);
+    try {
+      const res = await axios.post(
+        `${BACKEND_URL}/admin/auth/request-otp`,
+        { contact: cleaned, purpose: "phone_change" },
+      );
+      setPhoneOtpSent(true);
+      setPhoneChangeMessage(res.data?.message || "OTP পাঠানো হয়েছে।");
+      if (res.data?.otp) setPhoneOtp(res.data.otp);
+    } catch (err: unknown) {
+      const message = axios.isAxiosError<{ error?: string }>(err)
+        ? toBanglaError(err.response?.data?.error)
+        : undefined;
+      setPhoneChangeError(message || "OTP পাঠানো যায়নি।");
+    } finally {
+      setPhoneChanging(false);
+    }
+  };
+
+  const submitPhoneChange = async () => {
+    setPhoneChangeError("");
+    setPhoneChangeMessage("");
+    if (!phoneOtp.trim()) {
+      setPhoneChangeError("OTP কোড দাও।");
+      return;
+    }
+    setPhoneChanging(true);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication required");
+      const res = await axios.put(
+        `${BACKEND_URL}/user/profile/phone`,
+        { newPhone: newPhone.trim(), otp: phoneOtp.trim() },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setPhoneChangeMessage(toBanglaError(res.data?.message) || "ফোন নম্বর আপডেট হয়েছে।");
+      setPhoneChangeOpen(false);
+      setNewPhone("");
+      setPhoneOtp("");
+      setPhoneOtpSent(false);
+      await refetch();
+    } catch (err: unknown) {
+      const message = axios.isAxiosError<{ error?: string }>(err)
+        ? toBanglaError(err.response?.data?.error)
+        : undefined;
+      setPhoneChangeError(message || "ফোন নম্বর আপডেট করা যায়নি।");
+      setPhoneChangeOpen(false);
+      setPhoneOtpSent(false);
+      setNewPhone("");
+      setPhoneOtp("");
+      await refetch();
+    } finally {
+      setPhoneChanging(false);
+    }
+  };
+
+  const handleGoogleConnect = useCallback(async (credential: string) => {
+    setGoogleConnecting(true);
+    setGoogleMessage("");
+    setGoogleError("");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Authentication required");
+      const res = await axios.post(
+        `${BACKEND_URL}/admin/auth/connect-google`,
+        { id_token: credential },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      setGoogleMessage(res.data?.message || "Google অ্যাকাউন্ট কানেক্ট হয়েছে।");
+      setGoogleChangeOpen(false);
+      await refetch();
+    } catch (err: unknown) {
+      const message = axios.isAxiosError<{ error?: string }>(err)
+        ? toBanglaError(err.response?.data?.error)
+        : undefined;
+      setGoogleError(message || "Google কানেক্ট করা যায়নি।");
+      setGoogleChangeOpen(false);
+      await refetch();
+    } finally {
+      setGoogleConnecting(false);
+    }
+  }, [refetch]);
+
+  const hasGoogle = profile?.auth_providers?.includes("google");
+
+  const cooldownDaysLeft = (changedAt?: string) => {
+    if (!changedAt) return 0;
+    const elapsed = (Date.now() - new Date(changedAt).getTime()) / (1000 * 60 * 60 * 24);
+    return elapsed < 7 ? Math.ceil(7 - elapsed) : 0;
+  };
+  const phoneCooldown = cooldownDaysLeft(profile?.profile?.phone_changed_at);
+  const emailCooldown = cooldownDaysLeft(profile?.profile?.email_changed_at);
+
+  useEffect(() => {
+    if (phoneCooldown > 0 && phoneChangeOpen) setPhoneChangeOpen(false);
+    if (emailCooldown > 0 && googleChangeOpen) setGoogleChangeOpen(false);
+  }, [phoneCooldown, emailCooldown, phoneChangeOpen, googleChangeOpen]);
+
+  useEffect(() => {
+    if (!googleClientId || !googleButtonRef.current || (hasGoogle && !googleChangeOpen) || (hasGoogle && emailCooldown > 0)) return;
+    let cancelled = false;
+
+    const render = () => {
+      if (cancelled || !googleButtonRef.current || !window.google?.accounts?.id) return;
+      window.google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: ({ credential }) => {
+          if (credential) handleGoogleConnect(credential);
+        },
+      });
+      googleButtonRef.current.innerHTML = "";
+      const w = Math.min(320, googleButtonRef.current.parentElement?.clientWidth || 320);
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        width: w,
+        logo_alignment: "left",
+      });
+    };
+
+    const load = () => {
+      if (window.google?.accounts?.id) return Promise.resolve();
+      if (!window.__mathProGoogleScriptPromise) {
+        window.__mathProGoogleScriptPromise = new Promise<void>((resolve, reject) => {
+          const existing = document.querySelector(
+            'script[src="https://accounts.google.com/gsi/client"]',
+          ) as HTMLScriptElement | null;
+          if (existing) {
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => reject(), { once: true });
+            return;
+          }
+          const s = document.createElement("script");
+          s.src = "https://accounts.google.com/gsi/client";
+          s.async = true;
+          s.defer = true;
+          s.onload = () => resolve();
+          s.onerror = () => reject();
+          document.head.appendChild(s);
+        });
+      }
+      return window.__mathProGoogleScriptPromise;
+    };
+
+    load().then(render).catch(() => setGoogleError("Google স্ক্রিপ্ট লোড হয়নি।"));
+    return () => { cancelled = true; };
+  }, [googleClientId, hasGoogle, googleChangeOpen, emailCooldown, handleGoogleConnect]);
 
   const requiresCurrentPassword = profile?.has_password !== false;
 
@@ -263,10 +455,9 @@ export default function ProfilePage() {
                   </label>
                   <input
                     id="profile-phone"
-                    className={inputClass}
-                    placeholder="01XXXXXXXXX"
-                    value={profileForm.phone}
-                    onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
+                    className={`${inputClass} cursor-not-allowed bg-muted text-muted-foreground`}
+                    value={profileForm.phone || "ফোন নম্বর নেই"}
+                    readOnly
                   />
                 </div>
               </div>
@@ -301,7 +492,7 @@ export default function ProfilePage() {
                   <input
                     id="profile-email"
                     className={`${inputClass} cursor-not-allowed bg-muted text-muted-foreground`}
-                    value={profile?.email || profile?.profile?.email || ""}
+                    value={profile?.email || profile?.profile?.email || "ইমেইল পাওয়া যায়নি"}
                     readOnly
                   />
                 </div>
@@ -461,6 +652,122 @@ export default function ProfilePage() {
         <div className="space-y-6">
           <section className={`${cardClass} space-y-4`}>
             <div>
+              <h2 className="text-lg font-bold text-heading">ফোন নম্বর</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {profileForm.phone
+                  ? "ফোন নম্বর পরিবর্তন করতে নতুন নম্বরে OTP যাচাই করতে হবে।"
+                  : "ফোন নম্বর যোগ করলে ফোন দিয়ে লগইন করতে পারবে।"}
+              </p>
+            </div>
+
+            {profileForm.phone && (
+              <p className="rounded-lg bg-muted px-4 py-3 text-sm text-muted-foreground">
+                বর্তমান নম্বর:{" "}
+                <span className="font-medium text-foreground">{profileForm.phone}</span>
+              </p>
+            )}
+
+            {!phoneChangeOpen ? (
+              <div className="relative group">
+                <button
+                  type="button"
+                  disabled={phoneCooldown > 0}
+                  title={phoneCooldown > 0 ? `আরো ${phoneCooldown} দিন পর পরিবর্তন করা যাবে। ৭ দিনে একবার পরিবর্তন করা যায়।` : undefined}
+                  className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-sm font-semibold text-primary transition hover:bg-primary/15 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    setPhoneChangeOpen(true);
+                    setPhoneChangeError("");
+                    setPhoneChangeMessage("");
+                    setNewPhone("");
+                    setPhoneOtp("");
+                    setPhoneOtpSent(false);
+                  }}
+                >
+                  {profileForm.phone ? "পরিবর্তন করো" : "যোগ করো"}
+                </button>
+                {phoneCooldown > 0 && (
+                  <p className="mt-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-center text-xs text-amber-700 dark:text-amber-400">
+                    ৭ দিনে একবার পরিবর্তন করা যায়। আরো {phoneCooldown} দিন অপেক্ষা করো।
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass} htmlFor="new-phone">
+                    নতুন ফোন নম্বর
+                  </label>
+                  <input
+                    id="new-phone"
+                    type="tel"
+                    className={inputClass}
+                    placeholder="01XXXXXXXXX"
+                    value={newPhone}
+                    onChange={(e) => setNewPhone(e.target.value)}
+                    disabled={phoneOtpSent}
+                  />
+                </div>
+                {phoneOtpSent && (
+                  <div>
+                    <label className={labelClass} htmlFor="phone-otp">
+                      OTP কোড
+                    </label>
+                    <input
+                      id="phone-otp"
+                      type="text"
+                      className={inputClass}
+                      placeholder="SMS এ পাওয়া OTP"
+                      value={phoneOtp}
+                      onChange={(e) => setPhoneOtp(e.target.value)}
+                    />
+                  </div>
+                )}
+
+                {phoneChangeError ? (
+                  <p className="rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                    {phoneChangeError}
+                  </p>
+                ) : null}
+                {phoneChangeMessage ? (
+                  <p className="rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+                    {phoneChangeMessage}
+                  </p>
+                ) : null}
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    disabled={phoneChanging}
+                    className="inline-flex h-12 flex-1 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-60"
+                    onClick={phoneOtpSent ? submitPhoneChange : sendPhoneOtp}
+                  >
+                    {phoneChanging
+                      ? "অপেক্ষা করো..."
+                      : phoneOtpSent
+                        ? "আপডেট করো"
+                        : "OTP পাঠাও"}
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex h-12 items-center justify-center rounded-lg border border-border px-4 text-sm font-semibold text-muted-foreground transition hover:bg-muted"
+                    onClick={() => {
+                      setPhoneChangeOpen(false);
+                      setPhoneChangeError("");
+                      setPhoneChangeMessage("");
+                      setNewPhone("");
+                      setPhoneOtp("");
+                      setPhoneOtpSent(false);
+                    }}
+                  >
+                    বাতিল
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+
+          <section className={`${cardClass} space-y-4`}>
+            <div>
               <h2 className="text-lg font-bold text-heading">
                 {requiresCurrentPassword ? "পাসওয়ার্ড বদলাও" : "পাসওয়ার্ড সেট করো"}
               </h2>
@@ -554,6 +861,83 @@ export default function ProfilePage() {
               </button>
             </form>
           </section>
+
+          {googleClientId ? (
+            <section className={`${cardClass} space-y-4`}>
+              <div>
+                <h2 className="text-lg font-bold text-heading">Google অ্যাকাউন্ট</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {hasGoogle
+                    ? "তোমার অ্যাকাউন্টে Google কানেক্ট করা আছে। Google দিয়েও লগইন করতে পারবে।"
+                    : "Google কানেক্ট করলে Google দিয়েও লগইন করতে পারবে এবং ইমেইল যুক্ত হবে।"}
+                </p>
+              </div>
+
+              {hasGoogle && (
+                <p className="rounded-lg bg-primary/10 px-4 py-3 text-sm text-primary">
+                  ✓ Google কানেক্ট আছে {profile?.email ? `(${profile.email})` : ""}
+                </p>
+              )}
+
+              {hasGoogle && emailCooldown > 0 ? (
+                <div>
+                  <button
+                    type="button"
+                    disabled
+                    title={`আরো ${emailCooldown} দিন পর পরিবর্তন করা যাবে। ৭ দিনে একবার পরিবর্তন করা যায়।`}
+                    className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-sm font-semibold text-primary opacity-50 cursor-not-allowed"
+                  >
+                    পরিবর্তন করো
+                  </button>
+                  <p className="mt-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2.5 text-center text-xs text-amber-700 dark:text-amber-400">
+                    ৭ দিনে একবার পরিবর্তন করা যায়। আরো {emailCooldown} দিন অপেক্ষা করো।
+                  </p>
+                </div>
+              ) : hasGoogle && !googleChangeOpen ? (
+                <button
+                  type="button"
+                  className="inline-flex h-12 w-full items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-sm font-semibold text-primary transition hover:bg-primary/15"
+                  onClick={() => {
+                    setGoogleChangeOpen(true);
+                    setGoogleError("");
+                    setGoogleMessage("");
+                  }}
+                >
+                  পরিবর্তন করো
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className={googleConnecting ? "pointer-events-none opacity-70" : ""}>
+                    <div ref={googleButtonRef} className="flex justify-center" />
+                  </div>
+                  {googleChangeOpen && (
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-border text-sm font-semibold text-muted-foreground transition hover:bg-muted"
+                      onClick={() => {
+                        setGoogleChangeOpen(false);
+                        setGoogleError("");
+                        setGoogleMessage("");
+                      }}
+                    >
+                      বাতিল
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {googleError ? (
+                <p className="rounded-lg border border-destructive/25 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {googleError}
+                </p>
+              ) : null}
+              {googleMessage ? (
+                <p className="rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
+                  {googleMessage}
+                </p>
+              ) : null}
+            </section>
+          ) : null}
         </div>
       </div>
     </div>

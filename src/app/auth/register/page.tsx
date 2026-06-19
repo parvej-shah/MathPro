@@ -7,6 +7,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn, handlePostLoginRedirect } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
+import { toBanglaError } from "../_components/error-bn";
 
 type Step = "phone" | "otp" | "details";
 
@@ -23,6 +24,7 @@ function RegisterPageContent() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [loading, setLoading] = useState(false);
@@ -69,11 +71,11 @@ function RegisterPageContent() {
         setStep("otp");
         startCooldown(60);
       } else {
-        setError(res.data?.error || "OTP পাঠানো যায়নি।");
+        setError(toBanglaError(res.data?.error) || "OTP পাঠানো যায়নি।");
       }
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : undefined;
       setError(message || "OTP পাঠানো যায়নি। আবার চেষ্টা করো।");
     } finally {
@@ -94,11 +96,11 @@ function RegisterPageContent() {
       if (res.data?.success) {
         setStep("details");
       } else {
-        setError(res.data?.error || "OTP সঠিক নয়।");
+        setError(toBanglaError(res.data?.error) || "OTP সঠিক নয়।");
       }
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : undefined;
       setError(message || "OTP যাচাই করা যায়নি।");
     } finally {
@@ -126,7 +128,8 @@ function RegisterPageContent() {
         login: phone.trim(),
         password,
         otp: otp.trim(),
-        name: name.trim() || undefined,
+        name: name.trim(),
+        email: email.trim() || undefined,
       });
 
       const token = res?.data?.token;
@@ -135,7 +138,7 @@ function RegisterPageContent() {
       handlePostLoginRedirect(token, redirectUrl, router);
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : undefined;
       setError(message || "রেজিস্ট্রেশন করা যায়নি। আবার চেষ্টা করো।");
     } finally {
@@ -253,9 +256,24 @@ function RegisterPageContent() {
               id="name"
               type="text"
               className={inputClass}
-              placeholder="নাম (ঐচ্ছিক)"
+              placeholder="তোমার পুরো নাম"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold" htmlFor="email">
+              ইমেইল <span className="font-normal text-muted-foreground">(ঐচ্ছিক)</span>
+            </label>
+            <input
+              id="email"
+              type="email"
+              className={inputClass}
+              placeholder="example@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 

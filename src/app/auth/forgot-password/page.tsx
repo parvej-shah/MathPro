@@ -7,6 +7,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
+import { toBanglaError } from "../_components/error-bn";
 
 function ForgotPasswordContent() {
   const router = useRouter();
@@ -52,15 +53,15 @@ function ForgotPasswordContent() {
         return;
       }
 
-      const res = await axios.post(`${BACKEND_URL}/admin/auth/reset-password`, {
+      await axios.post(`${BACKEND_URL}/admin/auth/reset-password`, {
         contact: phone.trim(),
         otp: otp.trim(),
         newPassword: password,
       });
-      setSuccess(res.data?.message || "পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।");
+      router.replace(loginHref);
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : undefined;
       setError(message || "অনুরোধটি সম্পন্ন করা যায়নি। আবার চেষ্টা করো।");
     } finally {

@@ -7,6 +7,7 @@ import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { isLoggedIn, handlePostLoginRedirect, clearAuthToken } from "@/helpers";
 import AuthShell from "../_components/AuthShell";
+import { toBanglaError } from "../_components/error-bn";
 
 declare global {
   interface Window {
@@ -115,7 +116,7 @@ function LoginPageContent() {
       handlePostLoginRedirect(token, redirectUrl, router);
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
-        ? err.response?.data?.error
+        ? toBanglaError(err.response?.data?.error)
         : undefined;
       setError(message || "লগইন করা যায়নি। আবার চেষ্টা করো।");
     } finally {
@@ -148,7 +149,7 @@ function LoginPageContent() {
         handlePostLoginRedirect(token, redirectUrlRef.current, routerRef.current);
       } catch (err: unknown) {
         const message = axios.isAxiosError<{ error?: string }>(err)
-          ? err.response?.data?.error
+          ? toBanglaError(err.response?.data?.error)
           : undefined;
         setError(message || "Google লগইন করা যায়নি। আবার চেষ্টা করো।");
       } finally {
@@ -266,12 +267,13 @@ function LoginPageContent() {
       <form className="space-y-4" onSubmit={onSubmit}>
         <div>
           <label className="mb-1.5 block text-sm font-semibold" htmlFor="login">
-            ইমেইল
+            ফোন নম্বর
           </label>
           <input
             id="login"
+            type="tel"
             className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-            placeholder="তোমার ইমেইল"
+            placeholder="তোমার ফোন নম্বর"
             value={form.login}
             onChange={(e) => setForm((p) => ({ ...p, login: e.target.value }))}
             required

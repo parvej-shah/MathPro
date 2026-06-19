@@ -16,6 +16,8 @@ export interface UserProfileDetails {
   classLevel: 'JSC' | 'SSC' | 'HSC' | null;
   version: 'Bangla' | 'English' | null;
   department: string | null;
+  phone_changed_at?: string;
+  email_changed_at?: string;
 }
 
 export interface UserProfile {
