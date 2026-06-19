@@ -21,7 +21,7 @@ import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
 import WhatsAppWidget from "@/components/WhatsAppWidget";
 import { siteConfig } from "@/config/site.config";
-import { FAQSection } from "@/features/courses-page/components";
+import { ComboCard, FAQSection } from "@/features/courses-page/components";
 import {
   mapPublicTestimonialsToFeedbacks,
   usePublicTestimonials,
@@ -35,20 +35,28 @@ const TestimonialMarquee = dynamic(
   { ssr: false },
 );
 
-interface BundleCourse {
-  id: number;
-  title: string;
-  price: number;
-  url: string;
-}
-
 interface Bundle {
   id: number;
   title: string;
   price: number;
   url: string;
-  courses: BundleCourse[];
+  courses: Array<{
+    id: number;
+    title: string;
+    price: number;
+    x_price?: number;
+    url: string;
+  }>;
   course_count: number;
+  short_description?: string;
+  tags?: string[] | null;
+  is_live: boolean;
+  is_active: boolean;
+  chips?: {
+    thumbnails?: {
+      bundle_thumb_4_3?: string;
+    };
+  };
 }
 
 interface BundlesResponse {
@@ -68,116 +76,13 @@ function formatPrice(price: number) {
   }).format(price))}`;
 }
 
-function calculateTotalOriginalPrice(courses: BundleCourse[]) {
-  return courses.reduce((total, course) => total + Number(course.price || 0), 0);
+function calculateTotalOriginalPrice(courses: Bundle["courses"]) {
+  return courses.reduce((total, course) => total + Number(course.x_price || course.price || 0), 0);
 }
 
 function calculateDiscount(comboPrice: number, originalTotal: number) {
   if (!originalTotal || originalTotal <= comboPrice) return 0;
   return Math.round(((originalTotal - comboPrice) / originalTotal) * 100);
-}
-
-function ComboCard({ combo, featured }: { combo: Bundle; featured: boolean }) {
-  const courses = combo.courses || [];
-  const courseCount = combo.course_count || courses.length;
-  const originalTotal = calculateTotalOriginalPrice(courses);
-  const discount = calculateDiscount(combo.price, originalTotal);
-  const savings = Math.max(originalTotal - combo.price, 0);
-
-  return (
-    <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-3xl border bg-card shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${
-        featured ? "border-primary/40 shadow-primary/10" : "border-border"
-      }`}
-    >
-      {featured && (
-        <div className="absolute left-5 top-5 z-10 inline-flex items-center gap-2 rounded-full border border-warning/30 bg-warning/15 px-3 py-1 text-xs font-bold text-warning">
-          <Sparkles className="size-3.5" />
-          সবচেয়ে ভালো ভ্যালু
-        </div>
-      )}
-
-      <div className="relative overflow-hidden bg-linear-to-br from-primary via-primary to-teal px-5 pb-6 pt-16 sm:px-6">
-        <div className="absolute -right-10 -top-10 size-36 rounded-full bg-background/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-background/25" />
-
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <div className="mb-4 flex size-14 items-center justify-center rounded-2xl border border-primary-foreground/25 bg-primary-foreground/15 text-primary-foreground backdrop-blur-md">
-              <Gift className="size-7" />
-            </div>
-            <p className="text-sm font-semibold text-primary-foreground/80">
-              {toBanglaNumber(courseCount)}টি কোর্স একসাথে
-            </p>
-            <h3 className="mt-2 text-2xl font-extrabold leading-snug text-primary-foreground">
-              {combo.title}
-            </h3>
-          </div>
-
-          {discount > 0 && (
-            <div className="shrink-0 rounded-2xl border border-warning/30 bg-warning px-3 py-2 text-center text-warning-foreground shadow-lg">
-              <span className="block text-xl font-extrabold leading-none">
-                {toBanglaNumber(discount)}%
-              </span>
-              <span className="text-xs font-bold">ছাড়</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="mb-5 rounded-2xl border border-primary/15 bg-primary/5 p-4">
-          <p className="mb-3 text-sm font-bold text-foreground">
-            এই Combo-তে যা পাচ্ছো
-          </p>
-          <div className="space-y-2.5">
-            {courses.map((course) => (
-              <div key={course.id} className="flex items-start gap-2.5 text-sm leading-snug">
-                <BookOpenCheck className="mt-0.5 size-4 shrink-0 text-primary" />
-                <span className="font-medium text-muted-foreground">{course.title}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-5 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-border bg-background/70 p-3">
-            <p className="text-xs font-semibold text-muted-foreground">মোট কোর্স</p>
-            <p className="mt-1 text-lg font-extrabold text-foreground">
-              {toBanglaNumber(courseCount)}টি
-            </p>
-          </div>
-          <div className="rounded-2xl border border-border bg-background/70 p-3">
-            <p className="text-xs font-semibold text-muted-foreground">তোমার সাশ্রয়</p>
-            <p className="mt-1 text-lg font-extrabold text-success">
-              {formatPrice(savings)}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-auto">
-          <div className="mb-4 flex flex-wrap items-end gap-x-3 gap-y-1">
-            <span className="text-3xl font-extrabold text-foreground">
-              {formatPrice(combo.price)}
-            </span>
-            {originalTotal > combo.price && (
-              <span className="pb-1 text-lg font-semibold text-muted-foreground line-through">
-                {formatPrice(originalTotal)}
-              </span>
-            )}
-          </div>
-
-          <Link
-            href={`/combos/${combo.id}`}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-teal px-5 py-3.5 text-base font-extrabold text-primary-foreground shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-xl hover:shadow-primary/30"
-          >
-            Combo বিস্তারিত দেখো
-            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
-      </div>
-    </article>
-  );
 }
 
 function CombosLoading() {
@@ -567,8 +472,8 @@ export default function CombosPage() {
 
             {combos.length > 0 ? (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {combos.map((combo, index) => (
-                  <ComboCard key={combo.id} combo={combo} featured={index === 0} />
+                {combos.map((combo) => (
+                  <ComboCard key={combo.id} combo={combo} />
                 ))}
               </div>
             ) : (

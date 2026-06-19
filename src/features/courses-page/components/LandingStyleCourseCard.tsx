@@ -136,7 +136,7 @@ export default function LandingStyleCourseCard({
               ))}
             </div>
           )}
-          <div className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-destructive/8 text-destructive text-sm font-extrabold px-3.5 py-1.5 border border-destructive/20 shadow-sm whitespace-nowrap">
+          <div className="w-fit self-end shrink-0 inline-flex items-center gap-1.5 rounded-full bg-destructive/8 text-destructive text-sm font-extrabold px-3.5 py-1.5 border border-destructive/20 shadow-sm whitespace-nowrap">
             {formatPrice(price)}
             {discount > 0 && (
               <span className="text-xs font-bold text-success">−{discount}%</span>

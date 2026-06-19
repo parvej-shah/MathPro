@@ -395,7 +395,7 @@ export const apiConfig = {
   },
 };
 
-export function englishToBanglaNumbers(number: number) {
+export function englishToBanglaNumbers(number: number | string) {
   const banglaDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
   const englishNumberStr = number.toString();
   const banglaNumberStr = englishNumberStr

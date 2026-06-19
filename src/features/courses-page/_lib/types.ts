@@ -64,6 +64,16 @@ export interface CourseCategory {
   courses: Course[];
 }
 
+export interface BundleCourse {
+  id: number;
+  title: string;
+  price: number;
+  x_price?: number;
+  url: string;
+  tags?: string[] | null;
+  short_description?: string | null;
+}
+
 export interface DirectoryResponse {
   success: boolean;
   data: CourseCategory[];
@@ -88,9 +98,11 @@ export interface Bundle {
   title: string;
   price: number;
   url: string;
+  tags?: string[] | null;
   is_live: boolean;
   is_active: boolean;
   course_count: number;
+  courses?: BundleCourse[];
   short_description?: string;
   intro_video?: string;
   chips?: {
@@ -99,7 +111,6 @@ export interface Bundle {
       video?: { label: string; value: string };
     };
     thumbnails?: {
-      bundle_thumb_16_9?: string;
       bundle_thumb_4_3?: string;
     };
   };
@@ -114,5 +125,3 @@ export interface InstructorResponse {
   success: boolean;
   data: Instructor[];
 }
-
-

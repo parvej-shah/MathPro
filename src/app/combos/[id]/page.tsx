@@ -27,6 +27,7 @@ import { siteConfig } from "@/config/site.config";
 import { isLoggedIn } from "@/helpers";
 import { useBundlePayment } from "@/hooks/useBundlePayment";
 import type { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
+import { getYouTubeThumbnail } from "@/features/course-details/_lib/youtubeHelpers";
 import { FAQSection, PremiumCourseCard } from "@/features/courses-page/components";
 import type { Course } from "@/features/courses-page/_lib/types";
 import {
@@ -90,7 +91,6 @@ interface Combo {
   books_total?: number;
   chips?: {
     thumbnails?: {
-      bundle_thumb_16_9?: string;
       bundle_thumb_4_3?: string;
     };
     enrollment?: {
@@ -490,7 +490,9 @@ export default function ComboDetailsPage() {
     );
   }
 
-  const thumb = combo.chips?.thumbnails?.bundle_thumb_16_9 || combo.chips?.thumbnails?.bundle_thumb_4_3;
+  const thumb = combo.intro_video
+    ? getYouTubeThumbnail(combo.intro_video) || combo.chips?.thumbnails?.bundle_thumb_4_3
+    : combo.chips?.thumbnails?.bundle_thumb_4_3;
   return (
     <div className="font-sans overflow-x-hidden">
       <SEO

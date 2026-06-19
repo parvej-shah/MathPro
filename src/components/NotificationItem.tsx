@@ -6,6 +6,8 @@ import { Bell, CheckCircle2, Megaphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+const NOTIFICATION_UPDATED_EVENT = "notificationUpdated";
+
 type Props = {
   populateFn: (notification: NotificationRecord) => void,
   notification: NotificationRecord
@@ -110,6 +112,7 @@ export default function NotificationItem({ populateFn: populate, notification }:
       )
       .then(() => {
         setReadOverride(true);
+        window.dispatchEvent(new Event(NOTIFICATION_UPDATED_EVENT));
       });
   };
 

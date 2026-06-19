@@ -12,18 +12,11 @@ import {
   StickyFilters,
   PremiumCourseCard,
   PremiumBundleCard,
+  AboutSection,
   // FacebookCommunityCTASection,
   FAQSection,
   CoursesLoadingSkeleton,
 } from "@/features/courses-page/components";
-
-const TeacherSlider = dynamic(
-  () =>
-    import("@/features/courses-page/components/TeacherSlider").then((mod) => ({
-      default: mod.default,
-    })),
-  { ssr: false },
-);
 
 const TestimonialMarquee = dynamic(
   () =>
@@ -185,7 +178,7 @@ export default function CoursesPage() {
           </div>
         </div>
 
-          {instructors.length > 0 && <TeacherSlider instructors={instructors} />}
+          {instructors.length > 0 && <AboutSection instructors={instructors} />}
           {/* <FacebookCommunityCTASection /> */}
           <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
           <FAQSection />

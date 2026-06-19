@@ -31,6 +31,8 @@ type NotificationCountResponse = {
   data?: Array<{ count?: string | number }>;
 };
 
+const NOTIFICATION_UPDATED_EVENT = "notificationUpdated";
+
 export default function Nav({ mode = "default" }: NavProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(mode !== "landing");
@@ -95,44 +97,6 @@ export default function Nav({ mode = "default" }: NavProps) {
     }
   }, []);
 
-  const markBellClicked = useCallback(async () => {
-    if (!isLoggedIn()) return;
-
-    const token = localStorage.getItem("token");
-    const userId = getUserIdFromToken();
-    if (!token || !userId) return;
-
-    try {
-      const coursesResponse = await axios.get<{ data?: CourseSummary[] }>(
-        `${BACKEND_URL}/user/bundle/all-courses/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      const courses = coursesResponse.data.data || [];
-      await Promise.all(
-        courses.map((course) =>
-          axios.post(
-            `${BACKEND_URL}/user/notification/bellIconClicked?courseId=${course.id}`,
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-        )
-      );
-
-      setNotificationCount(0);
-    } catch (error) {
-      console.warn("Failed to mark notification bell as clicked:", error);
-    }
-  }, []);
-
   useEffect(() => {
     const sync = () => setLoggedIn(isLoggedIn());
     sync();
@@ -152,6 +116,17 @@ export default function Nav({ mode = "default" }: NavProps) {
 
     void fetchNotificationCount();
   }, [fetchNotificationCount, loggedIn]);
+
+  useEffect(() => {
+    const refresh = () => {
+      void fetchNotificationCount();
+    };
+
+    window.addEventListener(NOTIFICATION_UPDATED_EVENT, refresh);
+    return () => {
+      window.removeEventListener(NOTIFICATION_UPDATED_EVENT, refresh);
+    };
+  }, [fetchNotificationCount]);
 
   useEffect(() => {
     if (mode !== "landing") return;
@@ -204,7 +179,7 @@ export default function Nav({ mode = "default" }: NavProps) {
             </span>
           </Link>
 
-          <div className={`hidden md:flex gap-8 text-lg font-bold transition-colors ${navTextClass}`}>
+          <div className={`hidden lg:flex gap-8 text-lg font-bold transition-colors ${navTextClass}`}>
             <Link
               href="/courses"
               className={`transition-colors ${navHoverClass} ${coursesActive ? "text-emerald-600" : ""}`}
@@ -243,13 +218,10 @@ export default function Nav({ mode = "default" }: NavProps) {
             )}
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-2">
             {loggedIn && (
               <Link
                 href="/notifications"
-                onClick={() => {
-                  void markBellClicked();
-                }}
                 className={notificationButtonClass}
                 aria-label="নোটিফিকেশন"
                 title={
@@ -284,13 +256,10 @@ export default function Nav({ mode = "default" }: NavProps) {
             )}
           </div>
 
-          <div className="md:hidden flex items-center gap-2">
+          <div className="flex items-center gap-2 lg:hidden">
             {loggedIn && (
               <Link
                 href="/notifications"
-                onClick={() => {
-                  void markBellClicked();
-                }}
                 className={notificationButtonClass}
                 aria-label="নোটিফিকেশন"
                 title={

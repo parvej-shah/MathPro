@@ -11,7 +11,7 @@ import AuthShell from "../_components/AuthShell";
 function ForgotPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
@@ -40,29 +40,29 @@ function ForgotPasswordContent() {
     try {
       if (!showOtpForm) {
         const res = await axios.post(`${BACKEND_URL}/admin/auth/forgot-password`, {
-          contact: email.trim(),
+          contact: phone.trim(),
         });
         setShowOtpForm(true);
-        setSuccess(res.data?.message || "OTP তোমার ইমেইলে পাঠানো হয়েছে।");
+        setSuccess(res.data?.message || "OTP তোমার ফোনে SMS এ পাঠানো হয়েছে।");
         return;
       }
 
       if (password !== confirmPass) {
-        setError("পাসওয়ার্ড দুটি এক হয়নি।");
+        setError("পাসওয়ার্ড দুটি এক হয়নি।");
         return;
       }
 
       const res = await axios.post(`${BACKEND_URL}/admin/auth/reset-password`, {
-        contact: email.trim(),
+        contact: phone.trim(),
         otp: otp.trim(),
         newPassword: password,
       });
-      setSuccess(res.data?.message || "পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।");
+      setSuccess(res.data?.message || "পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।");
     } catch (err: unknown) {
       const message = axios.isAxiosError<{ error?: string }>(err)
         ? err.response?.data?.error
         : undefined;
-      setError(message || "অনুরোধটি সম্পন্ন করা যায়নি। আবার চেষ্টা করো।");
+      setError(message || "অনুরোধটি সম্পন্ন করা যায়নি। আবার চেষ্টা করো।");
     } finally {
       setLoading(false);
     }
@@ -70,21 +70,21 @@ function ForgotPasswordContent() {
 
   return (
     <AuthShell
-      title="পাসওয়ার্ড রিসেট করো"
-      description="তোমার ইমেইলে OTP পাঠানো হবে। সেটা দিয়ে নতুন পাসওয়ার্ড সেট করতে পারবে।"
+      title="পাসওয়ার্ড রিসেট করো"
+      description="তোমার ফোনে OTP পাঠানো হবে। সেটা দিয়ে নতুন পাসওয়ার্ড সেট করতে পারবে।"
     >
       <form className="space-y-4" onSubmit={onSubmit}>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold" htmlFor="email">
-            ইমেইল
+          <label className="mb-1.5 block text-sm font-semibold" htmlFor="phone">
+            ফোন নম্বর
           </label>
           <input
-            id="email"
-            type="email"
+            id="phone"
+            type="tel"
             className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-            placeholder="তোমার ইমেইল"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            placeholder="তোমার ফোন নম্বর"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             required
           />
         </div>
@@ -98,7 +98,7 @@ function ForgotPasswordContent() {
               <input
                 id="otp"
                 className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-                placeholder="ইমেইলে পাওয়া OTP"
+                placeholder="SMS এ পাওয়া OTP"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 required
@@ -109,7 +109,7 @@ function ForgotPasswordContent() {
               <input
                 type="password"
                 className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-                placeholder="নতুন পাসওয়ার্ড"
+                placeholder="নতুন পাসওয়ার্ড"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -117,7 +117,7 @@ function ForgotPasswordContent() {
               <input
                 type="password"
                 className="w-full rounded-lg border border-input bg-background px-4 py-3 text-base outline-none transition placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/25"
-                placeholder="পাসওয়ার্ড নিশ্চিত করো"
+                placeholder="পাসওয়ার্ড নিশ্চিত করো"
                 value={confirmPass}
                 onChange={(e) => setConfirmPass(e.target.value)}
                 required
@@ -145,13 +145,13 @@ function ForgotPasswordContent() {
           {loading
             ? "একটু অপেক্ষা করো..."
             : showOtpForm
-              ? "নতুন পাসওয়ার্ড সেট করো"
+              ? "নতুন পাসওয়ার্ড সেট করো"
               : "OTP পাঠাও"}
         </button>
       </form>
 
       <p className="mt-5 text-sm font-semibold text-muted-foreground">
-        মনে পড়ে গেছে?{" "}
+        মনে পড়ে গেছে?{" "}
         <Link href={loginHref} className="text-primary transition hover:text-primary/80">
           লগইন করো
         </Link>

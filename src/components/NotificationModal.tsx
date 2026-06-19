@@ -10,6 +10,8 @@ import { SyncLoader } from "react-spinners";
 import { Megaphone } from "lucide-react";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 
+const NOTIFICATION_UPDATED_EVENT = "notificationUpdated";
+
 interface NotificationModuleData {
   liveId?: string | number;
   chapterId?: string | number;
@@ -219,6 +221,7 @@ export default function NotificationModal({
           n.id === notification.id ? { ...n, is_read: true } : n
         )
       );
+      window.dispatchEvent(new Event(NOTIFICATION_UPDATED_EVENT));
       if (onCountUpdate) {
         onCountUpdate();
       }
@@ -245,6 +248,7 @@ export default function NotificationModal({
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, is_read: true }))
       );
+      window.dispatchEvent(new Event(NOTIFICATION_UPDATED_EVENT));
       if (onCountUpdate) {
         onCountUpdate();
       }

@@ -16,6 +16,10 @@ import {
 } from "../_lib/types";
 import { getStatSections } from "@/features/course-details/_lib/chips";
 import { useFeaturedCourses } from "./useFeaturedCourses";
+import {
+  bundleMatchesCategory,
+  getCategoryTagSet,
+} from "../_lib/tagUtils";
 
 /**
  * Extract number from Bengali/English mixed strings
@@ -217,6 +221,12 @@ export function useCoursesPage() {
     return category ? new Set(category.courses.map((c) => c.id)) : new Set<number>();
   }, [courseCategories, activeCategorySlug]);
 
+  const activeCategoryTags = useMemo(() => {
+    if (!activeCategorySlug) return null;
+    const category = courseCategories.find((cat) => cat.slug === activeCategorySlug);
+    return getCategoryTagSet(category);
+  }, [courseCategories, activeCategorySlug]);
+
   // Filter courses based on search and category (using debounced search)
   const filteredCourses = useMemo(() => {
     if (selectedCategory === "bundles") return [];
@@ -236,18 +246,20 @@ export function useCoursesPage() {
 
   // Filter bundles based on search and category (using debounced search)
   const filteredBundles = useMemo(() => {
-    if (activeCategorySlug) return [];
     return bundles.filter((bundle) => {
       const matchesSearch =
         debouncedSearchTerm === "" ||
         bundle.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
         bundle.short_description?.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
-      const matchesCategory = selectedCategory === "all" || selectedCategory === "bundles";
+      const matchesCategory =
+        selectedCategory === "all" ||
+        selectedCategory === "bundles" ||
+        bundleMatchesCategory(bundle, activeCategoryCourseIds, activeCategoryTags);
 
       return matchesSearch && matchesCategory;
     });
-  }, [bundles, debouncedSearchTerm, selectedCategory, activeCategorySlug]);
+  }, [bundles, debouncedSearchTerm, selectedCategory, activeCategoryTags]);
 
   // Get categories for filtering: "all", "Combo", and one tab per course directory category.
   const categories = useMemo(() => {
@@ -259,10 +271,18 @@ export function useCoursesPage() {
     ];
 
     courseCategories.forEach((cat) => {
+      const categoryTags = getCategoryTagSet(cat);
+      const matchingBundles = bundles.filter((bundle) =>
+        bundleMatchesCategory(
+          bundle,
+          new Set(cat.courses.map((course) => course.id)),
+          categoryTags,
+        ),
+      ).length;
       tabs.push({
         id: `${CATEGORY_PREFIX}${cat.slug}`,
         label: cat.category_name,
-        count: cat.courses.length,
+        count: cat.courses.length + matchingBundles,
       });
     });
 

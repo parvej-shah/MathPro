@@ -19,7 +19,8 @@ import { UserContext } from "@/Contexts/UserContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import NotificationItem from "@/components/NotificationItem";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
-import { englishToBanglaNumbers } from "@/helpers";
+
+const NOTIFICATION_UPDATED_EVENT = "notificationUpdated";
 
 type CourseSummary = {
   id: string | number;
@@ -145,11 +146,7 @@ export default function NotificationsPageClient({ courseId }: NotificationsPageC
   const [enrolledCourses, setEnrolledCourses] = useState<CourseSummary[]>([]);
   const [activeNotification, setActiveNotification] = useState<NotificationRecord | null>(null);
 
-  const pageTitle = courseId ? "কোর্স নোটিফিকেশন" : "তোমার নোটিফিকেশন";
-  const pageDescription = courseId
-    ? "এই কোর্সের আপডেট, লাইভ ক্লাস আর অ্যাসাইনমেন্ট এক জায়গায় দেখো।"
-    : "সব কোর্সের আপডেট, লাইভ ক্লাস আর অ্যাসাইনমেন্ট এক জায়গায় দেখো।";
-
+  const pageTitle = courseId ? "কোর্স নোটিফিকেশন" : "সাম্প্রতিক আপডেট";
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.is_read).length,
     [notifications],
@@ -303,6 +300,7 @@ export default function NotificationsPageClient({ courseId }: NotificationsPageC
     setNotifications((currentNotifications) =>
       currentNotifications.map((notification) => ({ ...notification, is_read: true })),
     );
+    window.dispatchEvent(new Event(NOTIFICATION_UPDATED_EVENT));
   };
 
   useEffect(() => {
@@ -324,98 +322,74 @@ export default function NotificationsPageClient({ courseId }: NotificationsPageC
           <div className="absolute bottom-24 left-0 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
         </div>
 
-        <section className="relative border-b border-border bg-section-a">
+        <section className="relative">
           <div className="mx-auto w-[90%] max-w-5xl py-10 md:py-14">
-            <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card/80 p-5 shadow-xl backdrop-blur-md md:flex-row md:items-center md:justify-between md:p-7">
-              <div className="flex items-start gap-4">
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                  <Bell className="size-6" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-primary">MathPro আপডেট</p>
-                  <h1 className="mt-1 text-3xl font-bold leading-tight text-foreground md:text-[2.6rem]">
-                    {pageTitle}
-                  </h1>
-                  <p className="mt-3 max-w-2xl text-base text-muted-foreground md:text-lg">
-                    {pageDescription}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 md:w-64">
-                <div className="rounded-xl border border-primary/15 bg-primary/5 p-4">
-                  <p className="text-sm font-medium text-muted-foreground">মোট</p>
-                  <p className="mt-1 text-2xl font-extrabold text-foreground">
-                    {englishToBanglaNumbers(notifications.length)}
-                  </p>
-                </div>
-                <div className="rounded-xl border border-warning/30 bg-warning/15 p-4">
-                  <p className="text-sm font-medium text-warning">অপঠিত</p>
-                  <p className="mt-1 text-2xl font-extrabold text-foreground">
-                    {englishToBanglaNumbers(unreadCount)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="relative bg-section-b">
-          <div className="mx-auto min-h-[60vh] w-[90%] max-w-5xl py-8 md:py-10">
-            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-foreground">সাম্প্রতিক আপডেট</h2>
-                <p className="text-sm text-muted-foreground">
-                  নতুন নোটিফিকেশনগুলো সবার আগে ওপরে দেখাবে।
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={markAllAsRead}
-                disabled={unreadCount === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground"
-              >
-                <CheckCheck className="size-4" aria-hidden="true" />
-                সব পড়া হয়েছে
-              </button>
-            </div>
-
-            {loading ? (
-              <div className="flex min-h-64 items-center justify-center rounded-2xl border border-border bg-card/75 backdrop-blur-md">
-                <Loader2 className="size-8 animate-spin text-primary" aria-label="লোড হচ্ছে" />
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border bg-card/75 p-10 text-center backdrop-blur-md">
-                <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Bell className="size-7" aria-hidden="true" />
-                </div>
-                <h3 className="mt-4 text-xl font-semibold text-foreground">এখনো কোনো নোটিফিকেশন নেই</h3>
-                <p className="mx-auto mt-2 max-w-md text-muted-foreground">
-                  লাইভ ক্লাস, অ্যাসাইনমেন্ট বা কোর্স আপডেট এলে এখানে দেখা যাবে।
-                </p>
-              </div>
-            ) : (
-              <InfiniteScroll
-                dataLength={notifications.length}
-                next={fetchMoreNotifications}
-                hasMore={hasMoreNotifications}
-                loader={
-                  <div className="flex justify-center py-8">
-                    <Loader2 className="size-6 animate-spin text-primary" aria-label="আরও লোড হচ্ছে" />
+            <div className="overflow-hidden rounded-2xl border border-border bg-card/80 shadow-xl backdrop-blur-md">
+              <div className="flex flex-col gap-6 border-b border-border/70 bg-section-a p-4 md:flex-row md:items-center md:justify-between md:p-7">
+                <div className="flex items-start gap-4">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
+                    <Bell className="size-6" aria-hidden="true" />
                   </div>
-                }
-              >
-                <div className="space-y-3">
-                  {notifications.map((notification) => (
-                    <NotificationItem
-                      key={notification.id ?? `${notification.timestamp}-${notification.type}`}
-                      populateFn={setActiveNotification}
-                      notification={notification}
-                    />
-                  ))}
+                  <div>
+                    <p className="text-sm font-semibold text-primary">MathPro Announcements</p>
+                    <h1 className="mt-1 text-2xl font-bold leading-tight text-foreground sm:max-w-none sm:text-3xl md:text-[2.6rem]">
+                      {pageTitle}
+                    </h1>
+                  </div>
                 </div>
-              </InfiniteScroll>
-            )}
+              </div>
+
+              <div className="bg-section-b p-5 md:p-7">
+                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={markAllAsRead}
+                    disabled={unreadCount === 0}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:border-border disabled:bg-muted disabled:text-muted-foreground"
+                  >
+                    <CheckCheck className="size-4" aria-hidden="true" />
+                    সব পড়া হয়েছে
+                  </button>
+                </div>
+
+                {loading ? (
+                  <div className="flex min-h-64 items-center justify-center rounded-2xl border border-border bg-card/75 backdrop-blur-md">
+                    <Loader2 className="size-8 animate-spin text-primary" aria-label="লোড হচ্ছে" />
+                  </div>
+                ) : notifications.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-border bg-card/75 p-10 text-center backdrop-blur-md">
+                    <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <Bell className="size-7" aria-hidden="true" />
+                    </div>
+                    <h3 className="mt-4 text-xl font-semibold text-foreground">এখনো কোনো নোটিফিকেশন নেই</h3>
+                    <p className="mx-auto mt-2 max-w-md text-muted-foreground">
+                      লাইভ ক্লাস, অ্যাসাইনমেন্ট বা কোর্স আপডেট এলে এখানে দেখা যাবে।
+                    </p>
+                  </div>
+                ) : (
+                  <InfiniteScroll
+                    dataLength={notifications.length}
+                    next={fetchMoreNotifications}
+                    hasMore={hasMoreNotifications}
+                    loader={
+                      <div className="flex justify-center py-8">
+                        <Loader2 className="size-6 animate-spin text-primary" aria-label="আরও লোড হচ্ছে" />
+                      </div>
+                    }
+                  >
+                    <div className="space-y-3">
+                      {notifications.map((notification) => (
+                        <NotificationItem
+                          key={notification.id ?? `${notification.timestamp}-${notification.type}`}
+                          populateFn={setActiveNotification}
+                          notification={notification}
+                        />
+                      ))}
+                    </div>
+                  </InfiniteScroll>
+                )}
+              </div>
+            </div>
           </div>
         </section>
 
