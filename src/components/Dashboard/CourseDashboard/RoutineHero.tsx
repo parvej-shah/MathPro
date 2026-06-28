@@ -1,6 +1,9 @@
 import React from 'react';
+import Image from 'next/image';
 import { BsDownload } from 'react-icons/bs';
 import { motion } from 'framer-motion';
+import { englishToBanglaNumbers } from '@/helpers';
+import { sectionVariants } from '@/components/Dashboard/motion';
 
 interface RoutineHeroProps {
     routineImage: string;
@@ -21,7 +24,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
 }) => {
     if (loading) {
         return (
-            <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 bg-muted animate-pulse">
+            <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-6 sm:mb-8 bg-muted animate-pulse">
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-muted-foreground">রুটিন লোড হচ্ছে...</div>
                 </div>
@@ -45,8 +48,9 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch {
-            // CORS blocked — use a hidden image + canvas to force download
-            const img = new Image();
+            // CORS blocked — use a hidden image + canvas to force download.
+            // window.Image references the DOM constructor (next/image shadows the global name).
+            const img = new window.Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
                 const canvas = document.createElement('canvas');
@@ -68,11 +72,12 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 group shadow-xl border border-border"
+            variants={sectionVariants}
+            initial="hidden"
+            animate="show"
+            className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-6 sm:mb-8 group shadow-xl ring-1 ring-foreground/10"
         >
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px z-30 bg-linear-to-r from-transparent via-primary/70 to-transparent" />
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10" />
 
             <button
@@ -82,16 +87,19 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
             >
                 <BsDownload className="text-sm sm:text-base" />
             </button>
-            <img
+            <Image
                 src={routineImage}
                 alt={`${courseTitle} - Weekly Routine`}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                fill
+                priority
+                sizes="(max-width: 1280px) 92vw, 85vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
 
             <div className="absolute bottom-0 left-0 w-full p-4 sm:p-6 md:p-8 z-20 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 sm:gap-4">
                 <div>
                     <h2 className="text-white text-xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">
-                        Module {currentModule} / {totalModules}
+                        Module {englishToBanglaNumbers(currentModule)} / {englishToBanglaNumbers(totalModules)}
                     </h2>
                     <p className="text-white/90 text-xs sm:text-sm md:text-base max-w-xl">
                         তোমার শেখার রুটিন মেনে চলো। অগ্রগতি ও আসন্ন পাঠ দেখো।

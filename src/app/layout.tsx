@@ -21,9 +21,54 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_NAME = "Math Pro Academy";
+const SITE_URL = "https://mathpro.academy";
+const SITE_DESCRIPTION =
+  "Math Pro Academy — বাংলায় JSC, SSC ও HSC গণিতের অনলাইন কোর্স। ভিডিও ক্লাস, লাইভ ক্লাস, প্র্যাকটিস ও র‍্যাংকিং দিয়ে A+ এর প্রস্তুতি নাও।";
+
 export const metadata: Metadata = {
-  title: "MathPro LMS",
-  description: "A modern LMS frontend foundation for MathPro.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "Math Pro Academy",
+    "MathPro",
+    "গণিত কোর্স",
+    "অনলাইন গণিত",
+    "JSC গণিত",
+    "SSC গণিত",
+    "HSC গণিত",
+    "math course bangla",
+    "online math academy",
+    "Bangladesh math",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "bn_BD",
+    url: SITE_URL,
+    title: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -33,7 +78,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="bn"
       suppressHydrationWarning
       className={`${anekBangla.variable} ${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >

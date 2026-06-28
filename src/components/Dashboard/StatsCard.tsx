@@ -59,7 +59,7 @@ const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, colorClass = 
                     <h4 className="text-4xl font-bold text-foreground tracking-tight">{value}</h4>
                 </div>
 
-                <div className={`p-4 rounded-2xl bg-gradient-to-br ${styles.gradient} text-primary-foreground shadow-lg ${styles.shadow} transform group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`p-4 rounded-2xl bg-linear-to-br ${styles.gradient} text-primary-foreground shadow-lg ${styles.shadow} transform group-hover:scale-110 transition-transform duration-300`}>
                     <div className="text-3xl">
                         {icon}
                     </div>

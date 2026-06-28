@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useRanking } from '@/hooks/useRanking';
-import { getUserIdFromToken } from '@/helpers';
+import { getUserIdFromToken, englishToBanglaNumbers } from '@/helpers';
 
 interface RankingCardProps {
   courseId: string;
@@ -34,7 +34,7 @@ const RankingCard: React.FC<RankingCardProps> = ({ courseId, loading = false }) 
   if (isLoading) {
     return (
       <div
-        className="rounded-2xl p-4 md:p-5 backdrop-blur-lg shadow-lg border border-primary/20 bg-linear-to-r from-primary/80 via-primary to-teal/90"
+        className="rounded-2xl p-5 sm:p-6 backdrop-blur-lg shadow-lg border border-primary/20 bg-linear-to-br from-primary via-primary to-teal/90"
       >
         <div className="animate-pulse">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 items-center">
@@ -85,13 +85,13 @@ const RankingCard: React.FC<RankingCardProps> = ({ courseId, loading = false }) 
   }
 
   return (
-    <Link href={`/ranking?course=${courseId}`}>
+    <Link href={`/ranking?course=${courseId}`} className="block">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         whileHover={{ y: -1 }}
-        className="relative z-10 rounded-2xl p-4 md:p-5 cursor-pointer hover:shadow-xl transition-all duration-300 group shadow-lg backdrop-blur-lg border border-primary/20 bg-linear-to-r from-primary/80 via-primary to-teal/90"
+        className="relative z-10 rounded-2xl p-5 sm:p-6 cursor-pointer hover:shadow-xl transition-all duration-300 group shadow-lg backdrop-blur-lg border border-primary/20 bg-linear-to-br from-primary via-primary to-teal/90"
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 items-center text-white">
           {/* Left side - Star icon and Rank */}
@@ -107,12 +107,12 @@ const RankingCard: React.FC<RankingCardProps> = ({ courseId, loading = false }) 
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-2xl sm:text-3xl font-bold">
-                  #{myData?.rank || '--'}
+                  #{myData?.rank ? englishToBanglaNumbers(myData.rank) : '--'}
                 </span>
                 {myData && parseInt(myData.rank) <= 3 && (
                   <svg className={`w-6 h-6 ${
-                    parseInt(myData.rank) === 1 ? 'text-yellow-300' : 
-                    parseInt(myData.rank) === 2 ? 'text-muted-foreground' : 'text-orange-300'
+                    parseInt(myData.rank) === 1 ? 'text-warning' :
+                    parseInt(myData.rank) === 2 ? 'text-primary-foreground/70' : 'text-accent'
                   }`} fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
@@ -127,7 +127,7 @@ const RankingCard: React.FC<RankingCardProps> = ({ courseId, loading = false }) 
               তোমার স্কোর
             </div>
             <div className="text-2xl sm:text-3xl font-bold">
-              {myData?.score || '0'}
+              {englishToBanglaNumbers(myData?.score || '0')}
             </div>
           </div>
 

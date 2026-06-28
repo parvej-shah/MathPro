@@ -24,6 +24,7 @@ import {
     StreakCountCard,
     RankingCard,
 } from "@/components/Dashboard/CourseDashboard";
+import { sectionVariants } from "@/components/Dashboard/motion";
 export default function CourseDashboardPage() {
     const router = useRouter();
     const params = useParams<{ courseId: string }>();
@@ -301,18 +302,18 @@ export default function CourseDashboardPage() {
             <DashboardLayout>
                 <div className="min-h-screen bg-page-bg flex items-center justify-center">
                     <div className="text-center max-w-md mx-auto p-8">
-                        <div className="text-red-500 text-6xl mb-4">⚠️</div>
+                        <div className="text-destructive text-6xl mb-4">⚠️</div>
                         <h2 className="text-2xl font-bold text-foreground mb-2">
-                            Error Loading Course
+                            কোর্স লোড করা যায়নি
                         </h2>
                         <p className="text-muted-foreground mb-6">
                             {courseError}
                         </p>
                         <button
                             onClick={() => router.push("/dashboard")}
-                            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+                            className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
                         >
-                            Back to Dashboard
+                            ড্যাশবোর্ডে ফিরে যাও
                         </button>
                     </div>
                 </div>
@@ -387,21 +388,24 @@ export default function CourseDashboardPage() {
                         loading={courseLoading}
                     />
 
-                    {/* Section B: The "Action Zone" (Split Layout) */}
+                    {/* Section B: The "Action Zone" — single grid, each card rendered exactly once.
+                        Desktop: left stack (cols 1–3) and right stack (cols 4–5) pinned with
+                        col-start/row-start. Mobile: a single column ordered via `order-*`. */}
                     <motion.div
                         variants={sectionVariants}
                         initial="hidden"
                         animate="show"
                         transition={{ delay: 0.08, duration: 0.35 }}
-                        className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8"
+                        className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-x-8 lg:gap-y-6 lg:items-start"
                     >
-                        {/* Left Column: Progress & Learning (60% -> col-span-3) */}
-                        <div className="lg:col-span-3 space-y-6 lg:space-y-8">
+                        <div className="order-1 lg:col-span-3 lg:col-start-1 lg:row-start-1">
                             <StreakCountCard
                                 courseId={courseId as string}
                                 loading={courseLoading}
                             />
+                        </div>
 
+                        <div className="order-2 lg:col-span-3 lg:col-start-1 lg:row-start-2">
                             <ProgressCard
                                 currentModule={currentModule}
                                 progress={calculatedProgress}
@@ -409,62 +413,44 @@ export default function CourseDashboardPage() {
                                 nextLesson={nextLesson}
                                 loading={courseLoading}
                             />
+                        </div>
 
-                            <LiveClassesSection
-                                liveModules={liveModules}
-                                loading={liveClassesLoading}
-                            />
-
-                            {/* Announcements — after live classes on mobile, right col on desktop */}
-                            <div className="lg:hidden">
-                                <AnnouncementsCard
-                                    announcements={announcements}
-                                    loading={announcementsLoading}
-                                    totalCount={totalCount}
-                                />
-                            </div>
-
-                            {/* Ranking — before feedback on mobile, right col on desktop */}
-                            <div className="lg:hidden">
-                                <RankingCard
-                                    courseId={courseId as string}
-                                    loading={courseLoading}
-                                />
-                            </div>
-
-                            {/* Community — before feedback on mobile */}
-                            <div className="lg:hidden">
-                                <CommunityCard
-                                    communityLink={courseData?.community?.facebook_private_group}
-                                    telegramLink={courseData?.community?.telegram_group}
-                                    accessCode={accessCode}
-                                />
-                            </div>
-
-                            {/* Feedback Card — always last on mobile */}
-                            <FeedbackCard
+                        {/* Ranking — high on mobile (gamified reward), top of right column on desktop */}
+                        <div className="order-3 lg:col-span-2 lg:col-start-4 lg:row-start-1">
+                            <RankingCard
                                 courseId={courseId as string}
                                 loading={courseLoading}
                             />
                         </div>
 
-                        {/* Right Column: Community & Updates (40% -> col-span-2) — desktop only */}
-                        <div className="hidden lg:block lg:col-span-2 space-y-6">
-                            <RankingCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
+                        <div className="order-4 lg:col-span-3 lg:col-start-1 lg:row-start-3">
+                            <LiveClassesSection
+                                liveModules={liveModules}
+                                loading={liveClassesLoading}
                             />
+                        </div>
 
+                        <div className="order-5 lg:col-span-2 lg:col-start-4 lg:row-start-2">
                             <AnnouncementsCard
                                 announcements={announcements}
                                 loading={announcementsLoading}
                                 totalCount={totalCount}
                             />
+                        </div>
 
+                        <div className="order-6 lg:col-span-2 lg:col-start-4 lg:row-start-3">
                             <CommunityCard
                                 communityLink={courseData?.community?.facebook_private_group}
                                 telegramLink={courseData?.community?.telegram_group}
                                 accessCode={accessCode}
+                            />
+                        </div>
+
+                        {/* Feedback — always last on mobile, bottom of left column on desktop */}
+                        <div className="order-7 lg:col-span-3 lg:col-start-1 lg:row-start-4">
+                            <FeedbackCard
+                                courseId={courseId as string}
+                                loading={courseLoading}
                             />
                         </div>
                     </motion.div>
@@ -474,11 +460,3 @@ export default function CourseDashboardPage() {
         </DashboardLayout>
     );
 }
-    const sectionVariants = {
-        hidden: { opacity: 0, y: 16 },
-        show: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.35, ease: "easeOut" as const },
-        },
-    };

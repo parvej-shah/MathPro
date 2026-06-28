@@ -26,7 +26,7 @@ export default function SearchAndFilters({
   availableBundles,
 }: SearchAndFiltersProps) {
   return (
-    <div className="flex flex-col gap-3 mb-8 bg-card p-3 sm:p-4 rounded-xl shadow-sm border border-border">
+    <div className="flex flex-col gap-3 mb-8 bg-card p-4 sm:p-5 rounded-2xl shadow-sm border border-border">
       {/* Search */}
       <div className="relative w-full">
         <BsSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />

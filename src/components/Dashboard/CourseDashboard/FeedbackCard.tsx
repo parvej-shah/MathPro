@@ -4,7 +4,7 @@ import { BiEdit, BiTrash } from 'react-icons/bi';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { BACKEND_URL } from '@/api.config';
-import { getUserIdFromToken, getAuthToken } from '@/helpers';
+import { getUserIdFromToken, getAuthToken, englishToBanglaNumbers } from '@/helpers';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 
 interface FeedbackCardProps {
@@ -291,7 +291,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
 
     if (loading || checkingFeedback) {
         return (
-            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border animate-pulse relative overflow-hidden">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border animate-pulse relative overflow-hidden">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
                 <div className="space-y-4">
                     <div className="h-5 bg-muted rounded w-40" />
@@ -314,7 +314,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     if (hasSubmitted && existingFeedback && !isEditing) {
         return (
             <>
-            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
                 {/* Decorative gradient background */}
                 <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
@@ -420,7 +420,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
     // Show feedback form (new submission or editing)
     return (
         <>
-        <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+        <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border relative overflow-hidden hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
             {/* Decorative gradient background */}
             <div className="absolute top-0 right-0 w-40 h-40 bg-linear-to-br from-primary/5 to-primary/10 rounded-full blur-3xl"></div>
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
@@ -554,7 +554,7 @@ export const FeedbackCard: React.FC<FeedbackCardProps> = ({
                                         ? 'text-warning' 
                                         : 'text-muted-foreground'
                             }`}>
-                                {comment.length}/500
+                                {englishToBanglaNumbers(comment.length)}/{englishToBanglaNumbers(500)}
                             </p>
                         </div>
                     </div>

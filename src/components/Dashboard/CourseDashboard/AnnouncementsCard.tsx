@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { BsBell, BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
+import { englishToBanglaNumbers } from "@/helpers";
 
 interface Announcement {
   id: number;
@@ -31,14 +32,18 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
     const diffInDays = Math.floor(diffInHours / 24);
 
     if (diffInHours < 24) {
-      return diffInHours === 0 ? "Just now" : `${diffInHours}h ago`;
+      return diffInHours === 0
+        ? "এইমাত্র"
+        : `${englishToBanglaNumbers(diffInHours)} ঘণ্টা আগে`;
     } else if (diffInDays < 7) {
-      return `${diffInDays}d ago`;
+      return `${englishToBanglaNumbers(diffInDays)} দিন আগে`;
     } else {
-      return date.toLocaleDateString("en-US", {
+      const formatted = date.toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       });
+      // Convert only the numeric digits, leave month name intact.
+      return formatted.replace(/\d/g, (d) => englishToBanglaNumbers(d));
     }
   };
 
@@ -57,7 +62,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (loading) {
     return (
-      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative z-0">
+      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h3 className="font-bold text-lg sm:text-xl text-foreground">
             ইন্সট্রাক্টর আপডেট
@@ -85,7 +90,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
   if (announcements.length === 0) {
     return (
-      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border relative z-0">
+      <div className="w-full self-start h-auto! bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border relative z-0">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h3 className="font-bold text-lg sm:text-xl text-foreground">
             ইন্সট্রাক্টর আপডেট
@@ -119,7 +124,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
   return (
     <div className="space-y-4">
       {/* Featured Latest Announcement */}
-      <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-warning">
+      <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 border-l-warning">
         <div className="flex items-start gap-3 sm:gap-4">
           <div className="bg-warning/15 text-warning p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0">
             <BsBell className="text-lg sm:text-xl" />
@@ -145,7 +150,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
               {featuredHasLongContent && (
                 <button
                   onClick={() => toggleExpand(featuredAnnouncement.id)}
-                  className="text-xs text-yellow-600 hover:text-yellow-700 dark:text-warning dark:hover:text-warning font-semibold transition-colors"
+                  className="text-xs text-warning hover:text-warning/80 font-semibold transition-colors"
                 >
                   {isFeaturedExpanded ? "কম দেখো" : "আরও পড়ো"}
                 </button>
@@ -157,13 +162,13 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
 
       {/* Other Announcements - Only show if there are more than 1 announcement */}
       {remainingAnnouncements.length > 0 && (
-        <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border">
+        <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h3 className="text-base sm:text-lg font-bold text-foreground">
               আগের আপডেট
             </h3>
             <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-              {remainingAnnouncements.length}
+              {englishToBanglaNumbers(remainingAnnouncements.length)}
             </span>
           </div>
 
@@ -199,7 +204,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
                         {hasLongContent && (
                           <button
                             onClick={() => toggleExpand(announcement.id)}
-                            className="text-xs text-yellow-600 hover:text-yellow-700 dark:text-warning dark:hover:text-warning font-medium transition-colors"
+                            className="text-xs text-warning hover:text-warning/80 font-medium transition-colors"
                           >
                             {isExpanded ? "কম" : "আরও"}
                           </button>
@@ -223,7 +228,7 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
                 </>
               ) : (
                 <>
-                  আরও {remainingAnnouncements.length - 2}টি দেখো{" "}
+                  আরও {englishToBanglaNumbers(remainingAnnouncements.length - 2)}টি দেখো{" "}
                   <BsChevronDown />
                 </>
               )}

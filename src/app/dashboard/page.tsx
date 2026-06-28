@@ -8,7 +8,6 @@ import ResumeBanner from "@/components/Dashboard/ResumeBanner";
 import LiveClassBanner from "@/components/Dashboard/LiveClassBanner";
 import {
   DashboardHeader,
-  StatsSection,
   SearchAndFilters,
   CoursesSection,
   EmptyState,
@@ -50,7 +49,6 @@ export default function DashboardPage() {
     availableBundles,
     filteredCourses,
     mostRecentCourse,
-    stats,
   } = useDashboardFilters(courses, allIndividualCourses);
 
   const { expandedBundleId, expandedBundleCourses, handleShowAll, handleBackToBundles } =
@@ -73,16 +71,16 @@ export default function DashboardPage() {
       <DashboardLayout>
         <div className="min-h-screen flex items-center justify-center bg-page-bg">
           <div className="text-center max-w-md mx-auto p-8 rounded-2xl border border-border bg-card">
-            <div className="text-red-500 text-5xl mb-4">⚠️</div>
+            <div className="text-destructive text-5xl mb-4">⚠️</div>
             <h2 className="text-2xl font-bold text-foreground mb-4">
-              Unable to Load Dashboard
+              ড্যাশবোর্ড লোড করা যায়নি
             </h2>
             <p className="text-muted-foreground mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all"
             >
-              Retry
+              আবার চেষ্টা করো
             </button>
           </div>
         </div>
@@ -98,19 +96,13 @@ export default function DashboardPage() {
         <div className="w-[90%] lg:w-[85%] max-w-[1440px] mx-auto py-12">
           <DashboardHeader />
 
-          <StatsSection
-            totalCourses={stats.totalCourses}
-            totalBundles={stats.totalBundles}
-            totalIndividualCourses={stats.totalIndividualCourses}
-          />
-
-          <LiveClassBanner />
-
           {!allProgressCalculated ? (
             <ResumeBanner isLoading={true} />
           ) : mostRecentCourse ? (
             <ResumeBanner course={mostRecentCourse} />
           ) : null}
+
+          <LiveClassBanner />
 
           <SearchAndFilters
             searchTerm={searchTerm}

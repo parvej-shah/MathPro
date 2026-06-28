@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BsCalendarEvent, BsChevronDown, BsChevronUp, BsClock } from 'react-icons/bs';
 import { LiveModule } from '@/hooks/useMyLiveModules';
+import { englishToBanglaNumbers } from '@/helpers';
 
 interface LiveClassesSectionProps {
     liveModules: LiveModule[];
@@ -26,7 +27,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
     if (loading) {
         return (
-            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-destructive animate-pulse">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 border-l-destructive animate-pulse">
                 <div className="h-20 sm:h-24 bg-muted rounded"></div>
             </div>
         );
@@ -34,7 +35,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
     if (!liveModules || liveModules.length === 0) {
         return (
-            <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 border-l-border">
+            <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 border-l-border">
                 <div className="flex items-center gap-3 sm:gap-4">
                     <div className="bg-muted p-3 sm:p-4 rounded-xl sm:rounded-2xl text-muted-foreground">
                         <BsCalendarEvent className="text-xl sm:text-2xl" />
@@ -60,7 +61,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
     return (
         <div className="space-y-4">
             {/* Featured Live/Upcoming Class - Large Prominent Card */}
-            <div className={`bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border border-l-4 ${
+            <div className={`bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 ${
                 isFeaturedLive ? 'border-l-destructive' : 'border-l-primary'
             } flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6`}>
                 <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
@@ -91,7 +92,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                     {isFeaturedLive ? (
                         <button
                             onClick={() => window.open(`https://zoom.us/j/${featured.live_meeting_id}`, '_blank')}
-                            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-red-500/30"
+                            className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-base transition-all duration-300 flex items-center justify-center gap-2 bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg shadow-destructive/30"
                         >
                             লাইভ ক্লাসে যোগ দাও
                         </button>
@@ -108,13 +109,13 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
 
             {/* Other Live/Upcoming Classes - Compact List */}
             {remaining.length > 0 && (
-                <div className="bg-card p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-border">
+                <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border">
                     <div className="flex items-center justify-between mb-3 sm:mb-4">
                         <h3 className="text-base sm:text-lg font-bold text-foreground">
                             অন্যান্য লাইভ ক্লাস
                         </h3>
                         <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                            {remaining.length}
+                            {englishToBanglaNumbers(remaining.length)}
                         </span>
                     </div>
 
@@ -160,7 +161,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                             {isLive ? (
                                                 <button
                                                     onClick={() => window.open(`https://zoom.us/j/${mod.live_meeting_id}`, '_blank')}
-                                                    className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-destructive text-white hover:bg-destructive/90 shadow-md"
+                                                    className="w-full sm:w-auto px-5 py-2 rounded-lg font-semibold text-sm transition-all duration-300 bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md"
                                                 >
                                                     যোগ দাও
                                                 </button>
@@ -190,7 +191,7 @@ export const LiveClassesSection: React.FC<LiveClassesSectionProps> = ({
                                 </>
                             ) : (
                                 <>
-                                    আরও {remaining.length - 2}টি দেখো <BsChevronDown />
+                                    আরও {englishToBanglaNumbers(remaining.length - 2)}টি দেখো <BsChevronDown />
                                 </>
                             )}
                         </button>

@@ -1,6 +1,9 @@
 import React from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { BsFire } from 'react-icons/bs';
 import { useCourseStreak } from '@/hooks/useStreak';
+import { englishToBanglaNumbers } from '@/helpers';
+import { popVariants } from '@/components/Dashboard/motion';
 
 interface StreakCountCardProps {
     courseId: string | string[];
@@ -15,6 +18,7 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
 }) => {
     // Fetch streak data from API
     const { streakData, loading: streakLoading } = useCourseStreak(courseId);
+    const reduceMotion = useReducedMotion();
 
     // Combine loading states
     const loading = externalLoading || streakLoading;
@@ -24,63 +28,68 @@ export const StreakCountCard: React.FC<StreakCountCardProps> = ({
     const longestStreak = streakData?.longestStreak ?? 0;
     if (loading) {
         return (
-            <div className="bg-linear-to-br from-orange-500/10 to-red-500/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-sm border border-orange-500/30 animate-pulse relative overflow-hidden">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-orange-400/90 to-transparent" />
+            <div className="bg-secondary p-5 sm:p-6 rounded-2xl shadow-sm border border-border animate-pulse relative overflow-hidden">
                 <div className="flex items-center justify-between">
                     <div className="flex-1 space-y-3">
-                        <div className="h-4 bg-orange-400/25 rounded w-24 sm:w-32" />
-                        <div className="h-10 sm:h-12 bg-orange-400/25 rounded w-20 sm:w-24" />
-                        <div className="h-3 bg-orange-400/25 rounded w-32 sm:w-40" />
+                        <div className="h-4 bg-secondary-foreground/15 rounded w-24 sm:w-32" />
+                        <div className="h-10 sm:h-12 bg-secondary-foreground/15 rounded w-20 sm:w-24" />
+                        <div className="h-3 bg-secondary-foreground/15 rounded w-32 sm:w-40" />
                     </div>
-                    <div className="w-14 h-14 sm:w-20 sm:h-20 bg-orange-400/25 rounded-full" />
+                    <div className="w-14 h-14 sm:w-20 sm:h-20 bg-secondary-foreground/15 rounded-full" />
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-linear-to-br from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-lg border border-orange-200 dark:border-orange-800 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
-            <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-orange-400/10 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-20 sm:w-24 h-20 sm:h-24 bg-red-400/10 rounded-full blur-2xl"></div>
+        <div className="bg-secondary p-5 sm:p-6 rounded-2xl shadow-sm border border-border relative overflow-hidden group hover:shadow-lg transition-shadow duration-300">
+            <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-accent/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-20 sm:w-24 h-20 sm:h-24 bg-accent/10 rounded-full blur-2xl"></div>
 
             <div className="relative z-10">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
-                            <BsFire className="text-orange-500 text-base sm:text-lg" />
-                            <span className="text-orange-600 dark:text-orange-400 font-bold uppercase text-[10px] sm:text-xs tracking-wider">
+                            <BsFire className="text-accent text-base sm:text-lg" />
+                            <span className="text-secondary-foreground font-bold uppercase text-[10px] sm:text-xs tracking-wider">
                                 শেখার ধারা
                             </span>
                         </div>
 
                         <div className="mb-2 sm:mb-3">
                             <div className="flex items-baseline gap-1.5 sm:gap-2">
-                                <span className="text-4xl sm:text-5xl font-black text-orange-600 dark:text-orange-400">
-                                    {currentStreak}
-                                </span>
-                                <span className="text-lg sm:text-xl font-semibold text-orange-500 dark:text-orange-500">
+                                <motion.span
+                                    key={currentStreak}
+                                    variants={popVariants}
+                                    initial={reduceMotion ? false : "hidden"}
+                                    animate="show"
+                                    className="text-4xl sm:text-5xl font-black text-accent"
+                                >
+                                    {englishToBanglaNumbers(currentStreak)}
+                                </motion.span>
+                                <span className="text-lg sm:text-xl font-semibold text-accent/80">
                                     দিন
                                 </span>
                             </div>
                         </div>
 
-                        <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                        <p className="text-xs sm:text-sm text-secondary-foreground/80 font-medium">
                             প্রতিদিন শিখলে ধারা ধরে রাখতে পারবে! 🚀
                         </p>
                     </div>
 
                     <div className="relative">
-                        <div className="w-14 h-14 sm:w-20 sm:h-20 bg-linear-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
-                            <BsFire className="text-2xl sm:text-4xl text-white" />
+                        <div className="w-14 h-14 sm:w-20 sm:h-20 bg-linear-to-br from-accent to-accent/70 rounded-full flex items-center justify-center shadow-lg shadow-accent/30 group-hover:scale-110 transition-transform duration-300">
+                            <BsFire className="text-2xl sm:text-4xl text-accent-foreground" />
                         </div>
-                        <div className="absolute inset-0 bg-orange-400 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                        <div className="absolute inset-0 bg-accent rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
                     </div>
                 </div>
 
-                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-orange-200 dark:border-orange-800">
+                <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-secondary-foreground/15">
                     <div className="flex items-center justify-between text-[10px] sm:text-xs">
-                        <span className="text-muted-foreground font-medium">সর্বোচ্চ ধারা</span>
-                        <span className="text-orange-600 dark:text-orange-400 font-bold">{longestStreak} দিন</span>
+                        <span className="text-secondary-foreground/80 font-medium">সর্বোচ্চ ধারা</span>
+                        <span className="text-accent font-bold">{englishToBanglaNumbers(longestStreak)} দিন</span>
                     </div>
                 </div>
             </div>

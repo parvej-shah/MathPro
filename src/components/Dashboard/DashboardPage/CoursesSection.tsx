@@ -2,6 +2,7 @@ import React from 'react';
 import { BsBook, BsGift, BsArrowRight } from 'react-icons/bs';
 import { motion } from "framer-motion";
 import CourseCard from '@/components/Dashboard/CourseCard';
+import { containerVariants, itemVariants } from '@/components/Dashboard/motion';
 import { EnrolledCourse } from './types';
 
 interface CoursesSectionProps {
@@ -21,26 +22,6 @@ export default function CoursesSection({
 }: CoursesSectionProps) {
   const hasIndividualCourses = filteredCourses.some(c => !c.isBundle);
   const hasBundles = filteredCourses.some(c => c.isBundle);
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.06,
-      },
-    },
-  };
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.985 },
-    show: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: { duration: 0.38, ease: "easeOut" as const },
-    },
-  };
-
   return (
     <div className="space-y-12">
       {/* Individual Courses Section */}

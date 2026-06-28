@@ -18,10 +18,10 @@ export default function DashboardHeader({ userName }: DashboardHeaderProps) {
   const greeting = getGreeting();
   return (
     <div className="mb-10">
-      <h1 className="text-4xl font-bold text-foreground mb-2">
+      <h1 className="text-3xl sm:text-4xl font-bold text-heading mb-2">
         আমার <span className="text-primary">কোর্সসমূহ</span>
       </h1>
-      <p className="text-muted-foreground">
+      <p className="text-paragraph">
         {greeting}{userName ? `, ${userName}` : ''}! আজকের সেশন শুরু করো।
       </p>
     </div>
