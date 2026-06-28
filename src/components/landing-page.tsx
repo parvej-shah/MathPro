@@ -1,11 +1,23 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import PremiumCourseCard from "@/features/courses-page/components/PremiumCourseCard";
-import TestimonialMarquee from "@/features/courses-page/components/TestimonialMarquee";
-import FAQSection from "@/features/courses-page/components/FAQSection";
-import AboutSection from "@/features/courses-page/components/AboutSection";
 import type { CourseCategory } from "@/features/courses-page/_lib/types";
+
+// Below-the-fold sections — lazy-loaded to keep the landing page's initial JS small.
+const TestimonialMarquee = dynamic(
+  () => import("@/features/courses-page/components/TestimonialMarquee"),
+  { ssr: false },
+);
+const FAQSection = dynamic(
+  () => import("@/features/courses-page/components/FAQSection"),
+  { ssr: false },
+);
+const AboutSection = dynamic(
+  () => import("@/features/courses-page/components/AboutSection"),
+  { ssr: false },
+);
 import { useCourseDirectory } from "@/hooks/useCourseDirectory";
 import {
   mapPublicTestimonialsToFeedbacks,
@@ -41,6 +53,7 @@ const slides = [
     title: "গণিতে আত্মবিশ্বাস গড়ুন",
     subtitle: "ক্লাস ৮ থেকে HSC পর্যন্ত শিক্ষার্থীদের জন্য লাইভ ক্লাস, রেকর্ডেড লেকচার, প্র্যাকটিস ও প্রগ্রেস ট্র্যাকিং।",
     cta: "কোর্সগুলো দেখুন",
+    href: "/courses",
     bgClass: "bg-emerald-950",
     pattern: "bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-400/20 via-emerald-950 to-slate-950",
     visual: (
@@ -107,6 +120,7 @@ const slides = [
     title: "লাইভ ও রেকর্ডেড ক্লাসের দারুণ সমন্বয়",
     subtitle: "সরাসরি শিক্ষকদের কাছে প্রশ্ন করো, কিংবা মিস করা ক্লাসগুলো এইচডি রেকর্ডিংয়ে দেখে নাও যেকোনো সময়।",
     cta: "ফ্রি ক্লাসগুলো দেখুন",
+    href: "/courses",
     bgClass: "bg-slate-900",
     pattern: "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-teal-500/10 via-slate-900 to-slate-950",
     visual: (
@@ -154,6 +168,7 @@ const slides = [
     title: "প্রগ্রেস ট্র্যাকিং ও ইন্টারঅ্যাকটিভ কুইজ",
     subtitle: "অধ্যায়ভিত্তিক কুইজ ও মক টেস্ট দিয়ে নিজের ভুলগুলো শুধরে নাও এবং পরীক্ষার জন্য ১০০% প্রস্তুত হও।",
     cta: "মডেল টেস্ট দিন",
+    href: "/courses",
     bgClass: "bg-teal-950",
     pattern: "bg-[conic-gradient(at_center_right,_var(--tw-gradient-stops))] from-emerald-950 via-teal-950 to-slate-900",
     visual: (
@@ -197,7 +212,7 @@ const classCategories = [
   {
     title: "অষ্টম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%85%E0%A6%B7%E0%A7%8D%E0%A6%9F%E0%A6%AE%20%E0%A6%B6%E0%A7%8D%E0%A6%B0%E0%A7%87%E0%A6%A3%E0%A6%BF#courses-grid",
     bgClass: "bg-[#dbeafe] dark:bg-[#1e3a8a]/30",
     iconBgClass: "bg-[#3b82f6]",
     titleClass: "text-[#2563eb] dark:text-blue-300",
@@ -207,7 +222,7 @@ const classCategories = [
   {
     title: "নবম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%A8%E0%A6%AC%E0%A6%AE%20%E0%A6%B6%E0%A7%8D%E0%A6%B0%E0%A7%87%E0%A6%A3%E0%A6%BF#courses-grid",
     bgClass: "bg-[#dcfce7] dark:bg-emerald-900/30",
     iconBgClass: "bg-[#10b981]",
     titleClass: "text-[#059669] dark:text-emerald-300",
@@ -217,7 +232,7 @@ const classCategories = [
   {
     title: "দশম শ্রেণি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%A6%E0%A6%B6%E0%A6%AE%20%E0%A6%B6%E0%A7%8D%E0%A6%B0%E0%A7%87%E0%A6%A3%E0%A6%BF#courses-grid",
     bgClass: "bg-[#f3e8ff] dark:bg-purple-900/30",
     iconBgClass: "bg-[#a855f7]",
     titleClass: "text-[#7e22ce] dark:text-purple-300",
@@ -227,7 +242,7 @@ const classCategories = [
   {
     title: "এসএসসি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%8F%E0%A6%B8%E0%A6%8F%E0%A6%B8%E0%A6%B8%E0%A6%BF#courses-grid",
     bgClass: "bg-[#ffedd5] dark:bg-orange-900/30",
     iconBgClass: "bg-[#f97316]",
     titleClass: "text-[#ea580c] dark:text-orange-300",
@@ -237,7 +252,7 @@ const classCategories = [
   {
     title: "এইচএসসি",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%8F%E0%A6%87%E0%A6%9A%E0%A6%8F%E0%A6%B8%E0%A6%B8%E0%A6%BF#courses-grid",
     bgClass: "bg-[#e0e7ff] dark:bg-indigo-900/30",
     iconBgClass: "bg-[#6366f1]",
     titleClass: "text-[#4f46e5] dark:text-indigo-300",
@@ -247,7 +262,7 @@ const classCategories = [
   {
     title: "এডমিশন",
     desc: "লেকচার ভিডিও, লাইভ ক্লাস, এসাইনমেন্ট",
-    href: "#",
+    href: "/courses?category=%E0%A6%8F%E0%A6%A1%E0%A6%AE%E0%A6%BF%E0%A6%B6%E0%A6%A8#courses-grid",
     bgClass: "bg-[#fce7f3] dark:bg-pink-900/30",
     iconBgClass: "bg-[#ec4899]",
     titleClass: "text-[#e11d48] dark:text-pink-300",
@@ -478,15 +493,19 @@ export function LandingPage() {
                       {slide.subtitle}
                     </motion.p>
 
-                    <motion.button
+                    <motion.div
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
                       transition={{ duration: 0.5, delay: 0.45, ease: "easeOut", type: "tween" }}
-                      className="group flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
                     >
-                      {slide.cta}
-                      <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
-                    </motion.button>
+                      <Link
+                        href={slide.href}
+                        className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
+                      >
+                        {slide.cta}
+                        <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </motion.div>
                   </div>
 
                   {/* Visual Content */}
@@ -582,7 +601,7 @@ export function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {classCategories.map((category, i) => (
-              <a key={i} href={category.href} className="group outline-none relative z-[45] block">
+              <Link key={i} href={category.href} className="group outline-none relative z-[45] block">
                 <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:hover:shadow-primary/15 border border-transparent dark:border-white/5 dark:hover:border-white/10 relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
                   <div>
                     <div className={`size-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-sm ${category.iconBgClass}`}>
@@ -597,7 +616,7 @@ export function LandingPage() {
                     </span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

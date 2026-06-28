@@ -14,6 +14,7 @@
   --font-heading: var(--font-anek-bangla);
   --font-bengali: var(--font-anek-bangla);
   --font-manrope: var(--font-manrope);
+  --font-logo: var(--font-logo);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);

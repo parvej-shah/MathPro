@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -174,11 +175,17 @@ export default function Nav({ mode = "default" }: NavProps) {
       <div className={`px-4 sm:px-6 lg:px-12 ${isScrolled ? "py-3" : "py-5"}`}>
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2 md:gap-3 group/logo">
-            <div className="size-8 md:size-10 rounded-lg md:rounded-xl bg-emerald-500 flex items-center justify-center text-white font-black text-lg md:xl shadow-lg shadow-emerald-500/20 group-hover/logo:rotate-12 transition-transform duration-300">
-              M
-            </div>
-            <span className="text-2xl md:text-4xl font-black tracking-tight font-manrope transition-all duration-300 group-hover/logo:tracking-widest text-emerald-500 group-hover/logo:text-emerald-400">
-              MATHPRO
+            <Image
+              src="/assets/logo-removebg-preview.png"
+              alt="MathPro"
+              width={56}
+              height={56}
+              priority
+              className="size-11 md:size-14 object-contain group-hover/logo:rotate-12 transition-transform duration-300"
+            />
+            <span className="text-2xl md:text-4xl font-logo font-black transition-all duration-300 group-hover/logo:tracking-wider">
+              <span className={isScrolled ? "text-foreground" : "text-white"}>MATH</span>
+              <span className="text-emerald-500 group-hover/logo:text-emerald-400">PRO</span>
             </span>
           </Link>
 

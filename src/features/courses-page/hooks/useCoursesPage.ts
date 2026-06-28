@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { useQuery } from "@tanstack/react-query";
@@ -31,9 +31,9 @@ const extractNumber = (value: string | undefined): number => {
   return match ? parseInt(match[0], 10) : 0;
 };
 
-export function useCoursesPage() {
+export function useCoursesPage(initialCategory?: string | null) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [manualSelectedCategory, setSelectedCategory] = useState<string | null>(null);
   const {
     featuredCourses,
     isLoading: featuredCoursesLoading,
@@ -208,8 +208,64 @@ export function useCoursesPage() {
     };
   }, [courses]);
 
-  // Category-tab selection is keyed as `cat-${slug}` for directory categories.
   const CATEGORY_PREFIX = "cat-";
+
+  // Get categories for filtering: "all", "Combo", and one tab per course directory category.
+  const categories = useMemo(() => {
+    const total = courses.length + bundles.length;
+
+    const tabs = [
+      { id: "all", label: "সব কোর্স", count: total },
+      { id: "bundles", label: "Combo", count: bundles.length },
+    ];
+
+    courseCategories.forEach((cat) => {
+      const categoryTags = getCategoryTagSet(cat);
+      const matchingBundles = bundles.filter((bundle) =>
+        bundleMatchesCategory(
+          bundle,
+          new Set(cat.courses.map((course) => course.id)),
+          categoryTags,
+        ),
+      ).length;
+      tabs.push({
+        id: `${CATEGORY_PREFIX}${cat.slug}`,
+        label: cat.category_name,
+        count: cat.courses.length + matchingBundles,
+      });
+    });
+
+    return tabs;
+  }, [courses, bundles, courseCategories]);
+
+  const selectedCategory = useMemo(() => {
+    if (manualSelectedCategory) {
+      return manualSelectedCategory;
+    }
+
+    if (!initialCategory) {
+      return "all";
+    }
+
+    const normalizedCategory = initialCategory.trim().toLowerCase();
+    const matchedCategory = categories.find((category) => {
+      const normalizedId = category.id.toLowerCase();
+      const normalizedLabel = category.label.trim().toLowerCase();
+      const normalizedSlug = normalizedId.startsWith(CATEGORY_PREFIX)
+        ? normalizedId.slice(CATEGORY_PREFIX.length)
+        : normalizedId;
+
+      return (
+        normalizedId === normalizedCategory ||
+        normalizedLabel === normalizedCategory ||
+        normalizedSlug === normalizedCategory
+      );
+    });
+
+    return matchedCategory?.id || "all";
+  }, [categories, initialCategory, manualSelectedCategory]);
+
+  // Category-tab selection is keyed as `cat-${slug}` for directory categories.
   const activeCategorySlug = selectedCategory.startsWith(CATEGORY_PREFIX)
     ? selectedCategory.slice(CATEGORY_PREFIX.length)
     : null;
@@ -259,35 +315,7 @@ export function useCoursesPage() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [bundles, debouncedSearchTerm, selectedCategory, activeCategoryTags]);
-
-  // Get categories for filtering: "all", "Combo", and one tab per course directory category.
-  const categories = useMemo(() => {
-    const total = courses.length + bundles.length;
-
-    const tabs = [
-      { id: "all", label: "সব কোর্স", count: total },
-      { id: "bundles", label: "Combo", count: bundles.length },
-    ];
-
-    courseCategories.forEach((cat) => {
-      const categoryTags = getCategoryTagSet(cat);
-      const matchingBundles = bundles.filter((bundle) =>
-        bundleMatchesCategory(
-          bundle,
-          new Set(cat.courses.map((course) => course.id)),
-          categoryTags,
-        ),
-      ).length;
-      tabs.push({
-        id: `${CATEGORY_PREFIX}${cat.slug}`,
-        label: cat.category_name,
-        count: cat.courses.length + matchingBundles,
-      });
-    });
-
-    return tabs;
-  }, [courses, bundles, courseCategories]);
+  }, [bundles, debouncedSearchTerm, selectedCategory, activeCategoryCourseIds, activeCategoryTags]);
 
   // Aggregate all feedbacks from courses
   const allFeedbacks = useMemo(() => {

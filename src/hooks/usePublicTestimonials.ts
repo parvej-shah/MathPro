@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
 import { PublicTestimonial } from "@/types/testimonial";
@@ -24,40 +24,21 @@ export function mapPublicTestimonialsToFeedbacks(
 }
 
 export function usePublicTestimonials(): UsePublicTestimonialsResult {
-  const [testimonials, setTestimonials] = useState<PublicTestimonial[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["public-testimonials"],
+    queryFn: async (): Promise<PublicTestimonial[]> => {
+      const response = await axios.get<{ success: boolean; data: PublicTestimonial[] }>(
+        `${BACKEND_URL}/user/testimonial/list`,
+      );
+      return Array.isArray(response.data?.data) ? response.data.data : [];
+    },
+    staleTime: 30 * 60 * 1000,
+    retry: 1,
+  });
 
-  useEffect(() => {
-    let active = true;
-
-    const fetchTestimonials = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get<{ success: boolean; data: PublicTestimonial[] }>(
-          `${BACKEND_URL}/user/testimonial/list`,
-        );
-
-        if (!active) return;
-
-        setTestimonials(Array.isArray(response.data?.data) ? response.data.data : []);
-        setError(null);
-      } catch (err) {
-        if (!active) return;
-        console.error("Failed to load public testimonials", err);
-        setTestimonials([]);
-        setError("Failed to load testimonials");
-      } finally {
-        if (active) setLoading(false);
-      }
-    };
-
-    fetchTestimonials();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  return { testimonials, loading, error };
+  return {
+    testimonials: data || [],
+    loading: isLoading,
+    error: error ? "Failed to load testimonials" : null,
+  };
 }

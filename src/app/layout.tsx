@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anek_Bangla, Geist_Mono, Manrope } from "next/font/google";
+import { Anek_Bangla, Geist_Mono, Manrope, Orbitron } from "next/font/google";
 import AppNavbar from "@/components/AppNavbar";
 import Footer from "@/components/footer";
 import { Providers } from "@/components/providers";
@@ -14,6 +14,12 @@ const anekBangla = Anek_Bangla({
 const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin"],
+});
+
+const orbitron = Orbitron({
+  variable: "--font-logo",
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
 });
 
 const geistMono = Geist_Mono({
@@ -80,7 +86,7 @@ export default function RootLayout({
     <html
       lang="bn"
       suppressHydrationWarning
-      className={`${anekBangla.variable} ${manrope.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${anekBangla.variable} ${manrope.variable} ${orbitron.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col font-sans">
         <Providers>
