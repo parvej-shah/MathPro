@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HydrationBoundary } from "@tanstack/react-query";
 import { prefetchPublicCatalog } from "@/lib/catalog-server";
 import CoursesPageClient from "./CoursesPageClient";
@@ -15,7 +16,11 @@ export default async function CoursesPage() {
 
   return (
     <HydrationBoundary state={state}>
-      <CoursesPageClient />
+      {/* CoursesPageClient reads ?category= via useSearchParams(), which Next 16
+          requires to be inside a Suspense boundary for static prerender. */}
+      <Suspense>
+        <CoursesPageClient />
+      </Suspense>
     </HydrationBoundary>
   );
 }
