@@ -24,7 +24,7 @@ import {
     StreakCountCard,
     RankingCard,
 } from "@/components/Dashboard/CourseDashboard";
-import { sectionVariants } from "@/components/Dashboard/motion";
+import { sectionVariants, containerVariants, itemVariants } from "@/components/Dashboard/motion";
 export default function CourseDashboardPage() {
     const router = useRouter();
     const params = useParams<{ courseId: string }>();
@@ -388,70 +388,72 @@ export default function CourseDashboardPage() {
                         loading={courseLoading}
                     />
 
-                    {/* Section B: The "Action Zone" — single grid, each card rendered exactly once.
-                        Desktop: left stack (cols 1–3) and right stack (cols 4–5) pinned with
-                        col-start/row-start. Mobile: a single column ordered via `order-*`. */}
+                    {/* Section B: The "Action Zone".
+                        Two independent columns on desktop (flex) so each stack flows by its
+                        own content height — no row-pinning, so the columns can't leave a void
+                        when one side is taller. Mobile: a single ordered column via `order-*`
+                        on a flat list, with `lg:contents` dissolving the column wrappers so
+                        the flat order applies. */}
                     <motion.div
-                        variants={sectionVariants}
+                        variants={containerVariants}
                         initial="hidden"
                         animate="show"
-                        transition={{ delay: 0.08, duration: 0.35 }}
-                        className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-x-8 lg:gap-y-6 lg:items-start"
+                        className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8"
                     >
-                        <div className="order-1 lg:col-span-3 lg:col-start-1 lg:row-start-1">
-                            <StreakCountCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
-                            />
+                        {/* Left column (≈60%) */}
+                        <div className="contents lg:flex lg:flex-3 lg:flex-col lg:gap-6">
+                            <motion.div variants={itemVariants} className="order-1 lg:order-0">
+                                <StreakCountCard
+                                    courseId={courseId as string}
+                                    loading={courseLoading}
+                                />
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="order-2 lg:order-0">
+                                <ProgressCard
+                                    currentModule={currentModule}
+                                    progress={calculatedProgress}
+                                    courseId={courseId as string}
+                                    nextLesson={nextLesson}
+                                    loading={courseLoading}
+                                />
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="order-4 lg:order-0">
+                                <LiveClassesSection
+                                    liveModules={liveModules}
+                                    loading={liveClassesLoading}
+                                />
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="order-7 lg:order-0">
+                                <FeedbackCard
+                                    courseId={courseId as string}
+                                    loading={courseLoading}
+                                />
+                            </motion.div>
                         </div>
 
-                        <div className="order-2 lg:col-span-3 lg:col-start-1 lg:row-start-2">
-                            <ProgressCard
-                                currentModule={currentModule}
-                                progress={calculatedProgress}
-                                courseId={courseId as string}
-                                nextLesson={nextLesson}
-                                loading={courseLoading}
-                            />
-                        </div>
-
-                        {/* Ranking — high on mobile (gamified reward), top of right column on desktop */}
-                        <div className="order-3 lg:col-span-2 lg:col-start-4 lg:row-start-1">
-                            <RankingCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
-                            />
-                        </div>
-
-                        <div className="order-4 lg:col-span-3 lg:col-start-1 lg:row-start-3">
-                            <LiveClassesSection
-                                liveModules={liveModules}
-                                loading={liveClassesLoading}
-                            />
-                        </div>
-
-                        <div className="order-5 lg:col-span-2 lg:col-start-4 lg:row-start-2">
-                            <AnnouncementsCard
-                                announcements={announcements}
-                                loading={announcementsLoading}
-                                totalCount={totalCount}
-                            />
-                        </div>
-
-                        <div className="order-6 lg:col-span-2 lg:col-start-4 lg:row-start-3">
-                            <CommunityCard
-                                communityLink={courseData?.community?.facebook_private_group}
-                                telegramLink={courseData?.community?.telegram_group}
-                                accessCode={accessCode}
-                            />
-                        </div>
-
-                        {/* Feedback — always last on mobile, bottom of left column on desktop */}
-                        <div className="order-7 lg:col-span-3 lg:col-start-1 lg:row-start-4">
-                            <FeedbackCard
-                                courseId={courseId as string}
-                                loading={courseLoading}
-                            />
+                        {/* Right column (≈40%) */}
+                        <div className="contents lg:flex lg:flex-2 lg:flex-col lg:gap-6">
+                            {/* Ranking — high on mobile (gamified reward), top of right column */}
+                            <motion.div variants={itemVariants} className="order-3 lg:order-0">
+                                <RankingCard
+                                    courseId={courseId as string}
+                                    loading={courseLoading}
+                                />
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="order-5 lg:order-0">
+                                <AnnouncementsCard
+                                    announcements={announcements}
+                                    loading={announcementsLoading}
+                                    totalCount={totalCount}
+                                />
+                            </motion.div>
+                            <motion.div variants={itemVariants} className="order-6 lg:order-0">
+                                <CommunityCard
+                                    communityLink={courseData?.community?.facebook_private_group}
+                                    telegramLink={courseData?.community?.telegram_group}
+                                    accessCode={accessCode}
+                                />
+                            </motion.div>
                         </div>
                     </motion.div>
 

@@ -124,8 +124,9 @@ export const AnnouncementsCard: React.FC<AnnouncementsCardProps> = ({
   return (
     <div className="space-y-4">
       {/* Featured Latest Announcement */}
-      <div className="bg-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 border-l-warning">
-        <div className="flex items-start gap-3 sm:gap-4">
+      <div className="bg-linear-to-br from-warning/10 via-card to-card p-4 sm:p-6 rounded-2xl shadow-sm border border-border border-l-4 border-l-warning relative overflow-hidden">
+        <div className="absolute top-0 right-0 -mt-6 -mr-6 w-24 h-24 bg-warning/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="relative z-10 flex items-start gap-3 sm:gap-4">
           <div className="bg-warning/15 text-warning p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shrink-0">
             <BsBell className="text-lg sm:text-xl" />
           </div>

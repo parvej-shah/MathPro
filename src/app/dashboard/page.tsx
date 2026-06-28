@@ -78,7 +78,7 @@ export default function DashboardPage() {
             <p className="text-muted-foreground mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-all"
             >
               আবার চেষ্টা করো
             </button>
@@ -93,7 +93,7 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <main className="pt-20 min-h-screen bg-page-bg">
-        <div className="w-[90%] lg:w-[85%] max-w-[1440px] mx-auto py-12">
+        <div className="w-[95%] sm:w-[92%] lg:w-[90%] xl:w-[85%] max-w-[1440px] mx-auto py-5 sm:py-8 lg:py-12">
           <DashboardHeader />
 
           {!allProgressCalculated ? (
