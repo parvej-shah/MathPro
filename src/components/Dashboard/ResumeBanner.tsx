@@ -111,7 +111,7 @@ const ResumeBanner: React.FC<ResumeBannerProps> = ({ course, isLoading }) => {
                                 </span>
                                 <span className="text-primary font-bold">{englishToBanglaNumbers(course.progress)}%</span>
                             </div>
-                            <div className="w-full bg-muted rounded-full h-2">
+                            <div className="w-full bg-muted ring-1 ring-foreground/10 rounded-full h-2">
                                 <div
                                     className="h-full bg-primary rounded-full transition-all duration-500"
                                     style={{ width: `${course.progress}%` }}

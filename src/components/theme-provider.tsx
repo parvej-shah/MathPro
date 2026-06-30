@@ -37,7 +37,7 @@ function applyThemeClass(theme: ResolvedTheme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("system");
+  const [theme, setThemeState] = useState<Theme>("light");
   const [systemTheme, setSystemTheme] = useState<ResolvedTheme>("light");
   const [mounted, setMounted] = useState(false);
 
@@ -46,7 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const initial =
       saved === "light" || saved === "dark" || saved === "system"
         ? saved
-        : "system";
+        : "light";
     setThemeState(initial);
     setSystemTheme(resolveSystemTheme());
     setMounted(true);

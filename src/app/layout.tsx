@@ -75,6 +75,9 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  other: {
+    google: "notranslate",
+  },
 };
 
 export default function RootLayout({
@@ -85,8 +88,9 @@ export default function RootLayout({
   return (
     <html
       lang="bn"
+      translate="no"
       suppressHydrationWarning
-      className={`${anekBangla.variable} ${manrope.variable} ${orbitron.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${anekBangla.variable} ${manrope.variable} ${orbitron.variable} ${geistMono.variable} h-full antialiased notranslate`}
     >
       <body className="flex min-h-full flex-col font-sans">
         <Providers>

@@ -93,7 +93,11 @@ export default function Nav({ mode = "default" }: NavProps) {
 
       setNotificationCount(totalCount);
     } catch (error) {
-      console.warn("Failed to fetch notification count:", error);
+      // 403 is expected for non-regular (admin/moderator) account tokens, which
+      // have no student bundles/courses — not a real failure, so stay quiet.
+      if (!axios.isAxiosError(error) || error.response?.status !== 403) {
+        console.warn("Failed to fetch notification count:", error);
+      }
       setNotificationCount(0);
     }
   }, []);
@@ -196,14 +200,12 @@ export default function Nav({ mode = "default" }: NavProps) {
             >
               কোর্সসমূহ
             </Link>
-            {loggedIn && (
-              <Link
-                href="/dashboard"
-                className={`transition-colors ${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}
-              >
-                ড্যাশবোর্ড
-              </Link>
-            )}
+            <Link
+              href={loggedIn ? "/dashboard" : loginHref}
+              className={`transition-colors ${navHoverClass} ${dashboardActive ? "text-emerald-600" : ""}`}
+            >
+              ড্যাশবোর্ড
+            </Link>
             {loggedIn && (
               <Link
                 href="/billing"
@@ -343,19 +345,17 @@ export default function Nav({ mode = "default" }: NavProps) {
                     >
                       কোর্সসমূহ
                     </Link>
-                    {loggedIn && (
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`rounded-xl border px-4 py-3 transition-colors ${
-                          dashboardActive
-                            ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
-                            : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
-                        }`}
-                      >
-                        ড্যাশবোর্ড
-                      </Link>
-                    )}
+                    <Link
+                      href={loggedIn ? "/dashboard" : loginHref}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`rounded-xl border px-4 py-3 transition-colors ${
+                        dashboardActive
+                          ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                          : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                      }`}
+                    >
+                      ড্যাশবোর্ড
+                    </Link>
                     {loggedIn && (
                       <Link
                         href="/billing"
