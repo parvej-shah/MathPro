@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import PremiumCourseCard from "@/features/courses-page/components/PremiumCourseCard";
 import type { CourseCategory } from "@/features/courses-page/_lib/types";
@@ -27,8 +27,6 @@ import { usePublicInstructors } from "@/hooks/usePublicInstructors";
 import { englishToBanglaNumbers } from "@/helpers";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import useEmblaCarousel from "embla-carousel-react";
-import Autoplay from "embla-carousel-autoplay";
 import {
   CheckCircle2,
   PlayCircle,
@@ -427,24 +425,34 @@ function CategoryCourseSection({ category }: { category: CourseCategory }) {
 }
 
 export function LandingPage() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
+  // Lightweight overlapping-crossfade hero slider (no carousel library). Every slide
+  // stays mounted and layered; only opacity/transform animate, so there is no empty
+  // frame between slides — the incoming slide fills in as the outgoing one fades out.
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const HERO_DURATION = 6000;
+
+  const scrollTo = useCallback((index: number) => {
+    setSelectedIndex(index);
+  }, []);
+
+  const nextSlide = useCallback(() => {
+    setSelectedIndex((i) => (i + 1) % slides.length);
+  }, []);
+
+  useEffect(() => {
+    if (slides.length <= 1 || paused) return;
+    timerRef.current = setTimeout(nextSlide, HERO_DURATION);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [selectedIndex, paused, nextSlide]);
 
   // Live category sections from GET /user/course/directory (COURSE_DIRECTORY_API_SPEC.md).
   const { categories: courseCategories, loading: coursesLoading } = useCourseDirectory();
   const { testimonials } = usePublicTestimonials();
   const { instructors } = usePublicInstructors();
-
-  const onSelect = useCallback(() => {
-    if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi, setSelectedIndex]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    emblaApi.on("select", onSelect);
-    emblaApi.on("reInit", onSelect);
-  }, [emblaApi, onSelect]);
 
   return (
     <div className="min-h-screen bg-page-bg font-sans text-foreground overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 dark:selection:bg-emerald-800 dark:selection:text-emerald-100 relative z-0">
@@ -454,85 +462,101 @@ export function LandingPage() {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none z-[39] hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.07) 0%, transparent 70%)' }}></div>
 
       {/* --- HERO CAROUSEL --- */}
-      <section className="relative h-[100dvh] min-h-[700px] w-full bg-slate-950 overflow-hidden">
-        {/* Carousel */}
-        <div className="overflow-hidden h-full" ref={emblaRef}>
-          <div className="flex h-full">
-            {slides.map((slide, index) => (
-              <div key={slide.id} className="flex-[0_0_100%] min-w-0 relative h-full">
-                <div className={`absolute inset-0 ${slide.bgClass} ${slide.pattern} opacity-90`}></div>
-                <div className="relative z-[45] h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
+      <section
+        className="relative h-[100dvh] min-h-[700px] w-full bg-slate-950 overflow-hidden"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      >
+        <style>{`
+          @keyframes hero-kenburns { from { transform: scale(1); } to { transform: scale(1.12); } }
+          .hero-kenburns { animation: hero-kenburns 8s ease-out forwards; }
+        `}</style>
 
-                  {/* Text Content */}
-                  <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
-                      transition={{ duration: 0.5, delay: 0.15, ease: "easeOut", type: "tween" }}
-                      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6"
+        {/* All slides stay mounted and layered; the active one crossfades in over the
+            outgoing one (overlapping opacity), so the frame is never empty — no blink. */}
+        {slides.map((slide, index) => {
+          const active = selectedIndex === index;
+          return (
+            <div
+              key={slide.id}
+              aria-hidden={!active}
+              className={`absolute inset-0 h-full transition-opacity duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${active ? "opacity-100 z-[2]" : "opacity-0 z-[1] pointer-events-none"}`}
+              style={{ willChange: "opacity" }}
+            >
+              {/* Background with slow Ken-Burns zoom while active */}
+              <div className={`absolute inset-0 ${slide.bgClass} ${slide.pattern} opacity-90 ${active ? "hero-kenburns" : ""}`}></div>
+
+              <div className="relative z-[45] h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
+
+                {/* Text Content */}
+                <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    transition={{ duration: 0.5, delay: active ? 0.35 : 0, ease: "easeOut", type: "tween" }}
+                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6"
+                  >
+                    <Sparkles className="size-3.5" />
+                    প্ল্যাটফর্ম ২.০ লাইভ
+                  </motion.div>
+
+                  <motion.h1
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    transition={{ duration: 0.5, delay: active ? 0.45 : 0, ease: "easeOut", type: "tween" }}
+                    className="font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm"
+                  >
+                    {slide.title}
+                  </motion.h1>
+
+                  <motion.p
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    transition={{ duration: 0.5, delay: active ? 0.55 : 0, ease: "easeOut", type: "tween" }}
+                    className="text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium"
+                  >
+                    {slide.subtitle}
+                  </motion.p>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+                    transition={{ duration: 0.5, delay: active ? 0.65 : 0, ease: "easeOut", type: "tween" }}
+                  >
+                    <Link
+                      href={slide.href}
+                      className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
                     >
-                      <Sparkles className="size-3.5" />
-                      প্ল্যাটফর্ম ২.০ লাইভ
-                    </motion.div>
-
-                    <motion.h1
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
-                      transition={{ duration: 0.5, delay: 0.25, ease: "easeOut", type: "tween" }}
-                      className="font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm"
-                    >
-                      {slide.title}
-                    </motion.h1>
-
-                    <motion.p
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
-                      transition={{ duration: 0.5, delay: 0.35, ease: "easeOut", type: "tween" }}
-                      className="text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium"
-                    >
-                      {slide.subtitle}
-                    </motion.p>
-
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, y: selectedIndex === index ? 0 : 16 }}
-                      transition={{ duration: 0.5, delay: 0.45, ease: "easeOut", type: "tween" }}
-                    >
-                      <Link
-                        href={slide.href}
-                        className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
-                      >
-                        {slide.cta}
-                        <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    </motion.div>
-                  </div>
-
-                  {/* Visual Content */}
-                  <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.92 }}
-                      animate={{ opacity: selectedIndex === index ? 1 : 0, scale: selectedIndex === index ? 1 : 0.92 }}
-                      transition={{ duration: 0.6, delay: 0.2, ease: "easeOut", type: "tween" }}
-                      style={{ willChange: "opacity, transform" }}
-                      className="absolute inset-0 flex items-center justify-center"
-                    >
-                      {slide.visual}
-                    </motion.div>
-                  </div>
-
+                      {slide.cta}
+                      <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </motion.div>
                 </div>
+
+                {/* Visual Content */}
+                <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={active ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
+                    transition={{ duration: 0.6, delay: active ? 0.4 : 0, ease: "easeOut", type: "tween" }}
+                    style={{ willChange: "opacity, transform" }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    {slide.visual}
+                  </motion.div>
+                </div>
+
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          );
+        })}
 
         {/* Custom Pips */}
         <div className="absolute bottom-6 md:bottom-12 left-0 right-0 flex justify-center gap-2 md:gap-3 z-20">
           {slides.map((_, i) => (
             <button
               key={i}
-              onClick={() => emblaApi?.scrollTo(i)}
+              onClick={() => scrollTo(i)}
               className={`h-2 rounded-full transition-all duration-500 ${selectedIndex === i ? 'w-12 bg-emerald-400' : 'w-3 bg-white/30 hover:bg-white/50'}`}
               aria-label={`Go to slide ${i + 1}`}
             />
