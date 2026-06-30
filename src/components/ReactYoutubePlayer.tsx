@@ -84,6 +84,10 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   const rafRef = useRef<number | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const unmuteOnFirstPlay = useRef(true);
+  // User's chosen quality. "auto" lets YouTube's ABR pick (and we mirror its choice in
+  // the label). Once the user picks a specific level we hold it here so onStateChange
+  // neither overwrites the label nor stops re-asserting it on the next PLAYING event.
+  const preferredQuality = useRef("auto");
 
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -143,7 +147,14 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
               setDuration(e.target.getDuration());
               const avail = e.target.getAvailableQualityLevels?.() || [];
               setQualities(avail);
-              setQuality(e.target.getPlaybackQuality?.() || "auto");
+              if (preferredQuality.current === "auto") {
+                // Mirror whatever ABR selected so the label reflects reality.
+                setQuality(e.target.getPlaybackQuality?.() || "auto");
+              } else {
+                // Re-assert the user's choice — some clients reset quality on
+                // buffer/seek/replay. Best-effort: YouTube may still override via ABR.
+                e.target.setPlaybackQuality?.(preferredQuality.current);
+              }
             } else if (e.data === YT.PlayerState.PAUSED) {
               setPlaying(false);
             } else if (e.data === YT.PlayerState.ENDED) {
@@ -165,6 +176,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       }
       playerRef.current = null;
       unmuteOnFirstPlay.current = true;
+      preferredQuality.current = "auto";
       setReady(false);
       setPlaying(false);
       setEnded(false);
@@ -173,6 +185,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       setCurrent(0);
       setDuration(0);
       setMuted(true);
+      setQuality("auto");
     };
   }, [videoId]);
 
@@ -287,6 +300,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   const pickQuality = useCallback((q: string) => {
     const p = playerRef.current;
     if (!p) return;
+    preferredQuality.current = q;
     p.setPlaybackQuality(q);
     setQuality(q);
     setSettingsTab("main");
