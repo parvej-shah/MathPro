@@ -378,12 +378,25 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
         className="absolute inset-0 z-20 h-full w-full cursor-pointer bg-transparent"
       />
 
-      {/* Center play indicator — only after user has played at least once then paused */}
-      {ready && !posterVisible && hasPlayedOnce && !playing && !ended && (
-        <div className="pointer-events-none absolute inset-0 z-25 flex items-center justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white">
-            <BsPlayFill className="ml-1 text-3xl" />
-          </div>
+      {/* Pause cover — full-frame opaque overlay whenever the player is ready but not
+          playing (paused mid-video). Masks YouTube's pause-screen related-videos grid,
+          which the edge mask bars never cover. Independent of showControls/controlsVisible
+          so the mouse-driven auto-hide timer can never reveal YouTube underneath on touch
+          devices. Sits below the click shield (z-20) so tapping still toggles play, and
+          below the control bar (z-30). Excludes the ended state (replay overlay handles it). */}
+      {ready && !posterVisible && !playing && !ended && (
+        <div className="pointer-events-none absolute inset-0 z-15 flex items-center justify-center bg-black">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={thumbUrl}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          {hasPlayedOnce && (
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white">
+              <BsPlayFill className="ml-1 text-3xl" />
+            </div>
+          )}
         </div>
       )}
 
