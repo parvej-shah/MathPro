@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anek_Bangla, Geist_Mono, Manrope, Orbitron } from "next/font/google";
+import { Anek_Bangla, Orbitron } from "next/font/google";
 import AppNavbar from "@/components/AppNavbar";
 import Footer from "@/components/footer";
 import { Providers } from "@/components/providers";
@@ -8,23 +8,13 @@ import "./globals.css";
 const anekBangla = Anek_Bangla({
   variable: "--font-anek-bangla",
   subsets: ["bengali"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
+  weight: ["400", "600", "700"],
 });
 
 const orbitron = Orbitron({
   variable: "--font-logo",
   subsets: ["latin"],
-  weight: ["700", "800", "900"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["900"],
 });
 
 const SITE_NAME = "Math Pro Academy";
@@ -90,7 +80,7 @@ export default function RootLayout({
       lang="bn"
       translate="no"
       suppressHydrationWarning
-      className={`${anekBangla.variable} ${manrope.variable} ${orbitron.variable} ${geistMono.variable} h-full antialiased notranslate`}
+      className={`${anekBangla.variable} ${orbitron.variable} h-full antialiased notranslate`}
     >
       <body className="flex min-h-full flex-col font-sans">
         <Providers>

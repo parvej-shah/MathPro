@@ -1,9 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import PremiumCourseCard from "@/features/courses-page/components/PremiumCourseCard";
-import type { CourseCategory } from "@/features/courses-page/_lib/types";
 
 // Below-the-fold sections — lazy-loaded to keep the landing page's initial JS small.
 const TestimonialMarquee = dynamic(
@@ -18,15 +16,20 @@ const AboutSection = dynamic(
   () => import("@/features/courses-page/components/AboutSection"),
   { ssr: false },
 );
+const LandingCourseSections = dynamic(
+  () =>
+    import("@/components/LandingCourseSections").then(
+      (module) => module.LandingCourseSections,
+    ),
+  { ssr: false },
+);
 import { useCourseDirectory } from "@/hooks/useCourseDirectory";
 import {
   mapPublicTestimonialsToFeedbacks,
   usePublicTestimonials,
 } from "@/hooks/usePublicTestimonials";
 import { usePublicInstructors } from "@/hooks/usePublicInstructors";
-import { englishToBanglaNumbers } from "@/helpers";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   CheckCircle2,
   PlayCircle,
@@ -65,12 +68,7 @@ const slides = [
           <div className="absolute bottom-[20%] right-[10%] text-emerald-400/40 font-serif text-2xl md:text-3xl rotate-12 select-none">∫ e^x dx</div>
         </div>
         {/* Single prominent cap icon */}
-        <motion.div
-          animate={{ y: -10 }}
-          transition={{ repeat: Infinity, repeatType: "mirror", duration: 3, ease: "easeInOut", type: "tween" }}
-          style={{ willChange: "transform" }}
-          className="relative flex items-center justify-center"
-        >
+        <div className="relative flex items-center justify-center animate-hero-float-up">
           {/* Glow rings */}
           <div className="absolute size-[280px] sm:size-[340px] md:size-[400px] lg:size-[440px] rounded-full border border-emerald-500/10 animate-pulse"></div>
           <div className="absolute size-[220px] sm:size-[280px] md:size-[320px] lg:size-[340px] rounded-full border border-emerald-500/15"></div>
@@ -80,15 +78,10 @@ const slides = [
           <div className="relative size-32 md:size-52 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/10 flex items-center justify-center backdrop-blur-xl border border-emerald-400/30 shadow-[0_0_80px_rgba(16,185,129,0.25)]">
             <span className="text-[5rem] md:text-[9rem] drop-shadow-[0_0_30px_rgba(16,185,129,0.6)] select-none leading-none">🎓</span>
           </div>
-        </motion.div>
+        </div>
 
         {/* Floating elements */}
-        <motion.div
-          animate={{ y: -12 }}
-          transition={{ repeat: Infinity, repeatType: "mirror", duration: 2.5, ease: "easeInOut", type: "tween" }}
-          style={{ willChange: "transform" }}
-          className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
-        >
+        <div className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100 animate-hero-float-card-up">
           <div className="size-8 md:size-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
             <TrendingUp className="text-emerald-400 size-4 md:size-5" />
           </div>
@@ -96,20 +89,15 @@ const slides = [
             <div className="text-white font-extrabold text-lg md:text-xl">১০০%</div>
             <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সিলেবাস কভার</div>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          animate={{ y: 14 }}
-          transition={{ repeat: Infinity, repeatType: "mirror", duration: 3.2, ease: "easeInOut", type: "tween" }}
-          style={{ willChange: "transform" }}
-          className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100"
-        >
+        <div className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100 animate-hero-float-card-down">
           <div className="text-emerald-400 font-bold text-3xl md:text-4xl font-serif leading-none mt-1">∑</div>
           <div>
             <div className="text-white font-extrabold text-base md:text-lg">গণিতভীতি দূর</div>
             <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সহজ সমাধান</div>
           </div>
-        </motion.div>
+        </div>
       </div>
     )
   },
@@ -172,11 +160,8 @@ const slides = [
     visual: (
       <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 flex-col md:flex-row scale-90 md:scale-100 lg:scale-110">
         {[1, 2, 3].map((i) => (
-          <motion.div
+          <div
             key={i}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.15, duration: 0.5, ease: "easeOut", type: "tween" }}
             className={`bg-white/5 backdrop-blur-sm p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border w-[260px] md:w-64 lg:w-72 shadow-2xl relative ${i === 2 ? 'border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10 md:-translate-y-8 lg:-translate-y-10' : 'border-white/10 opacity-70 scale-95 hidden sm:block'}`}
           >
             {i === 2 && (
@@ -199,7 +184,7 @@ const slides = [
                 <div className="h-2.5 w-2/3 bg-white/10 rounded-full"></div>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     )
@@ -278,152 +263,6 @@ const features = [
   { icon: Laptop, title: "দ্রুত ও সহজ এক্সেস", desc: "বিকাশ বা নগদে পেমেন্ট করেই সাথে সাথে কোর্সে যুক্ত হও। যেকোনো ডিভাইস থেকে অনায়াসে ক্লাস করার সুবিধা।" },
 ];
 
-const ALL_TAG_ID = "all";
-const sessionTagPattern = /(?:^|\s)(jsc|ssc|hsc)(?:\s|$)|[০-৯]{2,4}|\d{2,4}/i;
-const nonSessionTagKeywords = [
-  "লাইভ",
-  "রেকর্ডেড",
-  "ভিডিও",
-  "কুইজ",
-  "quiz",
-  "live",
-  "recorded",
-];
-
-function normalizeTag(tag: string) {
-  return tag.replace(/\s+/g, " ").trim();
-}
-
-function banglaDigitsToEnglish(value: string) {
-  return value.replace(/[০-৯]/g, (digit) =>
-    String("০১২৩৪৫৬৭৮৯".indexOf(digit)),
-  );
-}
-
-function isSessionFilterTag(tag: string) {
-  const normalized = normalizeTag(tag);
-  if (!normalized) return false;
-
-  const lowerCased = normalized.toLowerCase();
-  if (nonSessionTagKeywords.some((keyword) => lowerCased.includes(keyword))) {
-    return false;
-  }
-
-  return sessionTagPattern.test(lowerCased);
-}
-
-function formatTagLabel(tag: string) {
-  return normalizeTag(tag).replace(/\d+/g, (match) =>
-    englishToBanglaNumbers(Number(match)),
-  );
-}
-
-function extractTagSortValue(tag: string) {
-  const digits = banglaDigitsToEnglish(tag).match(/\d{2,4}/g);
-  if (!digits || digits.length === 0) return -1;
-  return Number(digits[digits.length - 1]);
-}
-
-function CategoryCourseSection({ category }: { category: CourseCategory }) {
-  const filterTags = useMemo(() => {
-    const uniqueTags = new Map<string, string>();
-
-    category.courses.forEach((course) => {
-      course.tags?.forEach((tag) => {
-        if (!isSessionFilterTag(tag)) return;
-        const normalized = normalizeTag(tag);
-        if (!uniqueTags.has(normalized)) {
-          uniqueTags.set(normalized, tag);
-        }
-      });
-    });
-
-    return Array.from(uniqueTags.values()).sort((a, b) => {
-      const yearDifference = extractTagSortValue(b) - extractTagSortValue(a);
-      if (yearDifference !== 0) return yearDifference;
-      return normalizeTag(a).localeCompare(normalizeTag(b), "en", {
-        sensitivity: "base",
-      });
-    });
-  }, [category.courses]);
-
-  const [selectedTag, setSelectedTag] = useState(ALL_TAG_ID);
-
-  const activeTag =
-    selectedTag === ALL_TAG_ID || filterTags.includes(selectedTag)
-      ? selectedTag
-      : ALL_TAG_ID;
-
-  const visibleCourses = useMemo(() => {
-    const courses =
-      activeTag === ALL_TAG_ID
-        ? category.courses
-        : category.courses.filter((course) =>
-            course.tags?.some((tag) => normalizeTag(tag) === activeTag),
-          );
-
-    return courses.slice(0, 3);
-  }, [activeTag, category.courses]);
-
-  return (
-    <div className="flex flex-col">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6 relative z-[45]">
-        <h3 className="font-heading text-3xl md:text-4xl font-extrabold text-heading">
-          {category.category_name}
-        </h3>
-        <Link
-          href="/courses"
-          className="text-sm font-bold text-primary hover:gap-2 flex items-center gap-1 transition-all"
-        >
-          সব দেখুন <span>&gt;</span>
-        </Link>
-      </div>
-
-      {filterTags.length > 0 && (
-        <div className="flex flex-wrap gap-3 mb-10 relative z-[45]">
-          <button
-            type="button"
-            onClick={() => setSelectedTag(ALL_TAG_ID)}
-            className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${
-              selectedTag === ALL_TAG_ID
-                ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary"
-            }`}
-          >
-            সব
-          </button>
-          {filterTags.map((tag) => (
-              <button
-              key={tag}
-              type="button"
-              onClick={() => setSelectedTag(normalizeTag(tag))}
-              className={`rounded-full border px-4 py-2 text-sm font-bold transition-all ${
-                activeTag === normalizeTag(tag)
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                  : "border-border bg-card text-muted-foreground hover:border-primary/30 hover:text-primary"
-              }`}
-            >
-              {formatTagLabel(tag)}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {visibleCourses.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-          {visibleCourses.map((course) => (
-            <PremiumCourseCard key={course.id} course={course} />
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center text-muted-foreground relative z-[45]">
-          এই ট্যাগে এখনো কোনো কোর্স পাওয়া যায়নি।
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function LandingPage() {
   // Lightweight overlapping-crossfade hero slider (no carousel library). Every slide
   // stays mounted and layered; only opacity/transform animate, so there is no empty
@@ -490,38 +329,27 @@ export function LandingPage() {
 
                 {/* Text Content */}
                 <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.5, delay: active ? 0.35 : 0, ease: "easeOut", type: "tween" }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6"
+                  <div
+                    className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6 transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[350ms]" : "opacity-0 translate-y-4"}`}
                   >
                     <Sparkles className="size-3.5" />
                     প্ল্যাটফর্ম ২.০ লাইভ
-                  </motion.div>
+                  </div>
 
-                  <motion.h1
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.5, delay: active ? 0.45 : 0, ease: "easeOut", type: "tween" }}
-                    className="font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm"
+                  <h1
+                    className={`font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[450ms]" : "opacity-0 translate-y-4"}`}
                   >
                     {slide.title}
-                  </motion.h1>
+                  </h1>
 
-                  <motion.p
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.5, delay: active ? 0.55 : 0, ease: "easeOut", type: "tween" }}
-                    className="text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium"
+                  <p
+                    className={`text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[550ms]" : "opacity-0 translate-y-4"}`}
                   >
                     {slide.subtitle}
-                  </motion.p>
+                  </p>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-                    transition={{ duration: 0.5, delay: active ? 0.65 : 0, ease: "easeOut", type: "tween" }}
+                  <div
+                    className={`transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[650ms]" : "opacity-0 translate-y-4"}`}
                   >
                     <Link
                       href={slide.href}
@@ -530,20 +358,16 @@ export function LandingPage() {
                       {slide.cta}
                       <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
-                  </motion.div>
+                  </div>
                 </div>
 
                 {/* Visual Content */}
                 <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={active ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
-                    transition={{ duration: 0.6, delay: active ? 0.4 : 0, ease: "easeOut", type: "tween" }}
-                    style={{ willChange: "opacity, transform" }}
-                    className="absolute inset-0 flex items-center justify-center"
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center transition-all duration-[600ms] ease-out will-change-[opacity,transform] ${active ? "opacity-100 scale-100 delay-[400ms]" : "opacity-0 scale-[0.92]"}`}
                   >
                     {slide.visual}
-                  </motion.div>
+                  </div>
                 </div>
 
               </div>
@@ -659,17 +483,16 @@ export function LandingPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
             {features.map((feature, i) => (
-              <motion.div
+              <div
                 key={i}
-                whileHover={{ y: -8 }}
-                className="p-8 md:p-10 rounded-[2rem] bg-card border border-border shadow-sm hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex flex-col items-start relative z-[45]"
+                className="p-8 md:p-10 rounded-[2rem] bg-card border border-border shadow-sm hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex flex-col items-start relative z-[45]"
               >
                 <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="size-7 stroke-[2.5]" />
                 </div>
                 <h3 className="text-2xl font-extrabold mb-4 text-heading font-heading tracking-tight">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed font-medium text-[15px]">{feature.desc}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -694,27 +517,10 @@ export function LandingPage() {
           </div>
 
           <div className="flex flex-col gap-24">
-            {coursesLoading ? (
-              // Lightweight skeleton rows while the directory loads.
-              [0, 1].map((i) => (
-                <div key={i} className="flex flex-col">
-                  <div className="h-10 w-48 bg-muted rounded-lg mb-10 animate-pulse" />
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-                    {[0, 1, 2].map((j) => (
-                      <div key={j} className="h-72 bg-muted rounded-2xl animate-pulse" />
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : courseCategories.length === 0 ? (
-              <div className="text-center text-muted-foreground py-16 relative z-[45]">
-                নতুন কোর্স শীঘ্রই যোগ করা হবে।
-              </div>
-            ) : (
-              courseCategories.map((category) => (
-                <CategoryCourseSection key={category.slug} category={category} />
-              ))
-            )}
+            <LandingCourseSections
+              categories={courseCategories}
+              loading={coursesLoading}
+            />
           </div>
         </div>
       </section>
@@ -737,10 +543,8 @@ export function LandingPage() {
               <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '48px 48px' }}></div>
 
               {/* Radar Sweep Effect */}
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                className="absolute top-1/2 left-1/2 w-[1000px] h-[1000px] -translate-x-1/2 -translate-y-1/2 origin-center"
+              <div
+                className="absolute top-1/2 left-1/2 w-[1000px] h-[1000px] -translate-x-1/2 -translate-y-1/2 origin-center animate-radar-spin"
                 style={{ background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(16, 185, 129, 0.15) 360deg)', borderRadius: '50%' }}
               />
 
@@ -750,23 +554,19 @@ export function LandingPage() {
 
               {/* SVG Connecting Path */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <motion.line
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  whileInView={{ pathLength: 1, opacity: 1 }}
-                  transition={{ duration: 2, delay: 0.3, ease: "easeInOut" }}
-                  viewport={{ once: true }}
+                <line
                   x1="35%" y1="35%" x2="65%" y2="65%"
-                  stroke="#10b981" strokeWidth="2" strokeDasharray="6 6" className="opacity-60"
+                  stroke="#10b981" strokeWidth="2" className="opacity-60 branch-line-draw"
                 />
               </svg>
 
               {/* Tech UI Overlays */}
-              <div className="absolute top-8 left-8 font-geist-mono text-[11px] text-emerald-400/80 tracking-[0.2em] leading-relaxed uppercase">
+              <div className="absolute top-8 left-8 font-mono text-[11px] text-emerald-400/80 tracking-[0.2em] leading-relaxed uppercase">
                 LAT_ 23.8103° N <br />
                 LON_ 90.4125° E <br />
                 <span className="text-white mt-2 inline-block">SYS.ACTIVE</span>
               </div>
-              <div className="absolute bottom-8 right-8 font-geist-mono text-[11px] text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase text-right">
+              <div className="absolute bottom-8 right-8 font-mono text-[11px] text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase text-right">
                 MATHPRO_NET_V2 <br />
                 O2O_CONNECT
               </div>

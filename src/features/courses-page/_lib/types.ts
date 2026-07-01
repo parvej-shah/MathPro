@@ -49,6 +49,7 @@ export interface Feedback {
   bio: string;
   description: string;
   imageUploadedLink?: string;
+  videoUrl?: string;
 }
 
 export interface CoursesResponse {

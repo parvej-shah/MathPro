@@ -77,7 +77,7 @@ export default function LandingStyleCourseCard({
             alt={title}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1279px) 45vw, 384px"
             onError={() => setImgError(true)}
           />
         ) : (

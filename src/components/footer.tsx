@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 const footerLinks = [
@@ -87,9 +84,9 @@ export default function Footer() {
       </div>
 
       {/* Massive Typography Section */}
-      <div className="w-full overflow-hidden flex flex-col items-center justify-center pt-8 pb-12 relative px-4 font-manrope">
+      <div className="w-full overflow-hidden flex flex-col items-center justify-center pt-8 pb-12 relative px-4">
         {/* Bottom bar texts */}
-        <div className="w-full flex justify-between absolute bottom-4 px-4 font-geist-mono text-[10px] md:text-xs font-bold uppercase tracking-widest z-10 text-slate-500">
+        <div className="w-full flex justify-between absolute bottom-4 px-4 text-[10px] md:text-xs font-bold uppercase tracking-widest z-10 text-slate-500">
           <span>&copy; {new Date().getFullYear()} MathPro Inc.</span>
           <span className="hidden sm:inline-block">Terms & Conditions</span>
           <span className="hidden sm:inline-block">Privacy Policy</span>
@@ -97,20 +94,11 @@ export default function Footer() {
         </div>
 
         {/* Giant Text */}
-        <motion.div
-          className="mt-4 mb-8 md:mb-4 cursor-default origin-center"
-          whileHover={{ scale: 1.04 }}
-          transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-        >
-          <motion.h1
-            initial={{ color: "#10b981" }}
-            whileHover={{ color: "#f8fafc" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="font-manrope text-[18vw] leading-none font-black tracking-tighter select-none"
-          >
+        <div className="mt-4 mb-8 md:mb-4 w-full max-w-[90vw] cursor-default text-center transition-transform duration-500 hover:scale-[1.02]">
+          <h1 className="font-logo text-[clamp(5.5rem,15vw,20rem)] leading-none font-black tracking-normal select-none whitespace-nowrap text-emerald-500 transition-colors duration-500 hover:text-slate-50">
             MATHPRO
-          </motion.h1>
-        </motion.div>
+          </h1>
+        </div>
       </div>
     </footer>
   );

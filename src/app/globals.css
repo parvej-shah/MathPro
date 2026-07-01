@@ -1,8 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "slick-carousel/slick/slick.css";
-@import "slick-carousel/slick/slick-theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,10 +8,10 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-anek-bangla);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --font-heading: var(--font-anek-bangla);
   --font-bengali: var(--font-anek-bangla);
-  --font-manrope: var(--font-manrope);
+  --font-manrope: var(--font-anek-bangla);
   --font-logo: var(--font-logo);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
@@ -245,8 +243,56 @@
   animation: motif-float 12s ease-in-out infinite;
   will-change: transform;
 }
+
+@keyframes hero-float-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-10px); }
+}
+
+@keyframes hero-float-card-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-12px); }
+}
+
+@keyframes hero-float-card-down {
+  from { transform: translateY(0); }
+  to { transform: translateY(14px); }
+}
+
+@keyframes radar-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.animate-hero-float-up {
+  animation: hero-float-up 3s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-hero-float-card-up {
+  animation: hero-float-card-up 2.5s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-hero-float-card-down {
+  animation: hero-float-card-down 3.2s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.animate-radar-spin {
+  animation: radar-spin 12s linear infinite;
+  will-change: transform;
+}
+
+.branch-line-draw {
+  stroke-dasharray: 6 6;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-motif-float {
+  .animate-motif-float,
+  .animate-hero-float-up,
+  .animate-hero-float-card-up,
+  .animate-hero-float-card-down,
+  .animate-radar-spin {
     animation: none;
   }
 }

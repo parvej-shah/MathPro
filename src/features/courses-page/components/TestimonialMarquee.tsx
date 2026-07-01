@@ -5,9 +5,44 @@ import Image from "next/image";
 import { Star, Quote } from "lucide-react";
 import { Feedback } from "../_lib/types";
 
+// ─── YouTube helpers ────────────────────────────────────────────────────────────
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, "");
+
+    if (host === "youtu.be") {
+      const id = parsed.pathname.slice(1);
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      if (parsed.pathname === "/watch") {
+        const id = parsed.searchParams.get("v");
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/);
+      if (shortsMatch) {
+        return `https://www.youtube.com/embed/${shortsMatch[1]}`;
+      }
+      const embedMatch = parsed.pathname.match(/^\/embed\/([^/]+)/);
+      if (embedMatch) {
+        return `https://www.youtube.com/embed/${embedMatch[1]}`;
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── Single card ───────────────────────────────────────────────────────────────
 
 function TestimonialCard({ feedback }: { feedback: Feedback }) {
+  const embedUrl = feedback.videoUrl ? getYouTubeEmbedUrl(feedback.videoUrl) : null;
+
   return (
     <div className="flex-shrink-0 w-[300px] md:w-[340px] bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300">
       {/* Quote icon + stars */}
@@ -22,6 +57,18 @@ function TestimonialCard({ feedback }: { feedback: Feedback }) {
           <span className="text-muted-foreground text-xs ml-1.5">5.0</span>
         </div>
       </div>
+
+      {embedUrl && (
+        <div className="aspect-video w-full overflow-hidden rounded-xl">
+          <iframe
+            src={embedUrl}
+            title={`${feedback.name} video testimonial`}
+            className="h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+      )}
 
       {/* Review text */}
       <p className="text-sm text-paragraph leading-relaxed line-clamp-3 flex-1">

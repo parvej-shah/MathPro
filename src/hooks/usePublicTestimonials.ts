@@ -20,6 +20,7 @@ export function mapPublicTestimonialsToFeedbacks(
     bio: item.course_name || "MathPro Student",
     description: item.comment,
     imageUploadedLink: "",
+    videoUrl: item.video_url || undefined,
   }));
 }
 
