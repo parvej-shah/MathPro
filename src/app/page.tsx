@@ -8,6 +8,7 @@ export default async function Home() {
     "course-directory",
     "public-testimonials",
     "instructors",
+    "faqs",
   ]);
 
   return (

@@ -12,6 +12,7 @@ export default async function CoursesPage() {
     "instructors",
     "bundles",
     "public-testimonials",
+    "faqs",
   ]);
 
   return (

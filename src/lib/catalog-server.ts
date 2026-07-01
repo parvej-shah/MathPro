@@ -23,7 +23,7 @@ import { BACKEND_URL } from "@/api.config";
  * case a webhook is ever missed.
  */
 
-const REVALIDATE_SECONDS = 3600; // 1h safety net; real freshness via revalidateTag.
+const REVALIDATE_SECONDS = 300; // 5m safety net; real freshness via revalidateTag.
 
 /**
  * On-demand cache tags. SINGLE SOURCE OF TRUTH — shared by:
@@ -36,6 +36,7 @@ export const REVALIDATE_TAGS = [
   "combos",
   "instructors",
   "public-testimonials",
+  "faqs",
 ] as const;
 
 export type RevalidateTag = (typeof REVALIDATE_TAGS)[number];
@@ -47,7 +48,8 @@ type CatalogKey =
   | "instructors"
   | "bundles"
   | "combos"
-  | "public-testimonials";
+  | "public-testimonials"
+  | "faqs";
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -84,6 +86,7 @@ const ENDPOINTS: Record<
     queryKey: ["public-testimonials"],
     tag: "public-testimonials",
   },
+  faqs: { path: "/user/faq/list", queryKey: ["faqs"], tag: "faqs" },
 };
 
 async function fetchCatalog<T>(path: string, tag: RevalidateTag): Promise<T[]> {

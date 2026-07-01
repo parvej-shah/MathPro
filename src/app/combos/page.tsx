@@ -4,7 +4,11 @@ import CombosPageClient from "./CombosPageClient";
 
 // ISR: revalidated by the prefetched fetch() calls (next.revalidate in catalog-server).
 export default async function CombosPage() {
-  const state = await prefetchPublicCatalog(["combos", "public-testimonials"]);
+  const state = await prefetchPublicCatalog([
+    "combos",
+    "public-testimonials",
+    "faqs",
+  ]);
 
   return (
     <HydrationBoundary state={state}>
