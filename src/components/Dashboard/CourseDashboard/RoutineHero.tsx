@@ -24,7 +24,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
 }) => {
     if (loading) {
         return (
-            <div className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-6 sm:mb-8 bg-muted animate-pulse">
+            <div className="relative w-full aspect-video rounded-3xl overflow-hidden mb-6 sm:mb-8 bg-muted animate-pulse">
                 <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-muted-foreground">রুটিন লোড হচ্ছে...</div>
                 </div>
@@ -75,7 +75,7 @@ export const RoutineHero: React.FC<RoutineHeroProps> = ({
             variants={sectionVariants}
             initial="hidden"
             animate="show"
-            className="relative w-full h-48 sm:h-64 md:h-80 lg:h-96 rounded-3xl overflow-hidden mb-6 sm:mb-8 group shadow-xl ring-1 ring-foreground/10"
+            className="relative w-full aspect-video rounded-3xl overflow-hidden mb-6 sm:mb-8 group shadow-xl ring-1 ring-foreground/10"
         >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px z-30 bg-linear-to-r from-transparent via-primary/70 to-transparent" />
             <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent z-10" />

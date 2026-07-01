@@ -38,7 +38,7 @@ function SingleInstructorLayout({ instructor }: { instructor: Instructor }) {
       </div>
 
       {/* Right — photo */}
-      <div className="relative aspect-[3/4] sm:aspect-square md:aspect-auto md:min-h-72 rounded-2xl overflow-hidden bg-muted order-1 md:order-2">
+      <div className="relative aspect-square md:aspect-auto md:min-h-72 rounded-2xl overflow-hidden bg-muted order-1 md:order-2">
         <Image
           src={instructor.imageUploadedLink || "/Frame 1000004442.png"}
           alt={instructor.name}

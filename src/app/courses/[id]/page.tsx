@@ -504,8 +504,8 @@ export default function CourseDetailsPage() {
                                 src={book.image_url}
                                 alt={book.title}
                                 width={64}
-                                height={80}
-                                className="rounded-md object-cover h-20 w-16 shrink-0"
+                                height={96}
+                                className="rounded-md object-cover h-24 w-16 shrink-0"
                               />
                             )}
                             <div className="min-w-0">

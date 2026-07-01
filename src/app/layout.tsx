@@ -87,7 +87,7 @@ export default function RootLayout({
           <div className="print:hidden">
             <AppNavbar />
           </div>
-          {children}
+          <div className="flex-1">{children}</div>
           <div className="print:hidden">
             <Footer />
           </div>

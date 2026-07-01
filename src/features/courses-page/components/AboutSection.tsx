@@ -115,7 +115,7 @@ function SingleInstructor({ instructor }: { instructor: Instructor }) {
         </div>
 
         {/* Right — photo */}
-        <div className="relative aspect-[3/4] sm:aspect-square lg:aspect-auto lg:min-h-full rounded-2xl overflow-hidden bg-muted order-1 lg:order-2">
+        <div className="relative aspect-square lg:aspect-auto lg:min-h-full rounded-2xl overflow-hidden bg-muted order-1 lg:order-2">
           {instructor.image ? (
             <Image
               src={instructor.image}
@@ -153,14 +153,14 @@ function MultipleInstructors({ instructors }: { instructors: Instructor[] }) {
         </div>
 
         {/* Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {instructors.map((instructor) => (
             <div
               key={instructor.id}
               className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-primary/8 dark:hover:shadow-emerald-400/12 dark:hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {/* Photo */}
-              <div className="relative aspect-[3/4] w-full bg-muted overflow-hidden">
+              <div className="relative aspect-square w-full bg-muted overflow-hidden">
                 {instructor.image ? (
                   <Image
                     src={instructor.image}

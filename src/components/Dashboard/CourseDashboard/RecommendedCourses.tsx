@@ -62,7 +62,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
                 key={course.id}
                 className="bg-background rounded-xl md:rounded-2xl overflow-hidden shadow-lg border border-border hover:shadow-xl transition-all duration-300 group flex flex-col sm:flex-row h-full"
               >
-                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden shrink-0">
+                <div className="w-full sm:w-2/5 aspect-video sm:aspect-auto sm:h-auto relative overflow-hidden shrink-0">
                   <img
                     src={course.thumbnail}
                     alt={course.title}
@@ -122,7 +122,7 @@ export const RecommendedCourses: React.FC<RecommendedCoursesProps> = ({
             >
             <Link href={`/course-details/${course.id}`}>
               <div className="bg-card rounded-xl md:rounded-2xl overflow-hidden shadow-sm border border-border hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group flex flex-col sm:flex-row h-full cursor-pointer">
-                <div className="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden shrink-0">
+                <div className="w-full sm:w-2/5 aspect-video sm:aspect-auto sm:h-auto relative overflow-hidden shrink-0">
                   <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/80 to-transparent z-10" />
                   <img
                     src={

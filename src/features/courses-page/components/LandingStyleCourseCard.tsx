@@ -70,7 +70,7 @@ export default function LandingStyleCourseCard({
     <div className="group bg-card rounded-3xl overflow-hidden border border-border shadow-sm hover:shadow-xl hover:shadow-primary/15 dark:hover:shadow-primary/20 dark:hover:border-emerald-500/30 hover:-translate-y-2 transition-all duration-300 flex flex-col">
 
       {/* ── Banner ──────────────────────────────────────────────────── */}
-      <div className={`relative h-48 w-full overflow-hidden flex flex-col justify-center items-center text-center bg-gradient-to-tr ${gradient}`}>
+      <div className={`relative aspect-[4/3] w-full overflow-hidden flex flex-col justify-center items-center text-center bg-gradient-to-tr ${gradient}`}>
         {showThumbnail ? (
           <Image
             src={thumbnail!}

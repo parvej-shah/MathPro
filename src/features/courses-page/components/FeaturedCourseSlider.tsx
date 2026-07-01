@@ -123,7 +123,7 @@ export default function FeaturedCourseSlider({
       `}</style>
 
       <div
-        className="relative isolate w-full max-w-full overflow-hidden rounded-3xl border border-white/10 dark:border-white/8 select-none aspect-[16/9] sm:aspect-[16/8] lg:aspect-[16/7] min-h-[250px] sm:min-h-[320px] lg:min-h-[420px] max-h-[620px] shadow-[0_20px_60px_-10px_rgba(139,92,246,0.25)] dark:shadow-[0_20px_80px_-10px_rgba(16,185,129,0.18)]"
+        className="relative isolate w-full max-w-full overflow-hidden rounded-3xl border border-white/10 dark:border-white/8 select-none aspect-[16/9] min-h-[250px] sm:min-h-[320px] lg:min-h-[420px] max-h-[620px] shadow-[0_20px_60px_-10px_rgba(139,92,246,0.25)] dark:shadow-[0_20px_80px_-10px_rgba(16,185,129,0.18)]"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
