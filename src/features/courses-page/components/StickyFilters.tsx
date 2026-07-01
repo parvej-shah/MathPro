@@ -13,7 +13,7 @@ export default function StickyFilters({
   onCategoryChange,
 }: StickyFiltersProps) {
   return (
-    <div className="sticky top-20 z-30 py-3 mb-6 -mx-4 px-4 bg-section-a/90 backdrop-blur-xl border-b border-border dark:border-white/8">
+    <div className="sticky top-20 z-30 py-3 mb-6 bg-section-a backdrop-blur-xl border-b border-border dark:border-white/8">
       <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide">
         {categories.map((category) => {
           const isActive = selectedCategory === category.id;
