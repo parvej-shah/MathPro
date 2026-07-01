@@ -77,7 +77,7 @@ export default function TeacherSlider({ instructors }: TeacherSliderProps) {
               className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-primary/8 dark:hover:shadow-emerald-400/12 dark:hover:border-emerald-500/30 hover:-translate-y-1 transition-all duration-300 flex flex-col"
             >
               {/* Photo */}
-              <div className="relative h-52 w-full bg-muted overflow-hidden">
+              <div className="relative aspect-[3/4] w-full bg-muted overflow-hidden">
                 {instructor.image ? (
                   <Image
                     src={instructor.image}
