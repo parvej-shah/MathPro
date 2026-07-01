@@ -5,10 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
 import { englishToBanglaNumbers } from "@/helpers";
-import { Course } from "../_lib/types";
+import { FeaturedItem } from "../_lib/types";
 
 interface FeaturedCourseSliderProps {
-  courses: Course[];
+  courses: FeaturedItem[];
 }
 
 const truncateText = (text: string, maxLength: number): string => {
@@ -27,17 +27,24 @@ const getPlaceholderSrc = (title: string): string => {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
-function getCourseThumbnail(course: Course): string {
-  return (
-    course.chips?.thumbnails?.course_thumbnail_16_9 ||
-    getPlaceholderSrc(course.title)
-  );
+function getItemThumbnail(item: FeaturedItem): string {
+  const thumbnail =
+    item.item_type === "bundle"
+      ? item.chips?.thumbnails?.bundle_thumbnail_16_9
+      : item.chips?.thumbnails?.course_thumbnail_16_9;
+  return thumbnail || getPlaceholderSrc(item.title);
+}
+
+function getItemHref(item: FeaturedItem): string {
+  return item.item_type === "bundle"
+    ? `/combos/${item.url || item.id}`
+    : `/courses/${item.slug || item.id}`;
 }
 
 export default function FeaturedCourseSlider({
   courses,
 }: FeaturedCourseSliderProps) {
-  const slides = useMemo<Course[]>(() => courses, [courses]);
+  const slides = useMemo<FeaturedItem[]>(() => courses, [courses]);
 
   const [active, setActive] = useState(0);
   const [direction, setDirection] = useState<"next" | "prev">("next");
@@ -78,8 +85,8 @@ export default function FeaturedCourseSlider({
   if (slides.length === 0) return null;
 
   const slide = slides[active];
-  const thumb = getCourseThumbnail(slide);
-  const href = `/courses/${slide.slug || slide.id}`;
+  const thumb = getItemThumbnail(slide);
+  const href = getItemHref(slide);
   const desc = truncateText(slide.short_description || "", 150);
 
   // Progress bar key forces remount on slide change
@@ -149,7 +156,7 @@ export default function FeaturedCourseSlider({
               {/* Badge row */}
               <div className="flex items-center gap-3 mb-2 sm:mb-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-primary/80 text-white backdrop-blur-sm border border-primary/30 shadow-lg">
-                  ফিচার্ড কোর্স
+                  ফিচার্ড
                 </span>
               </div>
 

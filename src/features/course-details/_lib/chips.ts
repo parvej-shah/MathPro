@@ -19,6 +19,7 @@ export interface NewChips {
   bundle_id?: string | number | null;
   thumbnails?: {
     course_thumbnail_16_9?: string;
+    course_thumbnail_card_4_3?: string;
     trailer_video_thumb_16_9?: string;
     facebook_community_thumb_16_9?: string;
   };
@@ -48,6 +49,12 @@ export interface StatSection {
 /** Main course thumbnail (16:9). New key is `course_thumbnail_16_9` (no `_link`). */
 export const getCourseThumbnail = (chips?: NewChips | null): string | null =>
   chips?.thumbnails?.course_thumbnail_16_9 || null;
+
+/** Card thumbnail (4:3). Falls back to the 16:9 banner until a dedicated card image is set. */
+export const getCourseCardThumbnail = (chips?: NewChips | null): string | null =>
+  chips?.thumbnails?.course_thumbnail_card_4_3 ||
+  chips?.thumbnails?.course_thumbnail_16_9 ||
+  null;
 
 /** Flat array of {label, value} stat chips. Filters out empty entries. */
 export const getStatSections = (chips?: NewChips | null): StatSection[] => {

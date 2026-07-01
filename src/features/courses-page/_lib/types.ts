@@ -113,6 +113,7 @@ export interface Bundle {
     };
     thumbnails?: {
       bundle_thumb_4_3?: string;
+      bundle_thumbnail_16_9?: string;
     };
   };
 }
@@ -120,6 +121,15 @@ export interface Bundle {
 export interface BundleResponse {
   success: boolean;
   data: Bundle[];
+}
+
+export type FeaturedItem =
+  | (Course & { item_type: "course" })
+  | (Bundle & { item_type: "bundle" });
+
+export interface FeaturedItemsResponse {
+  success: boolean;
+  data: FeaturedItem[];
 }
 
 export interface InstructorResponse {

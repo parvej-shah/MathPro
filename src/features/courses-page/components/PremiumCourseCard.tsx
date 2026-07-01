@@ -1,14 +1,14 @@
 import React from "react";
 import LandingStyleCourseCard from "./LandingStyleCourseCard";
 import { Course } from "../_lib/types";
-import { getCourseThumbnail, deriveSectionFlags } from "@/features/course-details/_lib/chips";
+import { getCourseCardThumbnail, deriveSectionFlags } from "@/features/course-details/_lib/chips";
 
 interface PremiumCourseCardProps {
   course: Course;
 }
 
 export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
-  const thumbnail = getCourseThumbnail(course.chips);
+  const thumbnail = getCourseCardThumbnail(course.chips);
   const flags = deriveSectionFlags(course.chips);
 
   // Prefer the course's own tags for chips; fall back to derived section flags.

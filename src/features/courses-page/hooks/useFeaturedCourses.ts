@@ -2,17 +2,17 @@ import axios from "axios";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { BACKEND_URL } from "@/api.config";
-import type { Course, CoursesResponse } from "../_lib/types";
+import type { FeaturedItem, FeaturedItemsResponse } from "../_lib/types";
 
 export function useFeaturedCourses() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["courses", "featured"],
-    queryFn: async (): Promise<Course[]> => {
-      const response = await axios.get<CoursesResponse>(
+    queryFn: async (): Promise<FeaturedItem[]> => {
+      const response = await axios.get<FeaturedItemsResponse>(
         `${BACKEND_URL}/user/course/featured`,
       );
       if (!response.data.success) {
-        throw new Error("Failed to fetch featured courses");
+        throw new Error("Failed to fetch featured items");
       }
       return response.data.data;
     },
