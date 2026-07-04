@@ -88,11 +88,18 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   // the label). Once the user picks a specific level we hold it here so onStateChange
   // neither overwrites the label nor stops re-asserting it on the next PLAYING event.
   const preferredQuality = useRef("auto");
+  // On pause YouTube overlays a "More videos" shelf. Seeking to the current time
+  // while paused dismisses it, and it stays gone because the iframe never receives
+  // pointer events (our shield swallows them). Guarded so the extra PAUSED event
+  // fired by the seek itself doesn't re-seek in a loop.
+  const pauseSeekDone = useRef(false);
+  // Touch UX: when playing with controls hidden, the first tap should only reveal
+  // the controls (like native players), not toggle play. Set on touchstart, consumed
+  // by the shield's click handler. Mouse clicks never set it, so desktop is unaffected.
+  const touchRevealOnly = useRef(false);
 
-  const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
-  const [hasPlayedOnce, setHasPlayedOnce] = useState(false);
   const [posterVisible, setPosterVisible] = useState(true);
   const [duration, setDuration] = useState(0);
   const [current, setCurrent] = useState(0);
@@ -130,7 +137,6 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
         events: {
           onReady: (e: any) => {
             if (cancelled) return;
-            setReady(true);
             setDuration(e.target.getDuration());
             setVolume(e.target.getVolume() || 100);
             setMuted(true);
@@ -143,7 +149,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
             if (e.data === YT.PlayerState.PLAYING) {
               setPlaying(true);
               setEnded(false);
-              setHasPlayedOnce(true);
+              pauseSeekDone.current = false;
               setDuration(e.target.getDuration());
               const avail = e.target.getAvailableQualityLevels?.() || [];
               setQualities(avail);
@@ -157,6 +163,10 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
               }
             } else if (e.data === YT.PlayerState.PAUSED) {
               setPlaying(false);
+              if (!pauseSeekDone.current) {
+                pauseSeekDone.current = true;
+                e.target.seekTo(e.target.getCurrentTime(), true);
+              }
             } else if (e.data === YT.PlayerState.ENDED) {
               setPlaying(false);
               setEnded(true);
@@ -177,11 +187,10 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       playerRef.current = null;
       unmuteOnFirstPlay.current = true;
       preferredQuality.current = "auto";
-      setReady(false);
       setPlaying(false);
       setEnded(false);
-      setHasPlayedOnce(false);
       setPosterVisible(true);
+      pauseSeekDone.current = false;
       setCurrent(0);
       setDuration(0);
       setMuted(true);
@@ -340,7 +349,10 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       ref={wrapperRef}
       onMouseMove={revealControls}
       onMouseLeave={revealControls}
-      onTouchStart={revealControls}
+      onTouchStart={() => {
+        touchRevealOnly.current = playing && !controlsVisible;
+        revealControls();
+      }}
       className="group relative aspect-video w-full overflow-hidden rounded-lg bg-black [&:fullscreen]:h-screen [&:fullscreen]:aspect-auto"
     >
       {/* YT iframe — pointer-events off so our shield catches everything */}
@@ -388,31 +400,15 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       <button
         type="button"
         aria-label="play-pause"
-        onClick={togglePlay}
+        onClick={() => {
+          if (touchRevealOnly.current) {
+            touchRevealOnly.current = false;
+            return;
+          }
+          togglePlay();
+        }}
         className="absolute inset-0 z-20 h-full w-full cursor-pointer bg-transparent"
       />
-
-      {/* Pause cover — full-frame opaque overlay whenever the player is ready but not
-          playing (paused mid-video). Masks YouTube's pause-screen related-videos grid,
-          which the edge mask bars never cover. Independent of showControls/controlsVisible
-          so the mouse-driven auto-hide timer can never reveal YouTube underneath on touch
-          devices. Sits below the click shield (z-20) so tapping still toggles play, and
-          below the control bar (z-30). Excludes the ended state (replay overlay handles it). */}
-      {ready && !posterVisible && !playing && !ended && (
-        <div className="pointer-events-none absolute inset-0 z-15 flex items-center justify-center bg-black">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={thumbUrl}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          {hasPlayedOnce && (
-            <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-black/60 text-white">
-              <BsPlayFill className="ml-1 text-3xl" />
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Replay overlay */}
       {ended && (
