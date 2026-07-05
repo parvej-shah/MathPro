@@ -17,8 +17,10 @@ interface Summary {
   total_spent: number;
   total_individual_spent: number;
   total_bundle_spent: number;
+  total_book_spent: number;
   total_courses_enrolled: number;
   total_bundles_purchased: number;
+  total_books_purchased: number;
   total_transactions: number;
 }
 
@@ -93,21 +95,43 @@ interface BundlePurchase {
   };
 }
 
+interface BookPurchase {
+  user_id: number;
+  book_id: number;
+  paid_amount: number;
+  transaction_id: string;
+  purchase_date: number;
+  fulfillment_status: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  ship_name?: string | null;
+  ship_phone?: string | null;
+  ship_address?: string | null;
+  ship_city?: string | null;
+  ship_postcode?: string | null;
+  id: number;
+  title: string;
+  book_image_url?: string | null;
+  original_price: number;
+  purchase_type: 'book';
+}
+
 interface Transaction {
   user_id: number;
   course_id?: number;
   bundle_id?: number;
+  book_id?: number;
   paid_amount: number;
   transaction_id: string;
   enrollment_date?: number;
   purchase_date?: number;
   transaction_date: number;
-  item_type: 'course' | 'bundle';
+  item_type: 'course' | 'bundle' | 'book';
   title: string;
-  purchase_type: 'individual' | 'bundle';
+  purchase_type: 'individual' | 'bundle' | 'book';
   original_price: number;
   course_url?: string;
   bundle_url?: string;
+  book_image_url?: string | null;
+  fulfillment_status?: 'pending' | 'shipped' | 'delivered' | 'cancelled';
   courses?: BundleCourse[];
   coupon?: Coupon | null;
 }
@@ -117,6 +141,7 @@ interface PaymentHistoryData {
   summary: Summary;
   individual_courses: IndividualCourse[];
   bundle_purchases: BundlePurchase[];
+  book_purchases: BookPurchase[];
   all_transactions: Transaction[];
 }
 
@@ -189,6 +214,7 @@ export type {
   Summary,
   IndividualCourse,
   BundlePurchase,
+  BookPurchase,
   Transaction,
   BundleCourse,
   Coupon,

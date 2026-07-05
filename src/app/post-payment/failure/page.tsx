@@ -5,13 +5,30 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { BsExclamationTriangle, BsArrowLeft } from "react-icons/bs";
 
+type ItemType = "course" | "bundle" | "book";
+
+function resolveItemType(searchParams: URLSearchParams): { itemType: ItemType | null; itemId: string | null } {
+  const typeParam = searchParams.get("type");
+  if (typeParam === "bundle" || typeParam === "book" || typeParam === "course") {
+    return { itemType: typeParam, itemId: searchParams.get("itemId") };
+  }
+
+  // Backward compat with the old param shape (no `type`, item-specific id keys).
+  const bundleId = searchParams.get("bundle_id") ?? searchParams.get("bundleId");
+  if (bundleId) return { itemType: "bundle", itemId: bundleId };
+
+  const courseId = searchParams.get("course_id") ?? searchParams.get("courseId");
+  if (courseId) return { itemType: "course", itemId: courseId };
+
+  return { itemType: null, itemId: null };
+}
+
 function FailurePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [countdown, setCountdown] = useState(10);
 
-  const bundleId = searchParams.get("bundle_id") ?? searchParams.get("bundleId");
-  const courseId = searchParams.get("course_id") ?? searchParams.get("courseId");
+  const { itemType, itemId } = resolveItemType(searchParams);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -19,10 +36,14 @@ function FailurePageContent() {
     }, 1000);
 
     const redirectTimer = setTimeout(() => {
-      if (bundleId) {
-        router.push(`/bundle/${bundleId}`);
+      if (itemType === "bundle" && itemId) {
+        router.push(`/combos/${itemId}`);
+      } else if (itemType === "book" && itemId) {
+        router.push(`/books/${itemId}`);
+      } else if (itemType === "course" && itemId) {
+        router.push(`/course-details/${itemId}`);
       } else {
-        router.push(`/course-details/${courseId ?? "12"}`);
+        router.push("/courses");
       }
     }, 10000);
 
@@ -30,7 +51,9 @@ function FailurePageContent() {
       clearInterval(timer);
       clearTimeout(redirectTimer);
     };
-  }, [router, bundleId, courseId]);
+  }, [router, itemType, itemId]);
+
+  const itemLabel = itemType === "bundle" ? "Combo টি" : itemType === "book" ? "বইটি" : "কোর্সটি";
 
   return (
     <div className="overflow-x-hidden">
@@ -48,7 +71,7 @@ function FailurePageContent() {
 
           {/* Sub-heading */}
           <p className="text-xl font-semibold text-foreground">
-            {bundleId ? "Combo টি কেনা হয়নি" : "কোর্সটি কেনা হয়নি"}
+            {itemLabel} কেনা হয়নি
           </p>
 
           {/* Body */}
@@ -59,25 +82,32 @@ function FailurePageContent() {
 
           {/* Actions */}
           <div className="space-y-3 pt-2">
-            {bundleId ? (
-              <Link href={`/combos/${bundleId}`} className="block">
+            {itemType === "bundle" && itemId ? (
+              <Link href={`/combos/${itemId}`} className="block">
                 <button className="w-full bg-linear-to-r from-primary to-teal text-white py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                   <BsArrowLeft />
                   Combo তে ফিরে যাও
                 </button>
               </Link>
-            ) : (
-              <Link href={`/course-details/${courseId}`} className="block">
+            ) : itemType === "book" && itemId ? (
+              <Link href={`/books/${itemId}`} className="block">
+                <button className="w-full bg-linear-to-r from-primary to-teal text-white py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                  <BsArrowLeft />
+                  বইয়ের পাতায় ফিরে যাও
+                </button>
+              </Link>
+            ) : itemId ? (
+              <Link href={`/course-details/${itemId}`} className="block">
                 <button className="w-full bg-linear-to-r from-primary to-teal text-white py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                   <BsArrowLeft />
                   কোর্সে ফিরে যাও
                 </button>
               </Link>
-            )}
+            ) : null}
 
-            <Link href="/courses" className="block">
+            <Link href={itemType === "book" ? "/books" : "/courses"} className="block">
               <button className="w-full border-2 border-border text-foreground hover:bg-muted transition-colors py-3 px-6 rounded-xl font-semibold">
-                সকল কোর্স দেখো
+                {itemType === "book" ? "সকল বই দেখো" : "সকল কোর্স দেখো"}
               </button>
             </Link>
           </div>

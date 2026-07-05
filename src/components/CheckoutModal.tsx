@@ -29,7 +29,7 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProceed: (bookSelection: BookSelection | null) => void;
-  type: "bundle" | "course";
+  type: "bundle" | "course" | "book";
   title: string;
   price: number;
   originalPrice?: number;
@@ -107,7 +107,9 @@ export default function CheckoutModal({
   });
   const [shippingErrors, setShippingErrors] = useState<Partial<Record<"name" | "phone" | "address", string>>>({});
 
+  const isBookCheckout = type === "book";
   const hasAttachedBooks = !!attachedBooks?.length;
+  const showShippingForm = isBookCheckout || includeBooks;
 
   useEffect(() => {
     if (profile) {
@@ -139,7 +141,7 @@ export default function CheckoutModal({
   }, [isOpen, profile, profileLoading]);
 
   useEffect(() => {
-    if (!includeBooks) return;
+    if (!showShippingForm) return;
 
     const defaults = getShippingDefaults(profile);
     setShipping((current) => ({
@@ -149,7 +151,7 @@ export default function CheckoutModal({
       city: current.city,
       postcode: current.postcode,
     }));
-  }, [includeBooks, profile]);
+  }, [showShippingForm, profile]);
 
   const isPhoneDisabled = (): boolean => {
     if (!profile) return false;
@@ -172,14 +174,17 @@ export default function CheckoutModal({
     } else if (!formData.phone.trim()) {
       newErrors.phone = "ফোন নম্বর প্রয়োজন";
     }
-    if (!formData.schoolCollege.trim()) newErrors.schoolCollege = "স্কুল / কলেজ প্রয়োজন";
-    if (!formData.classLevel) newErrors.classLevel = "ক্লাস বেছে নিন";
+    // A standalone book purchase has no course/class context to collect.
+    if (!isBookCheckout) {
+      if (!formData.schoolCollege.trim()) newErrors.schoolCollege = "স্কুল / কলেজ প্রয়োজন";
+      if (!formData.classLevel) newErrors.classLevel = "ক্লাস বেছে নিন";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validateShipping = (): boolean => {
-    if (!includeBooks) return true;
+    if (!showShippingForm) return true;
     const newErrors: Partial<Record<"name" | "phone" | "address", string>> = {};
     if (!shipping.name.trim()) newErrors.name = "নাম প্রয়োজন";
     if (!shipping.phone.trim()) newErrors.phone = "ফোন নম্বর প্রয়োজন";
@@ -208,8 +213,10 @@ export default function CheckoutModal({
       const updateData: Record<string, string | null | undefined> = {
         name: formData.name.trim(),
         phone: isPhoneDisabled() ? undefined : formData.phone.trim(),
-        schoolCollege: formData.schoolCollege.trim(),
-        classLevel: formData.classLevel,
+        ...(!isBookCheckout && {
+          schoolCollege: formData.schoolCollege.trim(),
+          classLevel: formData.classLevel,
+        }),
       };
       if (!isPhoneDisabled() && formData.phone.trim()) updateData.phone = formData.phone.trim();
       const response = await axios.put(`${BACKEND_URL}/user/profile`, updateData, {
@@ -218,7 +225,7 @@ export default function CheckoutModal({
       if (response.data.success) {
         await refetch();
         onClose();
-        const bookSelection: BookSelection | null = includeBooks
+        const bookSelection: BookSelection | null = showShippingForm
           ? {
               include: true,
               shipping: {
@@ -266,7 +273,7 @@ export default function CheckoutModal({
         overlayClassName="backdrop-blur-sm"
       >
         <DialogTitle render={<div />} className="sr-only">
-          {type === "bundle" ? "Bundle ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+          {type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
         </DialogTitle>
 
         {/* Close button */}
@@ -296,7 +303,7 @@ export default function CheckoutModal({
                 </div>
                 <div>
                   <p className="text-base sm:text-lg font-bold leading-tight">
-                    {type === "bundle" ? "Bundle ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+                    {type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
                   </p>
                   <p className="text-white/50 text-xs hidden sm:block">অনুগ্রহ করে আপনার তথ্য যাচাই করুন</p>
                 </div>
@@ -309,7 +316,7 @@ export default function CheckoutModal({
               <div className="rounded-xl bg-white/5 border border-white/10 p-4 space-y-3">
                 <p className="font-semibold text-white/90 text-sm leading-snug">{title}</p>
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <span>{type === "bundle" && courseCount ? `${courseCount}টি কোর্স` : "কোর্স"}</span>
+                  <span>{type === "bundle" && courseCount ? `${courseCount}টি কোর্স` : type === "book" ? "বই" : "কোর্স"}</span>
                   {originalPrice && (
                     <span className="line-through">{formatPrice(originalPrice)}</span>
                   )}
@@ -455,43 +462,115 @@ export default function CheckoutModal({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    {!isBookCheckout && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">
+                            স্কুল / কলেজ <span className="text-destructive">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.schoolCollege}
+                            onChange={(e) => handleInputChange("schoolCollege", e.target.value)}
+                            placeholder="আপনার প্রতিষ্ঠান"
+                            className={FIELD_CLASS(!!errors.schoolCollege)}
+                            required
+                          />
+                          {errors.schoolCollege && <p className="text-destructive text-xs mt-1">{errors.schoolCollege}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">
+                            ক্লাস <span className="text-destructive">*</span>
+                          </label>
+                          <select
+                            value={formData.classLevel}
+                            onChange={(e) => handleInputChange("classLevel", e.target.value)}
+                            className={FIELD_CLASS(!!errors.classLevel)}
+                            required
+                          >
+                            <option value="">বেছে নিন</option>
+                            <option value="JSC">JSC</option>
+                            <option value="SSC">SSC</option>
+                            <option value="HSC">HSC</option>
+                          </select>
+                          {errors.classLevel && <p className="text-destructive text-xs mt-1">{errors.classLevel}</p>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Standalone book purchase: shipping is mandatory, no checkbox needed */}
+                  {isBookCheckout && (
+                    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 sm:p-4 space-y-3">
+                      <p className="text-sm font-semibold text-foreground">বই পাঠানোর তথ্য</p>
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">
+                            নাম <span className="text-destructive">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={shipping.name}
+                            onChange={(e) => handleShippingChange("name", e.target.value)}
+                            placeholder="প্রাপকের নাম"
+                            className={FIELD_CLASS(!!shippingErrors.name)}
+                          />
+                          {shippingErrors.name && <p className="text-destructive text-xs mt-1">{shippingErrors.name}</p>}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">
+                            ফোন নম্বর <span className="text-destructive">*</span>
+                          </label>
+                          <input
+                            type="tel"
+                            value={shipping.phone}
+                            onChange={(e) => handleShippingChange("phone", e.target.value)}
+                            placeholder="01XXXXXXXXX"
+                            className={FIELD_CLASS(!!shippingErrors.phone)}
+                          />
+                          {shippingErrors.phone && <p className="text-destructive text-xs mt-1">{shippingErrors.phone}</p>}
+                        </div>
+                      </div>
                       <div>
                         <label className="block text-xs font-semibold text-foreground mb-1.5">
-                          স্কুল / কলেজ <span className="text-destructive">*</span>
+                          ঠিকানা <span className="text-destructive">*</span>
                         </label>
                         <input
                           type="text"
-                          value={formData.schoolCollege}
-                          onChange={(e) => handleInputChange("schoolCollege", e.target.value)}
-                          placeholder="আপনার প্রতিষ্ঠান"
-                          className={FIELD_CLASS(!!errors.schoolCollege)}
-                          required
+                          value={shipping.address}
+                          onChange={(e) => handleShippingChange("address", e.target.value)}
+                          placeholder="বাড়ি/রোড/এলাকা"
+                          className={FIELD_CLASS(!!shippingErrors.address)}
                         />
-                        {errors.schoolCollege && <p className="text-destructive text-xs mt-1">{errors.schoolCollege}</p>}
+                        {shippingErrors.address && <p className="text-destructive text-xs mt-1">{shippingErrors.address}</p>}
                       </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-foreground mb-1.5">
-                          ক্লাস <span className="text-destructive">*</span>
-                        </label>
-                        <select
-                          value={formData.classLevel}
-                          onChange={(e) => handleInputChange("classLevel", e.target.value)}
-                          className={FIELD_CLASS(!!errors.classLevel)}
-                          required
-                        >
-                          <option value="">বেছে নিন</option>
-                          <option value="JSC">JSC</option>
-                          <option value="SSC">SSC</option>
-                          <option value="HSC">HSC</option>
-                        </select>
-                        {errors.classLevel && <p className="text-destructive text-xs mt-1">{errors.classLevel}</p>}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">শহর</label>
+                          <input
+                            type="text"
+                            value={shipping.city}
+                            onChange={(e) => handleShippingChange("city", e.target.value)}
+                            placeholder="শহর"
+                            className={FIELD_CLASS(false)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-foreground mb-1.5">পোস্ট কোড</label>
+                          <input
+                            type="text"
+                            value={shipping.postcode}
+                            onChange={(e) => handleShippingChange("postcode", e.target.value)}
+                            placeholder="পোস্ট কোড"
+                            className={FIELD_CLASS(false)}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Books inclusion */}
-                  {hasAttachedBooks && (
+                  {/* Books inclusion (course/bundle addon flow only) */}
+                  {!isBookCheckout && hasAttachedBooks && (
                     <div
                       className={`rounded-xl border p-3 sm:p-4 space-y-3 transition-all ${
                         includeBooks
@@ -631,7 +710,7 @@ export default function CheckoutModal({
                         className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
                         গোপনীয়তা নীতি
                       </a>{" "}
-                      সম্মত এবং বুঝতে পেরেছি যে এটি একটি ডিজিটাল পণ্য এবং ক্রয়ের পর রিফান্ড করা যাবে না।
+                      সম্মত এবং বুঝতে পেরেছি যে {isBookCheckout ? "ক্রয়ের পর রিফান্ড করা যাবে না।" : "এটি একটি ডিজিটাল পণ্য এবং ক্রয়ের পর রিফান্ড করা যাবে না।"}
                     </span>
                   </label>
                 </div>

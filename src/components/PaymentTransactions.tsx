@@ -16,6 +16,9 @@ const PaymentTransactions: React.FC<PaymentTransactionsProps> = ({ transactions 
     if (transaction.item_type === 'bundle' && transaction.bundle_id != null) {
       return `/combos/${transaction.bundle_url || transaction.bundle_id}`;
     }
+    if (transaction.item_type === 'book' && transaction.book_id != null) {
+      return `/books/${transaction.book_id}`;
+    }
     return '#';
   };
 
@@ -34,13 +37,15 @@ const PaymentTransactions: React.FC<PaymentTransactionsProps> = ({ transactions 
   };
 
   const getTransactionLabel = (itemType: string) => {
-    return itemType === 'course' ? 'কোর্স' : 'কম্বো';
+    if (itemType === 'course') return 'কোর্স';
+    if (itemType === 'book') return 'বই';
+    return 'কম্বো';
   };
 
   const getTransactionColor = (itemType: string) => {
-    return itemType === 'course'
-      ? 'bg-info/15 text-info border-info/30'
-      : 'bg-accent/15 text-accent border-accent/30';
+    if (itemType === 'course') return 'bg-info/15 text-info border-info/30';
+    if (itemType === 'book') return 'bg-warning/15 text-warning border-warning/30';
+    return 'bg-accent/15 text-accent border-accent/30';
   };
 
   return (
