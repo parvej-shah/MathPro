@@ -150,6 +150,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
           onStateChange: (e: any) => {
             const YT = window.YT;
             setBuffering(e.data === YT.PlayerState.BUFFERING);
+            if (e.data === YT.PlayerState.BUFFERING) setControlsVisible(true);
             if (e.data === YT.PlayerState.PLAYING) {
               setPlaying(true);
               setEnded(false);
@@ -228,13 +229,16 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
 
   useEffect(() => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    if (playing) {
+    // No timer while buffering — controls hold through the stall (onStateChange sets
+    // controlsVisible), then the timer restarts here on resume so they linger 4.5s
+    // instead of vanishing instantly.
+    if (playing && !buffering) {
       hideTimerRef.current = setTimeout(() => setControlsVisible(false), 4500);
     }
     return () => {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
-  }, [playing]);
+  }, [playing, buffering]);
 
   const showControls = !playing || controlsVisible || buffering;
 
@@ -400,6 +404,16 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
           showControls ? "opacity-100" : "opacity-0"
         }`}
       />
+
+      {/* Buffering cover — YouTube redraws its full chrome (title, avatar, logo) while
+          buffering and it's taller than the mask bars, so cover the whole surface with
+          an opaque loading state of our own. The frame isn't advancing during a stall,
+          so nothing useful is hidden. */}
+      {buffering && !posterVisible && (
+        <div className="absolute inset-0 z-15 flex items-center justify-center bg-black">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/25 border-t-white" />
+        </div>
+      )}
 
       {/* Full-surface shield — swallows clicks on YouTube chrome */}
       <button
