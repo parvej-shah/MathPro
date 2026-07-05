@@ -112,6 +112,9 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   const [speed, setSpeed] = useState(1);
   const [availableSpeeds, setAvailableSpeeds] = useState<number[]>([0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]);
   const [controlsVisible, setControlsVisible] = useState(true);
+  // While buffering (slow network) YouTube redraws its full chrome — title bar,
+  // avatar, logo. Force the mask bars visible for the whole buffering window.
+  const [buffering, setBuffering] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -146,6 +149,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
           },
           onStateChange: (e: any) => {
             const YT = window.YT;
+            setBuffering(e.data === YT.PlayerState.BUFFERING);
             if (e.data === YT.PlayerState.PLAYING) {
               setPlaying(true);
               setEnded(false);
@@ -191,6 +195,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       setEnded(false);
       setPosterVisible(true);
       pauseSeekDone.current = false;
+      setBuffering(false);
       setCurrent(0);
       setDuration(0);
       setMuted(true);
@@ -231,7 +236,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
     };
   }, [playing]);
 
-  const showControls = !playing || controlsVisible;
+  const showControls = !playing || controlsVisible || buffering;
 
   const dismissPoster = useCallback(() => {
     const p = playerRef.current;
