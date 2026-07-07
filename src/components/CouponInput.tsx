@@ -32,6 +32,7 @@ const Spinner = ({ className = "size-4" }: { className?: string }) => (
 interface CouponInputProps {
   courseId?: number;
   bundleId?: number;
+  bookId?: number;
   originalPrice: number;
   userId?: number;
   onCouponApplied: (discountInfo: CouponApplyResponse["data"]) => void;
@@ -43,6 +44,7 @@ interface CouponInputProps {
 export default function CouponInput({
   courseId,
   bundleId,
+  bookId,
   originalPrice,
   userId,
   onCouponApplied,
@@ -100,6 +102,7 @@ export default function CouponInput({
         courseId,
         bundleId,
         userId,
+        bookId,
       );
 
       if (!validation.valid) {
@@ -115,6 +118,7 @@ export default function CouponInput({
         courseId,
         bundleId,
         userId,
+        bookId,
       );
 
       if (applyResult.success && applyResult.data) {

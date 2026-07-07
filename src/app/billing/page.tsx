@@ -9,6 +9,7 @@ import PaymentSummary from "@/components/PaymentSummary";
 import PaymentTransactions from "@/components/PaymentTransactions";
 import PaymentCourses from "@/components/PaymentCourses";
 import PaymentBundles from "@/components/PaymentBundles";
+import PaymentBooks from "@/components/PaymentBooks";
 
 export default function BillingPage() {
   const [mounted, setMounted] = useState(false);
@@ -71,6 +72,7 @@ export default function BillingPage() {
           <PaymentTransactions transactions={historyData.all_transactions} />
           <PaymentCourses courses={historyData.individual_courses} />
           <PaymentBundles bundles={historyData.bundle_purchases} />
+          <PaymentBooks books={historyData.book_purchases} />
         </div>
       </main>
     </DashboardLayout>

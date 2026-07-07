@@ -3,10 +3,11 @@ import { FaCheckCircle } from "react-icons/fa";
 
 interface SuccessHeaderProps {
     title: string;
-    type: "bundle" | "course";
+    type: "bundle" | "course" | "book";
 }
 
 const SuccessHeader: React.FC<SuccessHeaderProps> = ({ title, type }) => {
+    const itemLabel = type === "bundle" ? "কোর্স কম্বো" : type === "book" ? "বই" : "কোর্স";
     return (
         <div className="text-center animate-slideUp relative z-20">
             {/* Simple Success Badge */}
@@ -21,7 +22,7 @@ const SuccessHeader: React.FC<SuccessHeaderProps> = ({ title, type }) => {
                 অভিনন্দন!
             </h1>
             <p className="text-xl lg:text-2xl text-foreground font-semibold mb-2">
-                তোমার {type === "bundle" ? "কোর্স কম্বো" : "কোর্স"} কেনা সফল হয়েছে
+                তোমার {itemLabel} কেনা সফল হয়েছে
             </p>
             <p className="text-lg text-muted-foreground">
                 {title}

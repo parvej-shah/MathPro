@@ -13,11 +13,14 @@ function CentralizedSuccessPageContent() {
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
 
-  const type = searchParams.get("type") === "bundle" ? "bundle" : "course";
+  const typeParam = searchParams.get("type");
+  const type = typeParam === "bundle" ? "bundle" : typeParam === "book" ? "book" : "course";
   const title =
     type === "bundle"
       ? "তোমার কেনা কম্বো এখন ড্যাশবোর্ডে প্রস্তুত"
-      : "তোমার কেনা কোর্স এখন ড্যাশবোর্ডে প্রস্তুত";
+      : type === "book"
+        ? "তোমার বইয়ের অর্ডার প্রসেস হচ্ছে, শীঘ্রই পাঠানো হবে"
+        : "তোমার কেনা কোর্স এখন ড্যাশবোর্ডে প্রস্তুত";
 
   useEffect(() => {
     setMounted(true);

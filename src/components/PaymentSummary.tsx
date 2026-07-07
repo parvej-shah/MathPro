@@ -1,5 +1,5 @@
 import React from "react";
-import { BsWallet2, BsBook, BsBoxSeam, BsArrowRepeat } from "react-icons/bs";
+import { BsWallet2, BsMortarboard, BsBook, BsBoxSeam, BsArrowRepeat } from "react-icons/bs";
 import { Summary, UserInfo } from "../hooks/usePaymentHistory";
 import { englishToBanglaNumbers } from "@/helpers";
 
@@ -48,12 +48,17 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
     {
       label: "ইন্ডিভিজুয়াল কোর্স",
       value: englishToBanglaNumbers(summary.total_courses_enrolled),
-      icon: <BsBook />,
+      icon: <BsMortarboard />,
     },
     {
       label: "কম্বো",
       value: englishToBanglaNumbers(summary.total_bundles_purchased),
       icon: <BsBoxSeam />,
+    },
+    {
+      label: "বই",
+      value: englishToBanglaNumbers(summary.total_books_purchased),
+      icon: <BsBook />,
     },
     {
       label: "মোট ট্রানজেকশন",
@@ -112,6 +117,12 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
                 <span className="text-muted-foreground">কম্বো:</span>
                 <span className="font-semibold text-foreground">
                   {formatCurrency(summary.total_bundle_spent)}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center">
+                <span className="text-muted-foreground">বই:</span>
+                <span className="font-semibold text-foreground">
+                  {formatCurrency(summary.total_book_spent)}
                 </span>
               </div>
               <div className="border-t border-border pt-2 flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-center">

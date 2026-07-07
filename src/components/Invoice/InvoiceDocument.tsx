@@ -71,7 +71,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ transaction, userInfo
             <td className="py-3">
               <p className="font-semibold text-slate-900">{transaction.title}</p>
               <p className="text-xs text-slate-500">
-                {transaction.item_type === "bundle" ? "কম্বো" : "কোর্স"}
+                {transaction.item_type === "bundle" ? "কম্বো" : transaction.item_type === "book" ? "বই" : "কোর্স"}
               </p>
               {transaction.item_type === "bundle" && transaction.courses && transaction.courses.length > 0 && (
                 <ul className="mt-2 ml-4 list-disc text-xs text-slate-500 space-y-1">

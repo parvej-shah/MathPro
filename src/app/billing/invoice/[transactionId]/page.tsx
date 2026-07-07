@@ -38,7 +38,13 @@ const MOCK_USER_INFO: UserInfo = {
   profile: { email: "test@example.com", address: "ঢাকা, বাংলাদেশ" },
 };
 
-function PurchaseSuccessBanner({ title }: { title: string }) {
+function PurchaseSuccessBanner({ title, itemType }: { title: string; itemType?: "course" | "bundle" | "book" }) {
+  const heading =
+    itemType === "bundle"
+      ? "তোমার কম্বো কেনা সফল হয়েছে"
+      : itemType === "book"
+        ? "তোমার বইয়ের অর্ডার সফল হয়েছে"
+        : "তোমার কোর্স কেনা সফল হয়েছে";
   return (
     <section className="print:hidden rounded-[28px] border border-primary/20 bg-card px-6 py-8 sm:px-8 sm:py-10 shadow-[0_18px_50px_rgba(0,0,0,0.18)] overflow-hidden relative">
       <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/70 to-transparent" />
@@ -47,7 +53,7 @@ function PurchaseSuccessBanner({ title }: { title: string }) {
           অভিনন্দন!
         </p>
         <h1 className="mt-4 text-2xl sm:text-4xl font-extrabold text-foreground">
-          তোমার কোর্স কেনা সফল হয়েছে
+          {heading}
         </h1>
         <p className="mt-3 text-base sm:text-xl text-muted-foreground">
           {title}
@@ -140,7 +146,7 @@ export default function InvoicePage() {
               )}
             </div>
 
-            <PurchaseSuccessBanner title={MOCK_TRANSACTION.title} />
+            <PurchaseSuccessBanner title={MOCK_TRANSACTION.title} itemType={MOCK_TRANSACTION.item_type} />
             <InvoiceDocument transaction={MOCK_TRANSACTION} userInfo={MOCK_USER_INFO} />
           </div>
         </main>
@@ -199,7 +205,7 @@ export default function InvoicePage() {
             )}
           </div>
 
-          <PurchaseSuccessBanner title={transaction.title} />
+          <PurchaseSuccessBanner title={transaction.title} itemType={transaction.item_type} />
           <InvoiceDocument transaction={transaction} userInfo={historyData.user_info} />
         </div>
       </main>

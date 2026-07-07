@@ -56,13 +56,14 @@ const getCouponErrorMessage = (error: unknown, fallback: string): string => {
 };
 
 /**
- * Validate a coupon code for a course or bundle
+ * Validate a coupon code for a course, bundle, or book
  */
 export const validateCoupon = async (
   couponCode: string,
   courseId?: number,
   bundleId?: number,
-  userId?: number
+  userId?: number,
+  bookId?: number
 ): Promise<CouponValidationResponse> => {
   try {
     if (!couponCode.trim()) {
@@ -72,17 +73,19 @@ export const validateCoupon = async (
       };
     }
 
-    if (!courseId && !bundleId) {
+    const providedCount = [courseId, bundleId, bookId].filter(Boolean).length;
+
+    if (providedCount === 0) {
       return {
         valid: false,
-        error: "Course ID or Bundle ID is required",
+        error: "Course ID, Bundle ID or Book ID is required",
       };
     }
 
-    if (courseId && bundleId) {
+    if (providedCount > 1) {
       return {
         valid: false,
-        error: "Provide either course_id or bundle_id, not both",
+        error: "Provide only one of course_id, bundle_id or book_id",
       };
     }
 
@@ -90,6 +93,7 @@ export const validateCoupon = async (
       coupon_code: string;
       course_id?: number;
       bundle_id?: number;
+      book_id?: number;
       user_id?: number;
     } = {
       coupon_code: couponCode.trim(),
@@ -101,6 +105,10 @@ export const validateCoupon = async (
 
     if (bundleId) {
       requestBody.bundle_id = bundleId;
+    }
+
+    if (bookId) {
+      requestBody.book_id = bookId;
     }
 
     if (userId) {
@@ -138,7 +146,8 @@ export const applyCoupon = async (
   originalPrice: number,
   courseId?: number,
   bundleId?: number,
-  userId?: number
+  userId?: number,
+  bookId?: number
 ): Promise<CouponApplyResponse> => {
   try {
     if (!couponCode.trim()) {
@@ -155,17 +164,19 @@ export const applyCoupon = async (
       };
     }
 
-    if (!courseId && !bundleId) {
+    const providedCount = [courseId, bundleId, bookId].filter(Boolean).length;
+
+    if (providedCount === 0) {
       return {
         success: false,
-        error: "Course ID or Bundle ID is required",
+        error: "Course ID, Bundle ID or Book ID is required",
       };
     }
 
-    if (courseId && bundleId) {
+    if (providedCount > 1) {
       return {
         success: false,
-        error: "Provide either course_id or bundle_id, not both",
+        error: "Provide only one of course_id, bundle_id or book_id",
       };
     }
 
@@ -173,6 +184,7 @@ export const applyCoupon = async (
       coupon_code: string;
       course_id?: number;
       bundle_id?: number;
+      book_id?: number;
       user_id?: number;
     } = {
       coupon_code: couponCode.trim(),
@@ -184,6 +196,10 @@ export const applyCoupon = async (
 
     if (bundleId) {
       requestBody.bundle_id = bundleId;
+    }
+
+    if (bookId) {
+      requestBody.book_id = bookId;
     }
 
     if (userId) {
