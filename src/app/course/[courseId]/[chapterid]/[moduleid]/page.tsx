@@ -76,6 +76,9 @@ export default function CourseDetailsPage() {
     showQuizAnswer,
     attemptChecked,
     justSubmitted,
+    submitting,
+    submitError,
+    clearSubmitError,
     submitQuiz: submitQuizBase,
   } = useQuiz(activeModule, submitProgress);
 
@@ -94,9 +97,12 @@ export default function CourseDetailsPage() {
     clearQuizTimer,
   } = useQuizTimer(activeModule, showQuizAnswer, onTimerExpire, attemptChecked);
 
-  const submitQuiz = useCallback(() => {
-    submitQuizBase();
-    clearQuizTimer();
+  // Only stop the countdown once the server has actually recorded the attempt.
+  // Clearing it unconditionally meant a failed submit silently ended the exam
+  // with nothing saved and no way back.
+  const submitQuiz = useCallback(async () => {
+    const result = await submitQuizBase();
+    if (result.submitted) clearQuizTimer();
   }, [submitQuizBase, clearQuizTimer]);
 
   // ── Discussions ───────────────────────────────────────────────────────────
@@ -414,6 +420,9 @@ export default function CourseDetailsPage() {
                       quizVerdict={quizVerdict}
                       showQuizAnswer={showQuizAnswer}
                       justSubmitted={justSubmitted}
+                      submitting={submitting}
+                      submitError={submitError}
+                      clearSubmitError={clearSubmitError}
                       timeRemaining={timeRemaining}
                       timerActive={timerActive}
                       timerExpired={timerExpired}

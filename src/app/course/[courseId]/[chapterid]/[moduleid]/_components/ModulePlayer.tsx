@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useState } from "react";
 import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import ModuleUpcoming from "@/components/ModuleUpcoming";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
@@ -28,6 +28,9 @@ interface ModulePlayerProps {
   quizVerdict: boolean[];
   showQuizAnswer: boolean;
   justSubmitted: boolean;
+  submitting: boolean;
+  submitError: string | null;
+  clearSubmitError: () => void;
   timeRemaining: number;
   timerActive: boolean;
   timerExpired: boolean;
@@ -35,7 +38,7 @@ interface ModulePlayerProps {
   startQuiz: () => void;
   formatTime: (s: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
-  submitQuiz: () => void;
+  submitQuiz: () => void | Promise<void>;
 }
 
 const ModulePlayer = memo(function ModulePlayer({
@@ -45,6 +48,9 @@ const ModulePlayer = memo(function ModulePlayer({
   quizVerdict,
   showQuizAnswer,
   justSubmitted,
+  submitting,
+  submitError,
+  clearSubmitError,
   timeRemaining,
   timerActive,
   timerExpired,
@@ -79,6 +85,17 @@ const ModulePlayer = memo(function ModulePlayer({
 
   const liveStatus = activeModule?.live_status;
   const isLiveOverlay = liveStatus === "LIVE" || liveStatus === "SCHEDULED";
+
+  // Submitting is irreversible (one attempt only), so both submit buttons route
+  // through a confirm step that names how many questions are still unanswered.
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const unansweredCount = quizQuestions.length - answeredCount;
+
+  // Attempts made before the quiz_attempt table existed have a score but no
+  // stored answers/verdict. Rendering that as a normal reveal would mark every
+  // question wrong and show 0% — show the "already submitted" notice instead.
+  const isLegacyAttempt =
+    showQuizAnswer && !justSubmitted && quizQuestions.length > 0 && quizVerdict.length === 0;
 
   return (
     <div className="mt-8">
@@ -288,10 +305,11 @@ const ModulePlayer = memo(function ModulePlayer({
                     <span className="hidden sm:inline"> উত্তর দেওয়া</span>
                   </span>
                   <button
-                    onClick={submitQuiz}
-                    className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 sm:px-4 sm:text-sm"
+                    onClick={() => setConfirmOpen(true)}
+                    disabled={submitting}
+                    className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm"
                   >
-                    জমা দাও
+                    {submitting ? "জমা হচ্ছে…" : "জমা দাও"}
                   </button>
                 </div>
               </div>
@@ -318,14 +336,33 @@ const ModulePlayer = memo(function ModulePlayer({
                 </svg>
                 <div>
                   <p className="text-xl font-bold text-destructive">সময় শেষ!</p>
-                  <p className="text-sm text-muted-foreground">তোমার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়ে গেছে</p>
+                  {/* Only claim the auto-submit worked when it actually did —
+                      submitError means nothing was recorded. */}
+                  <p className="text-sm text-muted-foreground">
+                    {submitError
+                      ? "উত্তরপত্র জমা দেওয়া যায়নি, নিচে আবার চেষ্টা করো"
+                      : "তোমার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়ে গেছে"}
+                  </p>
                 </div>
               </div>
             </div>
           )}
 
+          {/* Legacy attempt — submitted, but the per-question record predates
+              quiz_attempt, so only the fact of submission is shown. */}
+          {isLegacyAttempt && (
+            <div className="mb-6 rounded-xl border border-primary/30 bg-primary/10 px-5 py-4">
+              <p className="text-lg font-semibold text-foreground">
+                তুমি এই পরীক্ষাটি আগেই জমা দিয়েছো
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                এই পরীক্ষার বিস্তারিত উত্তরপত্র সংরক্ষিত নেই, তাই প্রশ্নভিত্তিক ফলাফল দেখানো যাচ্ছে না।
+              </p>
+            </div>
+          )}
+
           {/* Score card (returning user) */}
-          {showQuizAnswer && (
+          {showQuizAnswer && !isLegacyAttempt && (
             <div className="mb-6 flex items-center gap-4 rounded-xl border border-primary/30 bg-primary/10 px-5 py-4">
               <div className="relative w-14 h-14 shrink-0">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -353,8 +390,9 @@ const ModulePlayer = memo(function ModulePlayer({
             </div>
           )}
 
-          {/* Quiz questions */}
-          {(activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => {
+          {/* Quiz questions — suppressed for legacy attempts, where there is no
+              stored selection or verdict to display against them. */}
+          {!isLegacyAttempt && (activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => {
             const correctAnswerRaw = decryptString(
               String(quiz.answer || quiz.correct_answer || ""),
               process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
@@ -476,18 +514,70 @@ const ModulePlayer = memo(function ModulePlayer({
           {!showQuizAnswer && (
             <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
               <button
-                onClick={submitQuiz}
-                type="submit"
-                className="w-full rounded-xl bg-primary px-8 py-3 text-base font-bold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 focus:ring ring-primary/30 sm:w-auto sm:text-lg"
+                onClick={() => setConfirmOpen(true)}
+                type="button"
+                disabled={submitting}
+                className="w-full rounded-xl bg-primary px-8 py-3 text-base font-bold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 focus:ring ring-primary/30 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:text-lg"
               >
-                উত্তরপত্র জমা দাও
+                {submitting ? "জমা হচ্ছে…" : "উত্তরপত্র জমা দাও"}
               </button>
-              {answeredCount < quizQuestions.length && (
+              {unansweredCount > 0 && (
                 <p className="text-center text-sm text-muted-foreground sm:text-left">
-                  {englishToBanglaNumbers(quizQuestions.length - answeredCount)} টি প্রশ্নের
+                  {englishToBanglaNumbers(unansweredCount)} টি প্রশ্নের
                   উত্তর এখনো বাকি
                 </p>
               )}
+            </div>
+          )}
+
+          {/* Submit failed outright — the attempt was NOT recorded, so the exam
+              stays open and the student can retry. */}
+          {submitError && !showQuizAnswer && (
+            <div
+              role="alert"
+              className="mt-4 flex flex-col gap-3 rounded-xl border border-destructive/40 bg-destructive/10 p-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <p className="text-sm font-medium text-destructive">{submitError}</p>
+              <button
+                onClick={() => { clearSubmitError(); submitQuiz(); }}
+                disabled={submitting}
+                className="shrink-0 rounded-lg bg-destructive px-4 py-2 text-sm font-semibold text-white duration-150 ease-in-out hover:bg-destructive/85 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                আবার চেষ্টা করো
+              </button>
+            </div>
+          )}
+
+          {/* Confirm — one attempt only, so make the student acknowledge it. */}
+          {confirmOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+              <div className="w-full max-w-sm rounded-2xl border border-border/60 bg-card p-6 shadow-2xl">
+                <h4 className="mb-2 text-lg font-bold text-foreground">
+                  উত্তরপত্র জমা দেবে?
+                </h4>
+                <p className="mb-1 text-sm text-muted-foreground">
+                  একবার জমা দিলে আর পরিবর্তন করা যাবে না।
+                </p>
+                {unansweredCount > 0 && (
+                  <p className="mb-1 text-sm font-medium text-destructive">
+                    {englishToBanglaNumbers(unansweredCount)} টি প্রশ্নের উত্তর এখনো বাকি।
+                  </p>
+                )}
+                <div className="mt-5 flex gap-3">
+                  <button
+                    onClick={() => setConfirmOpen(false)}
+                    className="w-full rounded-xl bg-muted/30 py-2.5 font-semibold text-foreground duration-150 ease-in-out hover:opacity-70"
+                  >
+                    ফিরে যাও
+                  </button>
+                  <button
+                    onClick={() => { setConfirmOpen(false); submitQuiz(); }}
+                    className="w-full rounded-xl bg-primary py-2.5 font-bold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85"
+                  >
+                    জমা দাও
+                  </button>
+                </div>
+              </div>
             </div>
           )}
           </>
