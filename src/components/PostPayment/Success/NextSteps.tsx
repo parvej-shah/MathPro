@@ -2,7 +2,19 @@ import React from "react";
 import Link from "next/link";
 import { FaPlay } from "react-icons/fa";
 
-const NextSteps: React.FC = () => {
+interface NextStepsProps {
+  type?: "bundle" | "course" | "book";
+}
+
+const NextSteps: React.FC<NextStepsProps> = ({ type = "course" }) => {
+  const isBook = type === "book";
+  const heading = isBook ? "অর্ডার হিস্টরি দেখো" : "ড্যাশবোর্ডে যাও";
+  const description = isBook
+    ? "তোমার পেমেন্ট হিস্টরি থেকে বইয়ের অর্ডার স্ট্যাটাস দেখতে পাবে। বইটি খুব শীঘ্রই তোমার ঠিকানায় পাঠানো হবে।"
+    : "তোমার ড্যাশবোর্ডে গিয়ে কেনা কোর্সগুলো দেখতে পাবে এবং শেখা শুরু করতে পারবে";
+  const href = isBook ? "/billing" : "/dashboard";
+  const buttonLabel = isBook ? "পেমেন্ট হিস্টরি" : "ড্যাশবোর্ড";
+
   return (
     <div className="animate-slideUp stagger-5">
       <h2 className="text-3xl lg:text-4xl font-bold text-center text-foreground mb-12">
@@ -14,15 +26,14 @@ const NextSteps: React.FC = () => {
             1
           </div>
           <h3 className="text-xl font-bold text-foreground mb-3">
-            ড্যাশবোর্ডে যাও
+            {heading}
           </h3>
           <p className="text-muted-foreground mb-8 text-sm">
-            তোমার ড্যাশবোর্ডে গিয়ে কেনা কোর্সগুলো দেখতে পাবে এবং শেখা শুরু করতে
-            পারবে
+            {description}
           </p>
-          <Link href="/dashboard">
+          <Link href={href}>
             <button className="w-full py-3 px-6 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-              <FaPlay /> ড্যাশবোর্ড
+              <FaPlay /> {buttonLabel}
             </button>
           </Link>
         </div>

@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
 import { Toaster } from "react-hot-toast";
-import { ArrowRight, BookOpen, ShoppingBag } from "lucide-react";
+import { ArrowRight, BookOpen, Loader2, ShoppingBag } from "lucide-react";
 import { useEffect } from "react";
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
@@ -70,7 +70,7 @@ function BookDetailsSkeleton() {
 export default function BookDetailsPage() {
   const params = useParams<{ id: string }>();
   const bookId = params?.id;
-  const { buyBook } = useBookPayment();
+  const { buyBook, loading: buyingBook } = useBookPayment();
 
   const [openCheckoutModal, setOpenCheckoutModal] = useState(false);
   const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
@@ -268,11 +268,21 @@ export default function BookDetailsPage() {
 
               <button
                 onClick={handleBuyBook}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-teal px-6 py-3.5 text-base font-extrabold text-primary-foreground shadow-xl shadow-primary/20"
+                disabled={buyingBook}
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r from-primary to-teal px-6 py-3.5 text-base font-extrabold text-primary-foreground shadow-xl shadow-primary/20 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <ShoppingBag className="size-5" />
-                বইটি কিনো
-                <ArrowRight className="size-5" />
+                {buyingBook ? (
+                  <>
+                    <Loader2 className="size-5 animate-spin" />
+                    প্রসেস হচ্ছে...
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="size-5" />
+                    বইটি কিনো
+                    <ArrowRight className="size-5" />
+                  </>
+                )}
               </button>
             </div>
           </div>

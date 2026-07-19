@@ -57,7 +57,7 @@ function CentralizedSuccessPageContent() {
       <main className="relative z-10 pt-10 lg:pt-20 bg-background min-h-screen overflow-hidden">
         <div className="w-[90%] lg:w-[85%] max-w-[1000px] mx-auto py-12 space-y-16 lg:space-y-20">
           <SuccessHeader title={title} type={type} />
-          <NextSteps />
+          <NextSteps type={type} />
         </div>
       </main>
     </>
