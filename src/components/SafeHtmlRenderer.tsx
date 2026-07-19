@@ -1,7 +1,9 @@
 "use client";
 
 import DOMPurify from "dompurify";
-import { useMemo } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
+import { useEffect, useMemo, useRef } from "react";
 
 interface SafeHtmlRendererProps {
   content: string | null | undefined;
@@ -47,6 +49,7 @@ export function SafeHtmlRenderer({
   fallback = null,
   truncate,
 }: SafeHtmlRendererProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const processedContent = useMemo(() => {
     // Handle null/undefined/empty content
     if (!content || content.trim() === "") return null;
@@ -136,6 +139,16 @@ export function SafeHtmlRenderer({
     return { type: "html" as const, value: htmlified };
   }, [content, truncate]);
 
+  // Renders $...$ / $$...$$ LaTeX inside the sanitized HTML with KaTeX. Runs
+  // as a post-mount DOM walk (same technique as the admin editor's
+  // LaTeXPlugin) rather than pre-rendering KaTeX markup through DOMPurify —
+  // KaTeX's output relies on precise inline styles/MathML/svg that would
+  // require a much larger, riskier sanitizer allowlist to preserve.
+  useEffect(() => {
+    if (processedContent?.type !== "html") return;
+    renderLatexInElement(containerRef.current);
+  }, [processedContent]);
+
   if (!processedContent) {
     return <>{fallback}</>;
   }
@@ -148,6 +161,7 @@ export function SafeHtmlRenderer({
   // For HTML content, render with dangerouslySetInnerHTML (already sanitized)
   return (
     <div
+      ref={containerRef}
       className={`rich-text-content ${className}`}
       dangerouslySetInnerHTML={{ __html: processedContent.value }}
     />
@@ -201,6 +215,86 @@ function transformMarkdownImages(text: string): string {
     const safeAlt = escapeHtml(altText || "Image");
     const safeSrc = escapeHtml(imageUrl);
     return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-64 object-contain rounded-md my-3" />`;
+  });
+}
+
+/**
+ * Walks the rendered container's text nodes and replaces $...$ / $$...$$
+ * LaTeX segments with KaTeX-rendered markup. Mirrors the admin editor's
+ * LaTeXPlugin matching logic so authoring and student-facing rendering agree
+ * on delimiter syntax.
+ */
+function renderLatexInElement(root: HTMLElement | null) {
+  if (!root) return;
+
+  const textNodes: Text[] = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    textNodes.push(node as Text);
+  }
+
+  textNodes.forEach((textNode) => {
+    const text = textNode.textContent || "";
+    if (!text.includes("$")) return;
+
+    const parent = textNode.parentElement;
+    if (parent?.classList.contains("katex") || parent?.classList.contains("katex-rendered")) {
+      return;
+    }
+
+    const inlineRegex = /(?<!\$)\$([^$]+?)\$(?!\$)/g;
+    const blockRegex = /\$\$([^$]+?)\$\$/g;
+
+    const blockMatches: Array<{ start: number; end: number; latex: string }> = [];
+    let match: RegExpExecArray | null;
+    while ((match = blockRegex.exec(text)) !== null) {
+      blockMatches.push({ start: match.index, end: match.index + match[0].length, latex: match[1] });
+    }
+
+    const inlineMatches: Array<{ start: number; end: number; latex: string }> = [];
+    inlineRegex.lastIndex = 0;
+    while ((match = inlineRegex.exec(text)) !== null) {
+      const overlaps = blockMatches.some(
+        (bm) => match && match.index < bm.end && match.index + match[0].length > bm.start,
+      );
+      if (!overlaps) {
+        inlineMatches.push({ start: match.index, end: match.index + match[0].length, latex: match[1] });
+      }
+    }
+
+    const allMatches = [
+      ...blockMatches.map((m) => ({ ...m, type: "block" as const })),
+      ...inlineMatches.map((m) => ({ ...m, type: "inline" as const })),
+    ].sort((a, b) => a.start - b.start);
+
+    if (allMatches.length === 0) return;
+
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+
+    allMatches.forEach((m, idx) => {
+      if (m.start > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, m.start)));
+      }
+
+      try {
+        const span = document.createElement("span");
+        span.className = "katex-rendered";
+        katex.render(m.latex, span, { throwOnError: false, displayMode: m.type === "block" });
+        fragment.appendChild(span);
+      } catch {
+        fragment.appendChild(document.createTextNode(text.slice(m.start, m.end)));
+      }
+
+      lastIndex = m.end;
+
+      if (idx === allMatches.length - 1 && lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+    });
+
+    textNode.parentNode?.replaceChild(fragment, textNode);
   });
 }
 
