@@ -35,6 +35,7 @@ export interface LandingStyleCourseCardProps {
   href: string;
   price: number;
   originalPrice?: number;
+  isFree?: boolean;
   tags?: string[];
   isLive?: boolean;
   hasRecorded?: boolean;
@@ -50,6 +51,7 @@ export default function LandingStyleCourseCard({
   href,
   price,
   originalPrice,
+  isFree,
   tags = [],
   isLive,
 }: LandingStyleCourseCardProps) {
@@ -136,9 +138,15 @@ export default function LandingStyleCourseCard({
               ))}
             </div>
           )}
-          <div className="w-fit self-end shrink-0 inline-flex items-center gap-1.5 rounded-full bg-destructive/8 text-destructive text-sm font-extrabold px-3.5 py-1.5 border border-destructive/20 shadow-sm whitespace-nowrap">
-            {formatPrice(price)}
-            {discount > 0 && (
+          <div
+            className={`w-fit self-end shrink-0 inline-flex items-center gap-1.5 rounded-full text-sm font-extrabold px-3.5 py-1.5 border shadow-sm whitespace-nowrap ${
+              isFree
+                ? "bg-success/10 text-success border-success/25"
+                : "bg-destructive/8 text-destructive border-destructive/20"
+            }`}
+          >
+            {isFree ? "ফ্রি" : formatPrice(price)}
+            {!isFree && discount > 0 && (
               <span className="text-xs font-bold text-success">−{discount}%</span>
             )}
           </div>

@@ -108,6 +108,7 @@ export default function CourseDetailsPage() {
     error,
     fetchCourse,
     buyCourse,
+    enrollFreeCourse,
     prebookCourse,
     prebookButtonLoading,
     bundle,
@@ -239,6 +240,10 @@ export default function CourseDetailsPage() {
 
   const handleProceedToPayment = (bookSelection: BookSelection | null) => {
     // This is called after CheckoutModal successfully updates profile
+    if (courseData?.is_free) {
+      enrollFreeCourse();
+      return;
+    }
     // Pass applied coupon code and optional book selection to buyCourse
     buyCourse(appliedCouponCode, bookSelection);
   };
@@ -361,6 +366,7 @@ export default function CourseDetailsPage() {
               }
               attachedBooks={courseData.attached_books}
               booksTotal={courseData.books_total}
+              isFree={courseData.is_free}
             />
           )}
 
@@ -593,22 +599,30 @@ export default function CourseDetailsPage() {
                       {/* Pricing Block */}
                       <div className="mb-5">
                         <div className="flex items-end gap-3 flex-wrap">
-                          <span className="text-4xl font-extrabold text-foreground tracking-tight">
-                            ৳{discountInfo ? discountInfo.final_price : courseData?.price}
-                          </span>
-                          {courseData?.x_price && (
-                            <span className="text-lg text-muted-foreground line-through mb-1">
-                              ৳{courseData.x_price}
+                          {courseData?.is_free ? (
+                            <span className="text-4xl font-extrabold text-success tracking-tight">
+                              ফ্রি
                             </span>
-                          )}
-                          {courseData?.x_price && courseData?.price && (
-                            <span className="mb-1 text-sm font-bold text-success bg-success/15 border border-success/30 px-2 py-0.5 rounded-full">
-                              {Math.round(((courseData.x_price - courseData.price) / courseData.x_price) * 100)}% ছাড়
-                            </span>
+                          ) : (
+                            <>
+                              <span className="text-4xl font-extrabold text-foreground tracking-tight">
+                                ৳{discountInfo ? discountInfo.final_price : courseData?.price}
+                              </span>
+                              {courseData?.x_price && (
+                                <span className="text-lg text-muted-foreground line-through mb-1">
+                                  ৳{courseData.x_price}
+                                </span>
+                              )}
+                              {courseData?.x_price && courseData?.price && (
+                                <span className="mb-1 text-sm font-bold text-success bg-success/15 border border-success/30 px-2 py-0.5 rounded-full">
+                                  {Math.round(((courseData.x_price - courseData.price) / courseData.x_price) * 100)}% ছাড়
+                                </span>
+                              )}
+                            </>
                           )}
                         </div>
                         {/* Discount breakdown */}
-                        {discountInfo && (
+                        {!courseData?.is_free && discountInfo && (
                           <div className="mt-3 p-3 bg-success/8 border border-success/25 rounded-xl space-y-1.5">
                             <div className="flex justify-between text-sm">
                               <span className="text-muted-foreground">মূল মূল্য</span>
@@ -678,7 +692,7 @@ export default function CourseDetailsPage() {
                       />
 
                       {/* Coupon Input */}
-                      {isCourseLive && !courseData.isTaken && (
+                      {isCourseLive && !courseData.isTaken && !courseData.is_free && (
                         <div className="mt-5">
                           <CouponInput
                             courseId={courseData.id}
@@ -729,7 +743,7 @@ export default function CourseDetailsPage() {
                             <svg className="w-5 h-5 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
-                            <span className="relative">এখনই ভর্তি হও</span>
+                            <span className="relative">{courseData?.is_free ? "ফ্রি এনরোল করো" : "এখনই ভর্তি হও"}</span>
                           </button>
                         )}
 
@@ -794,13 +808,19 @@ export default function CourseDetailsPage() {
           {!courseData.isTaken && (
             <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border px-4 py-3 flex items-center gap-3">
               <div className="flex flex-col min-w-0">
-                <span className="text-xl font-extrabold text-foreground leading-none">
-                  ৳{discountInfo ? discountInfo.final_price : courseData?.price}
-                </span>
-                {courseData?.x_price && (
-                  <span className="text-xs text-muted-foreground line-through">
-                    ৳{courseData.x_price}
-                  </span>
+                {courseData?.is_free ? (
+                  <span className="text-xl font-extrabold text-success leading-none">ফ্রি</span>
+                ) : (
+                  <>
+                    <span className="text-xl font-extrabold text-foreground leading-none">
+                      ৳{discountInfo ? discountInfo.final_price : courseData?.price}
+                    </span>
+                    {courseData?.x_price && (
+                      <span className="text-xs text-muted-foreground line-through">
+                        ৳{courseData.x_price}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
               {isPrebookingMode ? (
@@ -824,7 +844,7 @@ export default function CourseDetailsPage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  এখনই ভর্তি হও
+                  {courseData?.is_free ? "ফ্রি এনরোল করো" : "এখনই ভর্তি হও"}
                 </button>
               )}
             </div>

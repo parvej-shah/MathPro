@@ -87,6 +87,8 @@ export default function CourseDetailsPage() {
     timeRemaining,
     timerActive,
     timerExpired,
+    quizStarted,
+    startQuiz,
     formatTime,
     getTimerColor,
     clearQuizTimer,
@@ -243,7 +245,10 @@ export default function CourseDetailsPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="overflow-x-hidden">
+    // overflow-x-clip, not -hidden: `hidden` makes this a scroll container,
+    // which silently kills `position: sticky` for the quiz timer inside.
+    // `clip` suppresses the horizontal overflow without that side effect.
+    <div className="overflow-x-clip">
       <Toaster />
       {pageLoading ? (
         <div className="pt-24 pb-8">
@@ -334,7 +339,7 @@ export default function CourseDetailsPage() {
           </Transition>
 
           {/* Main layout */}
-          <div className="pt-24 pb-8 bg-background overflow-x-hidden">
+          <div className="pt-24 pb-8 bg-background overflow-x-clip">
             <div className="w-[90%] lgXl:w-[80%] mx-auto z-20">
 
               {/* Mobile-only top bar: course title + sidebar sheet trigger */}
@@ -412,6 +417,8 @@ export default function CourseDetailsPage() {
                       timeRemaining={timeRemaining}
                       timerActive={timerActive}
                       timerExpired={timerExpired}
+                      quizStarted={quizStarted}
+                      startQuiz={startQuiz}
                       formatTime={formatTime}
                       getTimerColor={getTimerColor}
                       submitQuiz={submitQuiz}

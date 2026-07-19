@@ -49,6 +49,7 @@ export interface CourseData {
     short_description: string;
     price: number;
     x_price: number;
+    is_free?: boolean;
     enrolled: number;
     prebooking?: number;
     is_live?: boolean;

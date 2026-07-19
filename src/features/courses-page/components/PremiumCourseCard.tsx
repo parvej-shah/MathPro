@@ -30,6 +30,7 @@ export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
       href={`/courses/${course.slug || course.url || course.id}`}
       price={course.price}
       originalPrice={course.x_price > course.price ? course.x_price : undefined}
+      isFree={course.is_free}
       tags={tags}
       isLive={course.is_live}
       hasRecorded={flags.hasRecorded}

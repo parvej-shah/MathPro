@@ -5,8 +5,20 @@ import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import ModuleUpcoming from "@/components/ModuleUpcoming";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import { RichFieldRenderer } from "@/components/RichFieldRenderer";
-import { decryptString } from "@/helpers";
+import { decryptString, englishToBanglaNumbers } from "@/helpers";
 import type { CourseModule, QuizQuestionData } from "./types";
+
+// Option labels for the answer pills (ক, খ, গ, ঘ, ঙ …). Falls back to the
+// number for quizzes authored with more options than we have letters.
+const OPTION_LABELS = ["ক", "খ", "গ", "ঘ", "ঙ", "চ", "ছ", "জ"];
+
+// Wide KaTeX block math renders as a fixed-width block that does not wrap. On a
+// phone that overflows the card, and because the page ancestors use
+// overflow-x-clip it gets silently cut off rather than scrolled. Scoped to the
+// quiz body: let the math scroll inside its own box, and keep long unbroken
+// option text from pushing the row wide.
+const MATH_OVERFLOW =
+  "break-words [&_.katex-display]:overflow-x-auto [&_.katex-display]:overflow-y-hidden [&_.katex-display]:py-1 [&_img]:max-w-full [&_table]:block [&_table]:overflow-x-auto";
 
 interface ModulePlayerProps {
   activeModule: CourseModule;
@@ -19,6 +31,8 @@ interface ModulePlayerProps {
   timeRemaining: number;
   timerActive: boolean;
   timerExpired: boolean;
+  quizStarted: boolean;
+  startQuiz: () => void;
   formatTime: (s: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
   submitQuiz: () => void;
@@ -34,6 +48,8 @@ const ModulePlayer = memo(function ModulePlayer({
   timeRemaining,
   timerActive,
   timerExpired,
+  quizStarted,
+  startQuiz,
   formatTime,
   getTimerColor,
   submitQuiz,
@@ -55,6 +71,11 @@ const ModulePlayer = memo(function ModulePlayer({
   const earnedPercentage = totalQuestionPoints > 0
     ? Math.round((earnedQuestionPoints / totalQuestionPoints) * 100)
     : 0;
+
+  const answeredCount = quizQuestions.reduce(
+    (sum, _quiz, index) => (quizAnswer[index] ? sum + 1 : sum),
+    0,
+  );
 
   const liveStatus = activeModule?.live_status;
   const isLiveOverlay = liveStatus === "LIVE" || liveStatus === "SCHEDULED";
@@ -176,121 +197,128 @@ const ModulePlayer = memo(function ModulePlayer({
       {/* ── QUIZ ─────────────────────────────────────────────── */}
       {category === "QUIZ" && (
         <div>
-          {/* Timer — sticky so it stays visible while scrolling through questions */}
-          {!showQuizAnswer && timerActive && (
-            <div className="sticky top-20 z-30 mb-8 relative overflow-hidden">
-              <div
-                className="absolute inset-0 blur-xl opacity-30 transition-all duration-1000"
-                style={{
-                  background: `radial-gradient(circle at 50% 50%, ${getTimerColor(timeRemaining, totalTime)}, transparent 70%)`,
-                }}
-              />
-              <div
-                className="relative p-8 rounded-2xl border-2 bg-gray-900/70 backdrop-blur-xl shadow-2xl transition-all duration-500"
-                style={{
-                  borderColor: getTimerColor(timeRemaining, totalTime),
-                  boxShadow: `0 0 30px ${getTimerColor(timeRemaining, totalTime)}40`,
-                }}
+          {/* ── Pre-exam start screen ──────────────────────────────────────
+              Shown until the student presses শুরু করো. Opening the module no
+              longer starts the clock — see useQuizTimer.startQuiz. */}
+          {!quizStarted && !showQuizAnswer && (
+            <div className="rounded-2xl border border-border/60 bg-card/60 p-5 text-center sm:p-8">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 sm:mb-5 sm:h-16 sm:w-16">
+                <svg className="h-7 w-7 text-primary sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+
+              <h4 className="mb-2 text-xl font-bold text-foreground sm:text-2xl">
+                পরীক্ষা শুরু করতে প্রস্তুত?
+              </h4>
+              <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground sm:mb-7">
+                শুরু করার পর সময় গণনা শুরু হবে। পেজ রিলোড করলেও সময় থামবে না,
+                তাই প্রস্তুতি নিয়ে তবেই শুরু করো।
+              </p>
+
+              <div className="mx-auto mb-7 grid max-w-md grid-cols-3 gap-2 sm:mb-8 sm:gap-3">
+                <div className="rounded-xl border border-border/50 bg-muted/20 px-2 py-3 sm:px-3 sm:py-4">
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">
+                    {englishToBanglaNumbers(quizQuestions.length)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">প্রশ্ন</p>
+                </div>
+                <div className="rounded-xl border border-border/50 bg-muted/20 px-2 py-3 sm:px-3 sm:py-4">
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">
+                    {englishToBanglaNumbers(totalQuestionPoints)}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">নম্বর</p>
+                </div>
+                <div className="rounded-xl border border-border/50 bg-muted/20 px-2 py-3 sm:px-3 sm:py-4">
+                  <p className="text-xl font-bold text-foreground sm:text-2xl">
+                    {totalTime > 0
+                      ? englishToBanglaNumbers(Math.round(totalTime / 60))
+                      : "—"}
+                  </p>
+                  <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">
+                    {totalTime > 0 ? "মিনিট" : "সময়সীমা নেই"}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={startQuiz}
+                className="w-full rounded-xl bg-primary px-10 py-3.5 text-base font-bold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 focus:ring ring-primary/30 sm:w-auto sm:text-lg"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <div
-                        className={`absolute inset-0 rounded-full blur-lg opacity-50 ${timeRemaining <= totalTime * 0.1 ? "animate-pulse" : ""}`}
-                        style={{ backgroundColor: getTimerColor(timeRemaining, totalTime) }}
-                      />
-                      <div
-                        className="relative w-16 h-16 rounded-full flex items-center justify-center"
-                        style={{ backgroundColor: `${getTimerColor(timeRemaining, totalTime)}20` }}
-                      >
-                        <svg
-                          className={`w-9 h-9 ${timeRemaining <= totalTime * 0.1 ? "animate-pulse" : ""}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          style={{ color: getTimerColor(timeRemaining, totalTime) }}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400 font-medium mb-1 tracking-wide uppercase">
-                        Time Remaining
-                      </p>
-                      <p
-                        className={`text-5xl font-bold tabular-nums tracking-tight ${timeRemaining <= totalTime * 0.1 ? "animate-pulse" : ""}`}
-                        style={{ color: getTimerColor(timeRemaining, totalTime) }}
-                      >
-                        {formatTime(timeRemaining)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500 font-medium mb-1">Questions</p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-lg bg-linear-to-br from-teal/30 to-primary/20 flex items-center justify-center border border-teal/30">
-                        <p className="text-2xl font-bold text-white">
-                          {quizQuestions.length}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                পরীক্ষা শুরু করো
+              </button>
+            </div>
+          )}
+
+          {/* Everything below is the live exam / reveal — hidden until started. */}
+          {(quizStarted || showQuizAnswer) && (
+          <>
+          {/* Compact sticky timer bar. The old card was ~250px tall, which made
+              sticky useless; this stays out of the way while scrolling. */}
+          {!showQuizAnswer && timerActive && (
+            <div className="sticky top-16 z-30 mb-6 rounded-xl border border-border/60 bg-card/90 px-3 py-2.5 shadow-lg backdrop-blur-md sm:top-20 sm:mb-8 sm:px-4 sm:py-3">
+              <div className="flex items-center justify-between gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <svg
+                    className={`h-4 w-4 sm:h-5 sm:w-5 ${timeRemaining <= totalTime * 0.1 ? "animate-pulse" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2.5}
+                    viewBox="0 0 24 24"
+                    style={{ color: getTimerColor(timeRemaining, totalTime) }}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span
+                    className={`text-xl font-bold tabular-nums tracking-tight sm:text-2xl ${timeRemaining <= totalTime * 0.1 ? "animate-pulse" : ""}`}
+                    style={{ color: getTimerColor(timeRemaining, totalTime) }}
+                  >
+                    {formatTime(timeRemaining)}
+                  </span>
                 </div>
 
-                <div className="mt-6 relative">
-                  <div className="w-full bg-gray-800/50 rounded-full h-3 overflow-hidden backdrop-blur-sm">
-                    <div
-                      className="h-full transition-all duration-1000 ease-out relative overflow-hidden"
-                      style={{
-                        width: `${(timeRemaining / totalTime) * 100}%`,
-                        background: `linear-gradient(90deg, ${getTimerColor(timeRemaining, totalTime)}, ${getTimerColor(timeRemaining, totalTime)}dd)`,
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                    </div>
-                  </div>
-                  <div className="flex justify-between mt-2">
-                    <span className="text-xs text-gray-500">
-                      {Math.round((timeRemaining / totalTime) * 100)}% remaining
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {/* "উত্তর দেওয়া" is dropped below sm — the bar has to fit a
+                      360px screen alongside the clock and submit button. */}
+                  <span className="text-xs text-muted-foreground sm:text-sm">
+                    <span className="font-semibold text-foreground">
+                      {englishToBanglaNumbers(answeredCount)}
                     </span>
-                    <span className="text-xs text-gray-500">{totalTime} sec total</span>
-                  </div>
+                    /{englishToBanglaNumbers(quizQuestions.length)}
+                    <span className="hidden sm:inline"> উত্তর দেওয়া</span>
+                  </span>
+                  <button
+                    onClick={submitQuiz}
+                    className="shrink-0 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 sm:px-4 sm:text-sm"
+                  >
+                    জমা দাও
+                  </button>
                 </div>
+              </div>
 
-                {timeRemaining <= totalTime * 0.2 && (
-                  <div className="mt-4 p-3 rounded-lg bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/50 backdrop-blur-sm">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-yellow-400 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <p className="text-sm text-yellow-300 font-semibold">Hurry up! Time is running out</p>
-                    </div>
-                  </div>
-                )}
+              {/* Time-remaining bar */}
+              <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/40">
+                <div
+                  className="h-full transition-all duration-1000 ease-linear"
+                  style={{
+                    width: `${(timeRemaining / totalTime) * 100}%`,
+                    backgroundColor: getTimerColor(timeRemaining, totalTime),
+                  }}
+                />
               </div>
             </div>
           )}
 
           {/* Time's Up */}
           {timerExpired && !showQuizAnswer && (
-            <div className="mb-8 p-6 rounded-lg border-2 border-red-500 bg-red-900/20 backdrop-blur-sm">
+            <div className="mb-8 rounded-xl border border-destructive/40 bg-destructive/10 p-5">
               <div className="flex items-center gap-3">
-                <svg className="w-8 h-8 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-7 w-7 shrink-0 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <p className="text-2xl font-bold text-destructive">Time&apos;s Up!</p>
-                  <p className="text-sm text-gray-300">Your quiz has been automatically submitted</p>
+                  <p className="text-xl font-bold text-destructive">সময় শেষ!</p>
+                  <p className="text-sm text-muted-foreground">তোমার উত্তরপত্র স্বয়ংক্রিয়ভাবে জমা হয়ে গেছে</p>
                 </div>
               </div>
             </div>
@@ -334,43 +362,61 @@ const ModulePlayer = memo(function ModulePlayer({
             return (
               <div
                 key={`quiz-question-${index}`}
-                className="my-6 bg-primary/10 border border-primary/40 dark:bg-muted/10 rounded-lg p-6"
+                className="my-4 rounded-2xl border border-border/60 bg-card/40 p-4 transition-colors sm:my-5 sm:p-6"
               >
-                <p className="text-xs font-semibold text-muted-foreground mb-2">
-                  প্রশ্ন {index + 1}
-                </p>
+                <div className="mb-4 flex items-center justify-between gap-3 border-b border-border/40 pb-3">
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary">
+                      {englishToBanglaNumbers(index + 1)}
+                    </span>
+                    প্রশ্ন
+                  </span>
+                  <span className="shrink-0 rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                    {englishToBanglaNumbers(
+                      typeof quiz.points === "number" && (quiz.points as number) > 0
+                        ? (quiz.points as number)
+                        : 1,
+                    )}{" "}
+                    নম্বর
+                  </span>
+                </div>
+
                 <RichFieldRenderer
                   htmlContent={quiz.question_html as string | undefined}
                   plainContent={quiz.question as string | undefined}
-                  className="text-foreground forced-white font-bold"
+                  className={`text-base font-semibold text-foreground ${MATH_OVERFLOW}`}
                 />
-                <div className="flex flex-col gap-2 mt-3">
+                <div className="mt-4 flex flex-col gap-2.5">
                   {(quiz.options as string[] | undefined)?.map((elem: string, optIndex: number) => {
                     const optionContent = (quiz.options_html as string[] | undefined)?.[optIndex] || elem;
                     const isSelected = elem === quizAnswer[index];
                     const isCorrectOption = showQuizAnswer && elem === correctAnswerRaw;
                     const isWrongSelection = showQuizAnswer && isSelected && !quizVerdict[index];
 
-                    let optColor: string | undefined;
-                    let optBorder = "border-transparent";
-                    let optBgColor = "";
+                    // Card state: green when revealed-correct, red when the
+                    // student's pick was wrong, primary when merely selected.
+                    let rowClass =
+                      "border-border/50 bg-background/40 hover:border-primary/50 hover:bg-primary/5";
+                    let pillClass = "border-border/60 text-muted-foreground";
                     if (showQuizAnswer) {
                       if (isCorrectOption) {
-                        optColor = "oklch(0.65 0.15 145)";
-                        optBorder = "border-green-500/30";
-                        optBgColor = "bg-green-500/10";
+                        rowClass = "border-primary/60 bg-primary/10";
+                        pillClass = "border-primary bg-primary text-primary-foreground";
                       } else if (isWrongSelection) {
-                        optColor = "oklch(0.577 0.245 27)";
-                        optBorder = "border-red-500/30";
-                        optBgColor = "bg-red-500/10";
+                        rowClass = "border-destructive/60 bg-destructive/10";
+                        pillClass = "border-destructive bg-destructive text-white";
+                      } else {
+                        rowClass = "border-border/40 bg-background/20";
                       }
+                    } else if (isSelected) {
+                      rowClass = "border-primary bg-primary/10";
+                      pillClass = "border-primary bg-primary text-primary-foreground";
                     }
 
                     return (
                       <label
                         key={`option-${index}-${optIndex}`}
-                        className={`flex items-center gap-3 cursor-pointer rounded-lg border px-3 py-2 ${optBorder} ${optBgColor}`}
-                        style={{ color: optColor }}
+                        className={`flex min-h-11 items-start gap-2.5 rounded-xl border px-3 py-3 transition-colors sm:gap-3 sm:px-3.5 ${rowClass} ${showQuizAnswer ? "cursor-default" : "cursor-pointer"}`}
                       >
                         <input
                           type="radio"
@@ -383,17 +429,24 @@ const ModulePlayer = memo(function ModulePlayer({
                               setQuizAnswer((prev) => ({ ...prev, [index]: elem }));
                             }
                           }}
-                          style={{ accentColor: optColor ?? "oklch(0.718 0.147 159.2)" }}
-                          className="shrink-0 w-4 h-4"
+                          className="sr-only"
                         />
-                        <SafeHtmlRenderer content={optionContent} />
+                        <span
+                          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold transition-colors ${pillClass}`}
+                          aria-hidden="true"
+                        >
+                          {OPTION_LABELS[optIndex] ?? englishToBanglaNumbers(optIndex + 1)}
+                        </span>
+                        <span className={`min-w-0 flex-1 self-center text-foreground ${MATH_OVERFLOW}`}>
+                          <SafeHtmlRenderer content={optionContent} />
+                        </span>
                         {showQuizAnswer && isCorrectOption && (
-                          <svg className="shrink-0 w-5 h-5 ml-auto" viewBox="0 0 20 20" fill="oklch(0.65 0.15 145)">
+                          <svg className="mt-0.5 h-5 w-5 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.06l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
                           </svg>
                         )}
                         {showQuizAnswer && isWrongSelection && (
-                          <svg className="shrink-0 w-5 h-5 ml-auto" viewBox="0 0 20 20" fill="oklch(0.577 0.245 27)">
+                          <svg className="mt-0.5 h-5 w-5 shrink-0 text-destructive" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
                           </svg>
                         )}
@@ -411,7 +464,7 @@ const ModulePlayer = memo(function ModulePlayer({
                       <RichFieldRenderer
                         htmlContent={expHtml || undefined}
                         plainContent={expPlain || undefined}
-                        className="text-muted-foreground"
+                        className={`text-muted-foreground ${MATH_OVERFLOW}`}
                       />
                     </div>
                   );
@@ -421,14 +474,23 @@ const ModulePlayer = memo(function ModulePlayer({
           })}
 
           {!showQuizAnswer && (
-            <button
-              onClick={submitQuiz}
-              type="submit"
-              disabled={showQuizAnswer}
-              className="py-2 mt-5 px-8 bg-primary hover:bg-primary/85 ease-in-out duration-150 focus:ring ring-primary/30 rounded-lg font-semibold text-primary-foreground text-lg"
-            >
-              Submit Answer
-            </button>
+            <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              <button
+                onClick={submitQuiz}
+                type="submit"
+                className="w-full rounded-xl bg-primary px-8 py-3 text-base font-bold text-primary-foreground duration-150 ease-in-out hover:bg-primary/85 focus:ring ring-primary/30 sm:w-auto sm:text-lg"
+              >
+                উত্তরপত্র জমা দাও
+              </button>
+              {answeredCount < quizQuestions.length && (
+                <p className="text-center text-sm text-muted-foreground sm:text-left">
+                  {englishToBanglaNumbers(quizQuestions.length - answeredCount)} টি প্রশ্নের
+                  উত্তর এখনো বাকি
+                </p>
+              )}
+            </div>
+          )}
+          </>
           )}
         </div>
       )}

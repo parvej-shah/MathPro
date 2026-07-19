@@ -40,6 +40,7 @@ interface CheckoutModalProps {
   youGet?: string[];
   attachedBooks?: AttachedBook[];
   booksTotal?: number;
+  isFree?: boolean;
 }
 
 interface ShippingFormData {
@@ -86,6 +87,7 @@ export default function CheckoutModal({
   youGet,
   attachedBooks,
   booksTotal,
+  isFree,
 }: CheckoutModalProps) {
   const { profile, loading: profileLoading, error: profileError, refetch } = useUserProfile();
   const [formData, setFormData] = useState<CheckoutFormData>({
@@ -273,7 +275,9 @@ export default function CheckoutModal({
         overlayClassName="backdrop-blur-sm"
       >
         <DialogTitle render={<div />} className="sr-only">
-          {type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+          {isFree
+            ? (type === "bundle" ? "ফ্রি Combo-তে এনরোল করো" : "ফ্রি কোর্সে এনরোল করো")
+            : type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
         </DialogTitle>
 
         {/* Close button */}
@@ -303,7 +307,9 @@ export default function CheckoutModal({
                 </div>
                 <div>
                   <p className="text-base sm:text-lg font-bold leading-tight">
-                    {type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
+                    {isFree
+                      ? (type === "bundle" ? "ফ্রি Combo-তে এনরোল করো" : "ফ্রি কোর্সে এনরোল করো")
+                      : type === "book" ? "বই ক্রয় নিশ্চিত করো" : type === "bundle" ? "Combo ক্রয় নিশ্চিত করো" : "কোর্স ক্রয় নিশ্চিত করো"}
                   </p>
                   <p className="text-white/50 text-xs hidden sm:block">অনুগ্রহ করে আপনার তথ্য যাচাই করুন</p>
                 </div>
@@ -317,15 +323,19 @@ export default function CheckoutModal({
                 <p className="font-semibold text-white/90 text-sm leading-snug">{title}</p>
                 <div className="flex items-center justify-between text-xs text-white/50">
                   <span>{type === "bundle" && courseCount ? `${courseCount}টি কোর্স` : type === "book" ? "বই" : "কোর্স"}</span>
-                  {originalPrice && (
+                  {!isFree && originalPrice && (
                     <span className="line-through">{formatPrice(originalPrice)}</span>
                   )}
                 </div>
                 <div className="border-t border-white/10 pt-3 flex items-center justify-between">
                   <span className="text-sm text-white/60 font-medium">মূল্য</span>
-                  <span className="text-2xl font-black text-primary">{formatPrice(price)}</span>
+                  {isFree ? (
+                    <span className="text-2xl font-black text-success">ফ্রি</span>
+                  ) : (
+                    <span className="text-2xl font-black text-primary">{formatPrice(price)}</span>
+                  )}
                 </div>
-                {savings !== undefined && savings > 0 && (
+                {!isFree && savings !== undefined && savings > 0 && (
                   <div className="bg-success/15 border border-success/30 rounded-lg px-3 py-2 flex items-center justify-between">
                     <span className="text-success text-xs font-semibold">সাশ্রয়</span>
                     <span className="text-success font-bold text-sm">
@@ -333,7 +343,7 @@ export default function CheckoutModal({
                     </span>
                   </div>
                 )}
-                {includeBooks && !!booksTotal && (
+                {!isFree && includeBooks && !!booksTotal && (
                   <>
                     <div className="flex items-center justify-between text-xs text-white/60">
                       <span>বইয়ের মূল্য</span>
@@ -570,7 +580,7 @@ export default function CheckoutModal({
                   )}
 
                   {/* Books inclusion (course/bundle addon flow only) */}
-                  {!isBookCheckout && hasAttachedBooks && (
+                  {!isBookCheckout && !isFree && hasAttachedBooks && (
                     <div
                       className={`rounded-xl border p-3 sm:p-4 space-y-3 transition-all ${
                         includeBooks

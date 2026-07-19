@@ -3,6 +3,7 @@ export interface Course {
   title: string;
   x_price: number;
   price: number;
+  is_free?: boolean;
   language: string;
   enrolled: number;
   short_description: string;

@@ -40,6 +40,7 @@ interface UseCourseDetailsReturn {
     buyCourse: (couponCode?: string | null, bookSelection?: BookSelection | null) => void;
     prebookCourse: (data: PrebookingData) => Promise<boolean>;
     purchaseFreeCourse: () => void;
+    enrollFreeCourse: () => void;
     prebookButtonLoading: boolean;
     // Bundle related
     bundle: Bundle | null;
@@ -258,6 +259,34 @@ export const useCourseDetails = (
             toast.error(errorMessage);
             return false;
         }
+    };
+
+    const enrollFreeCourse = () => {
+        setUser({ ...user, loading: true });
+        const token = localStorage.getItem('token');
+
+        axios
+            .post(
+                BACKEND_URL + '/user/course/enroll-free/' + courseId,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            .then(() => {
+                setUser({ ...user, loading: false });
+                window.location.href = '/post-payment/success?type=course';
+            })
+            .catch((err) => {
+                setUser({ ...user, loading: false });
+                const errorMessage =
+                    err.response?.data?.error ||
+                    err.message ||
+                    'Failed to enroll in this course';
+                toast.error(errorMessage);
+            });
     };
 
     const purchaseFreeCourse = () => {
@@ -491,6 +520,7 @@ export const useCourseDetails = (
         buyCourse,
         prebookCourse,
         purchaseFreeCourse,
+        enrollFreeCourse,
         prebookButtonLoading,
         bundle,
         bundleLoading,

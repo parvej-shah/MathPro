@@ -15,6 +15,16 @@ interface UseQuizTimerReturn {
   timeRemaining: number;
   timerActive: boolean;
   timerExpired: boolean;
+  /**
+   * True once this attempt is underway. Drives the pre-exam start screen: the
+   * quiz body stays hidden until the student presses শুরু করো.
+   *
+   * Derived from the stored timer entry on mount, not from a fresh piece of
+   * state — a reload mid-attempt must resume, never re-show the start screen
+   * (which would let a student reset the clock by refreshing).
+   */
+  quizStarted: boolean;
+  startQuiz: () => void;
   formatTime: (seconds: number) => string;
   getTimerColor: (remaining: number, total: number) => string;
   clearQuizTimer: () => void;
@@ -58,11 +68,17 @@ export function useQuizTimer(
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerExpired, setTimerExpired] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const activeModuleIdRef = useRef<number | null>(null);
+  const totalTimeRef = useRef(0);
   useEffect(() => {
     activeModuleIdRef.current = activeModule?.id ?? null;
-  }, [activeModule?.id]);
+    totalTimeRef.current =
+      activeModule?.quiz_time_limit && activeModule.quiz_time_limit > 0
+        ? activeModule.quiz_time_limit * 60
+        : 0;
+  }, [activeModule?.id, activeModule?.quiz_time_limit]);
 
   // Stops the countdown interval only — used both on unmount/module-switch
   // (where the stored timer must survive so navigating back resumes the same
@@ -102,18 +118,27 @@ export function useQuizTimer(
       setTimeRemaining(0);
       setTimerActive(false);
       setTimerExpired(false);
+      // Already-graded quizzes go straight to the reveal — the start screen is
+      // only for a genuinely fresh attempt.
+      setQuizStarted(true);
       return;
     }
 
+    // Untimed quizzes still get the start screen (so the student sees question
+    // count and marks first), they just never run a countdown.
     if (totalTime <= 0) {
       setTimeRemaining(0);
       setTimerActive(false);
       setTimerExpired(false);
+      setQuizStarted(false);
       return;
     }
 
     const existing = readTimer(moduleId);
     if (existing && existing.totalTime > 0) {
+      // An attempt is already underway — resume it rather than showing the
+      // start screen, so reloading can't reset the clock.
+      setQuizStarted(true);
       const elapsed = Math.floor(Date.now() / 1000) - existing.startTime;
       const remaining = existing.totalTime - elapsed;
       if (remaining <= 0) {
@@ -131,13 +156,31 @@ export function useQuizTimer(
         setTimerExpired(false);
       }
     } else {
-      const startTime = Math.floor(Date.now() / 1000);
-      writeTimer(moduleId, { startTime, totalTime });
+      // No stored attempt: show the start screen and hold the countdown until
+      // startQuiz() fires. Previously the timer began here on mount, so merely
+      // opening the module burned exam time.
       setTimeRemaining(totalTime);
-      setTimerActive(true);
+      setTimerActive(false);
       setTimerExpired(false);
+      setQuizStarted(false);
     }
   }, [alreadySubmitted, onExpire]);
+
+  // Begins the attempt: writes the start timestamp (so a reload resumes) and
+  // releases the countdown.
+  const startQuiz = useCallback(() => {
+    const moduleId = activeModuleIdRef.current;
+    if (moduleId == null) return;
+    setQuizStarted(true);
+
+    const totalTime = totalTimeRef.current;
+    if (totalTime <= 0) return; // untimed quiz — just reveal the questions
+
+    writeTimer(moduleId, { startTime: Math.floor(Date.now() / 1000), totalTime });
+    setTimeRemaining(totalTime);
+    setTimerActive(true);
+    setTimerExpired(false);
+  }, []);
 
   // Initialize / tear down timer when the active module changes. Waits for
   // attemptChecked so we never start a fresh countdown before the server has
@@ -157,6 +200,7 @@ export function useQuizTimer(
         clearQuizTimer();
         setTimerExpired(false);
         setTimeRemaining(0);
+        setQuizStarted(false);
       });
     }
     return () => { clearQuizTimer(); };
@@ -203,6 +247,8 @@ export function useQuizTimer(
     timeRemaining,
     timerActive,
     timerExpired,
+    quizStarted,
+    startQuiz,
     formatTime,
     getTimerColor,
     // Exposed as "clearQuizTimer" to callers submitting the quiz — it stops
