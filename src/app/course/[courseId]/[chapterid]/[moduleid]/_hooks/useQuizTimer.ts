@@ -41,16 +41,33 @@ function writeTimer(moduleId: number, data: StoredTimer) {
   }
 }
 
+function removeTimer(moduleId: number) {
+  try {
+    localStorage.removeItem(timerKey(moduleId));
+  } catch {
+    // localStorage may be unavailable (SSR / privacy mode)
+  }
+}
+
 export function useQuizTimer(
   activeModule: CourseModule | null,
   alreadySubmitted: boolean,
   onExpire: () => void,
+  attemptChecked: boolean,
 ): UseQuizTimerReturn {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
   const [timerExpired, setTimerExpired] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const activeModuleIdRef = useRef<number | null>(null);
+  useEffect(() => {
+    activeModuleIdRef.current = activeModule?.id ?? null;
+  }, [activeModule?.id]);
 
+  // Stops the countdown interval only — used both on unmount/module-switch
+  // (where the stored timer must survive so navigating back resumes the same
+  // countdown) and on submit (see submitAndClearQuizTimer, which also drops
+  // the stored entry).
   const clearQuizTimer = useCallback(() => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -59,6 +76,16 @@ export function useQuizTimer(
     setTimerActive(false);
   }, []);
 
+  // A manual/auto submit stops the countdown AND drops the stored entry —
+  // otherwise navigating back before the "already submitted" check resolves
+  // reads the stale entry as expired and auto-submits again.
+  const submitAndClearQuizTimer = useCallback(() => {
+    clearQuizTimer();
+    if (activeModuleIdRef.current != null) {
+      removeTimer(activeModuleIdRef.current);
+    }
+  }, [clearQuizTimer]);
+
   const initTimer = useCallback((module: CourseModule) => {
     const moduleId = module.id;
     const totalTime = module.quiz_time_limit && module.quiz_time_limit > 0
@@ -66,7 +93,12 @@ export function useQuizTimer(
       : 0;
 
     // Already-submitted quizzes (server says so) show the reveal, no timer.
+    // Also clears any stored timer left behind by a race where the countdown
+    // started locally before the "already submitted" check came back from the
+    // server (otherwise a later remount reads that stale entry as expired and
+    // re-fires onExpire, re-submitting a quiz that's already been graded).
     if (alreadySubmitted) {
+      removeTimer(moduleId);
       setTimeRemaining(0);
       setTimerActive(false);
       setTimerExpired(false);
@@ -85,6 +117,10 @@ export function useQuizTimer(
       const elapsed = Math.floor(Date.now() / 1000) - existing.startTime;
       const remaining = existing.totalTime - elapsed;
       if (remaining <= 0) {
+        // Remove immediately so a remount before the server's "already
+        // submitted" check resolves doesn't read this same expired entry
+        // again and re-fire onExpire (duplicate auto-submit).
+        removeTimer(moduleId);
         setTimeRemaining(0);
         setTimerExpired(true);
         setTimerActive(false);
@@ -103,8 +139,15 @@ export function useQuizTimer(
     }
   }, [alreadySubmitted, onExpire]);
 
-  // Initialize / tear down timer when the active module changes
+  // Initialize / tear down timer when the active module changes. Waits for
+  // attemptChecked so we never start a fresh countdown before the server has
+  // confirmed this quiz isn't already submitted — otherwise a quiz submitted
+  // in an earlier visit gets a brand-new full-length timer during the async
+  // gap, and if that gap outlasts the request (or it fails) the quiz gets
+  // silently re-submitted when it expires.
   useEffect(() => {
+    if (!attemptChecked) return;
+
     if (activeModule?.data?.category === "QUIZ" && activeModule.data?.quiz) {
       queueMicrotask(() => {
         initTimer(activeModule);
@@ -117,7 +160,7 @@ export function useQuizTimer(
       });
     }
     return () => { clearQuizTimer(); };
-  }, [activeModule?.id, activeModule?.data?.category, activeModule?.quiz_time_limit, alreadySubmitted]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeModule?.id, activeModule?.data?.category, activeModule?.quiz_time_limit, alreadySubmitted, attemptChecked]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Countdown tick
   useEffect(() => {
@@ -126,7 +169,7 @@ export function useQuizTimer(
     timerRef.current = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          clearQuizTimer();
+          submitAndClearQuizTimer();
           setTimerExpired(true);
           onExpire();
           return 0;
@@ -162,6 +205,8 @@ export function useQuizTimer(
     timerExpired,
     formatTime,
     getTimerColor,
-    clearQuizTimer,
+    // Exposed as "clearQuizTimer" to callers submitting the quiz — it stops
+    // the countdown and drops the stored entry so it can't be replayed.
+    clearQuizTimer: submitAndClearQuizTimer,
   };
 }

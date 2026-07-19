@@ -18,6 +18,8 @@ interface UseQuizReturn {
   quizScore: number;
   quizVerdict: boolean[];
   showQuizAnswer: boolean;
+  /** True once the server has answered whether this quiz was already submitted. */
+  attemptChecked: boolean;
   justSubmitted: boolean;
   submitting: boolean;
   /** Grades on the server, persists the attempt, returns the server verdict. */
@@ -32,6 +34,7 @@ export function useQuiz(
   const [quizScore, setQuizScore] = useState(0);
   const [quizVerdict, setQuizVerdict] = useState<boolean[]>([]);
   const [showQuizAnswer, setShowQuizAnswer] = useState(false);
+  const [attemptChecked, setAttemptChecked] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -46,6 +49,7 @@ export function useQuiz(
       setQuizAnswer({});
       setQuizVerdict([]);
       setShowQuizAnswer(false);
+      setAttemptChecked(false);
       setJustSubmitted(false);
       setQuizScore(0);
     });
@@ -70,7 +74,10 @@ export function useQuiz(
           setShowQuizAnswer(true);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setAttemptChecked(true);
+      });
 
     return () => { cancelled = true; };
   }, [activeModule?.id, activeModule?.data?.category]);
@@ -114,6 +121,7 @@ export function useQuiz(
     quizScore,
     quizVerdict,
     showQuizAnswer,
+    attemptChecked,
     justSubmitted,
     submitting,
     submitQuiz,

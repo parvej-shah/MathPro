@@ -176,9 +176,9 @@ const ModulePlayer = memo(function ModulePlayer({
       {/* ── QUIZ ─────────────────────────────────────────────── */}
       {category === "QUIZ" && (
         <div>
-          {/* Timer */}
+          {/* Timer — sticky so it stays visible while scrolling through questions */}
           {!showQuizAnswer && timerActive && (
-            <div className="mb-8 relative overflow-hidden">
+            <div className="sticky top-20 z-30 mb-8 relative overflow-hidden">
               <div
                 className="absolute inset-0 blur-xl opacity-30 transition-all duration-1000"
                 style={{

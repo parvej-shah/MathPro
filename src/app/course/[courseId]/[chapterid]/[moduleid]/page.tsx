@@ -74,6 +74,7 @@ export default function CourseDetailsPage() {
     setQuizAnswer,
     quizVerdict,
     showQuizAnswer,
+    attemptChecked,
     justSubmitted,
     submitQuiz: submitQuizBase,
   } = useQuiz(activeModule, submitProgress);
@@ -89,7 +90,7 @@ export default function CourseDetailsPage() {
     formatTime,
     getTimerColor,
     clearQuizTimer,
-  } = useQuizTimer(activeModule, showQuizAnswer, onTimerExpire);
+  } = useQuizTimer(activeModule, showQuizAnswer, onTimerExpire, attemptChecked);
 
   const submitQuiz = useCallback(() => {
     submitQuizBase();
