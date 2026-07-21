@@ -296,3 +296,25 @@
     animation: none;
   }
 }
+
+/* Rich content (quiz questions, options, explanations) rendered by
+   SafeHtmlRenderer. Lexical emits an empty <p> for every blank line the author
+   left in the editor, and KaTeX display math carries a large default margin.
+   Together those stacked into tall dead space inside quiz cards on mobile.
+   Scoped to .rich-text-content so prose elsewhere keeps its own rhythm. */
+.rich-text-content > p:empty,
+.rich-text-content > p:has(> br:only-child) {
+  display: none;
+}
+
+.rich-text-content > :first-child {
+  margin-top: 0;
+}
+
+.rich-text-content > :last-child {
+  margin-bottom: 0;
+}
+
+.rich-text-content .katex-display {
+  margin: 0.5em 0;
+}

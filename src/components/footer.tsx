@@ -95,7 +95,10 @@ export default function Footer() {
 
         {/* Giant Text */}
         <div className="mt-4 mb-8 md:mb-4 w-full max-w-[90vw] cursor-default text-center transition-transform duration-500 hover:scale-[1.02]">
-          <h1 className="font-logo text-[clamp(5.5rem,15vw,20rem)] leading-none font-black tracking-normal select-none whitespace-nowrap text-emerald-500 transition-colors duration-500 hover:text-slate-50">
+          {/* No rem floor: a fixed minimum keeps the 7-character wordmark wider
+              than a phone screen, and whitespace-nowrap then overflows it. Pure
+              vw scales it down to fit at every width. */}
+          <h1 className="font-logo text-[clamp(2.5rem,13vw,20rem)] leading-none font-black tracking-normal select-none whitespace-nowrap text-emerald-500 transition-colors duration-500 hover:text-slate-50">
             MATHPRO
           </h1>
         </div>

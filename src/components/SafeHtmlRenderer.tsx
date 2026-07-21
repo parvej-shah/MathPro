@@ -214,7 +214,11 @@ function transformMarkdownImages(text: string): string {
   return text.replace(markdownImageRegex, (_match, altText, imageUrl) => {
     const safeAlt = escapeHtml(altText || "Image");
     const safeSrc = escapeHtml(imageUrl);
-    return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-64 object-contain rounded-md my-3" />`;
+    // Height must follow the image's own aspect ratio. A fixed height (h-64)
+    // padded every wide-but-short question image — the common case for cropped
+    // equations — with dead space above and below on a phone. max-h caps a tall
+    // image without inventing space around a short one.
+    return `<img src="${safeSrc}" alt="${safeAlt}" class="max-w-full h-auto max-h-[70vh] object-contain rounded-md my-3" />`;
   });
 }
 

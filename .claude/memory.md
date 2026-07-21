@@ -120,3 +120,28 @@ Format: `YYYY-MM-DD — <what changed> | scope: <files/feature> | why: <reason>`
   `.rich-text-content` (which has no styles today) to keep the blast radius off other surfaces.
   Not browser-verified. Pre-existing and deliberately untouched: raw `oklch()` in the score
   card ring, unused `justSubmitted` prop.
+
+- **Quiz mobile spacing — removed dead vertical space in question/option cards.**
+  Root cause was `transformMarkdownImages()` in `SafeHtmlRenderer.tsx` hardcoding
+  `h-64 object-contain` on every markdown image: a wide-but-short cropped equation image
+  (the common case for authored questions) scaled to fit the phone width but kept a fixed
+  256px box, so the leftover became empty padding above and below. Changed to
+  `h-auto max-h-[70vh]` — natural aspect ratio, still capped so a tall image can't take the
+  screen. Also added the first-ever `.rich-text-content` rules to `globals.css`: hide empty
+  `<p>` / `<p><br></p>` that Lexical emits per blank authoring line, zero first/last child
+  margins, and tighten `.katex-display` margin to `0.5em`. NOTE: this intentionally reverses
+  the earlier decision to keep `.rich-text-content` unstyled — the empty-`<p>` and KaTeX
+  margin stacking is a rich-content problem, not a quiz-only one, so scoping it to the quiz
+  body would have left it broken everywhere else. Rules are still scoped to
+  `.rich-text-content`, so non-rich prose is unaffected. `tsc --noEmit` + eslint clean.
+  Not browser-verified — needs a look on a real phone, especially the `:has()` selector.
+
+- **Footer wordmark overflowed on phones.** `footer.tsx` sized the giant "MATHPRO" with
+  `clamp(5.5rem, 15vw, 20rem)`. Below ~587px viewport the `15vw` term drops under the
+  `5.5rem` (88px) floor, so the font pinned at 88px while `whitespace-nowrap` held all 7
+  characters on one line — far wider than a 375px screen, and the parent's `overflow-hidden`
+  silently clipped it instead of revealing the bug. Lowered the floor to `2.5rem` and the
+  scale term to `13vw` so it shrinks to fit at every width. `tsc` + eslint clean.
+  Not browser-verified. Noted but untouched (out of scope): the wrapper is `max-w-[90vw]`
+  while the text scales against full `100vw`, so the two are measured against different
+  boxes — worth reconciling if any clipping remains at the widest phone sizes.
