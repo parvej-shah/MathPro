@@ -8,7 +8,7 @@ interface ModuleNavButtonsProps {
   courseData: Course;
   activeModule: CourseModule;
   courseId: string;
-  findObjectBySerial: (data: Course, serial: number) => CourseModule | undefined;
+  findAdjacentModule: (data: Course, current: CourseModule, direction: 1 | -1) => CourseModule | undefined;
   goToModule: (module: CourseModule) => void;
   setActiveModule: (module: CourseModule) => void;
   shouldShowUnlockChapterButton: () => boolean;
@@ -19,7 +19,7 @@ export default function ModuleNavButtons({
   courseData,
   activeModule,
   courseId,
-  findObjectBySerial,
+  findAdjacentModule,
   goToModule,
   setActiveModule,
   shouldShowUnlockChapterButton,
@@ -27,18 +27,32 @@ export default function ModuleNavButtons({
 }: ModuleNavButtonsProps) {
   const isTaken = courseData?.isTaken || false;
 
+  // Same silent no-op bug as handleNext had: no module, or a locked module,
+  // produced a dead-looking button with no explanation.
   const handlePrev = () => {
-    const prevModule = findObjectBySerial(courseData, (activeModule?.serial ?? 0) - 1);
-    if (prevModule) {
-      setActiveModule(prevModule);
-      saveLastAccessedModule(courseId, prevModule.id, prevModule.chapter_id).catch(() => {});
-      if (typeof window !== "undefined") {
-        window.history.replaceState(
-          null,
-          "",
-          `/course/${courseId}/${prevModule.chapter_id}/${prevModule.id}`,
-        );
-      }
+    const prevModule = findAdjacentModule(courseData, activeModule, -1);
+    if (!prevModule) {
+      toast("এটিই প্রথম অধ্যায়/পাঠ।");
+      return;
+    }
+    if (!prevModule.is_free && !isTaken) {
+      toast.error("এই কোর্সটি কেনার পর এই অংশ দেখা যাবে।");
+      return;
+    }
+    const cat = prevModule.data?.category;
+    const gated = cat === "QUIZ";
+    if (gated && !isTaken) {
+      toast.error("কোর্সটি কেনার পর পরীক্ষা দেওয়া যাবে।");
+      return;
+    }
+    setActiveModule(prevModule);
+    saveLastAccessedModule(courseId, prevModule.id, prevModule.chapter_id).catch(() => {});
+    if (typeof window !== "undefined") {
+      window.history.replaceState(
+        null,
+        "",
+        `/course/${courseId}/${prevModule.chapter_id}/${prevModule.id}`,
+      );
     }
   };
 
@@ -46,7 +60,7 @@ export default function ModuleNavButtons({
   // looked broken with no explanation. Every blocked path now tells the
   // student why nothing happened.
   const handleNext = () => {
-    const nextModule = findObjectBySerial(courseData, (activeModule?.serial ?? 0) + 1);
+    const nextModule = findAdjacentModule(courseData, activeModule, 1);
     if (!nextModule) {
       toast("এটিই শেষ অধ্যায়/পাঠ।");
       return;

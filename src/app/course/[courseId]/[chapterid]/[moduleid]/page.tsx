@@ -22,13 +22,26 @@ import { useQuiz } from "./_hooks/useQuiz";
 import { useQuizTimer } from "./_hooks/useQuizTimer";
 import { useDiscussions } from "./_hooks/useDiscussions";
 
-function findObjectBySerial(data: Course, targetSerial: number): CourseModule | undefined {
-  for (const chapter of data.chapters) {
-    for (const mod of chapter.modules) {
-      if (mod.serial === targetSerial) return mod;
-    }
-  }
-  return undefined;
+// `serial` is only guaranteed to sort modules correctly, not to be gapless —
+// the backend explicitly allows non-consecutive values (see courseV2.reorderModules).
+// Looking up activeModule.serial ± 1 by exact match breaks Next/Previous whenever
+// there's a gap, even though the sidebar (plain serial-sorted order) looks fine.
+// Flattening to a serial-sorted list and stepping by array position fixes this.
+function flattenModulesBySerial(data: Course): CourseModule[] {
+  return data.chapters
+    .flatMap((chapter) => chapter.modules)
+    .sort((a, b) => (a.serial ?? 0) - (b.serial ?? 0));
+}
+
+function findAdjacentModule(
+  data: Course,
+  current: CourseModule,
+  direction: 1 | -1,
+): CourseModule | undefined {
+  const flat = flattenModulesBySerial(data);
+  const index = flat.findIndex((mod) => mod.id === current.id && mod.chapter_id === current.chapter_id);
+  if (index === -1) return undefined;
+  return flat[index + direction];
 }
 
 export default function CourseDetailsPage() {
@@ -177,7 +190,7 @@ export default function CourseDetailsPage() {
   // Prefetch next module URL so navigation feels instant
   useEffect(() => {
     if (!courseId || !courseData || !activeModule) return;
-    const nextModule = findObjectBySerial(courseData, (activeModule.serial ?? 0) + 1);
+    const nextModule = findAdjacentModule(courseData, activeModule, 1);
     if (nextModule) {
       router.prefetch(`/course/${courseId}/${nextModule.chapter_id}/${nextModule.id}`);
     }
@@ -458,7 +471,7 @@ export default function CourseDetailsPage() {
                     courseData={courseData as Course}
                     activeModule={activeModule as CourseModule}
                     courseId={courseId as string}
-                    findObjectBySerial={findObjectBySerial}
+                    findAdjacentModule={findAdjacentModule}
                     goToModule={goToModule}
                     setActiveModule={setActiveModule}
                     shouldShowUnlockChapterButton={shouldShowUnlockChapterButton}
