@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-hot-toast";
 import { saveLastAccessedModule } from "@/utils/moduleAccessUtils";
 import type { CourseModule, Course } from "./types";
 
@@ -41,15 +42,26 @@ export default function ModuleNavButtons({
     }
   };
 
+  // Previously silent no-op when the next module was locked — the button
+  // looked broken with no explanation. Every blocked path now tells the
+  // student why nothing happened.
   const handleNext = () => {
     const nextModule = findObjectBySerial(courseData, (activeModule?.serial ?? 0) + 1);
-    if (nextModule && (nextModule.is_free || isTaken)) {
-      const cat = nextModule.data?.category;
-      const gated = cat === "QUIZ";
-      if (!gated || isTaken) {
-        goToModule(nextModule);
-      }
+    if (!nextModule) {
+      toast("এটিই শেষ অধ্যায়/পাঠ।");
+      return;
     }
+    if (!nextModule.is_free && !isTaken) {
+      toast.error("এই কোর্সটি কেনার পর এই অংশ দেখা যাবে।");
+      return;
+    }
+    const cat = nextModule.data?.category;
+    const gated = cat === "QUIZ";
+    if (gated && !isTaken) {
+      toast.error("কোর্সটি কেনার পর পরীক্ষা দেওয়া যাবে।");
+      return;
+    }
+    goToModule(nextModule);
   };
 
   return (

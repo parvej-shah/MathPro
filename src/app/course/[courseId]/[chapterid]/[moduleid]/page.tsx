@@ -419,6 +419,7 @@ export default function CourseDetailsPage() {
                       setQuizAnswer={setQuizAnswer}
                       quizVerdict={quizVerdict}
                       showQuizAnswer={showQuizAnswer}
+                      attemptChecked={attemptChecked}
                       justSubmitted={justSubmitted}
                       submitting={submitting}
                       submitError={submitError}

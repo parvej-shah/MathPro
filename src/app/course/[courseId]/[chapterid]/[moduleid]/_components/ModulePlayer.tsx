@@ -27,6 +27,8 @@ interface ModulePlayerProps {
   setQuizAnswer: React.Dispatch<React.SetStateAction<Record<number, string>>>;
   quizVerdict: boolean[];
   showQuizAnswer: boolean;
+  /** True once the server has answered whether this quiz was already submitted. */
+  attemptChecked: boolean;
   justSubmitted: boolean;
   submitting: boolean;
   submitError: string | null;
@@ -47,6 +49,7 @@ const ModulePlayer = memo(function ModulePlayer({
   setQuizAnswer,
   quizVerdict,
   showQuizAnswer,
+  attemptChecked,
   justSubmitted,
   submitting,
   submitError,
@@ -214,10 +217,20 @@ const ModulePlayer = memo(function ModulePlayer({
       {/* ── QUIZ ─────────────────────────────────────────────── */}
       {category === "QUIZ" && (
         <div>
+          {/* While the server hasn't yet said whether this quiz was already
+              submitted, show a neutral loading state instead of the start
+              screen — otherwise "শুরু করো" flashes for an already-taken quiz
+              until the /attempt check resolves and flips to the reveal. */}
+          {!attemptChecked && (
+            <div className="rounded-2xl border border-border/60 bg-card/60 p-8 text-center text-muted-foreground">
+              পরীক্ষার তথ্য লোড হচ্ছে…
+            </div>
+          )}
+
           {/* ── Pre-exam start screen ──────────────────────────────────────
               Shown until the student presses শুরু করো. Opening the module no
               longer starts the clock — see useQuizTimer.startQuiz. */}
-          {!quizStarted && !showQuizAnswer && (
+          {attemptChecked && !quizStarted && !showQuizAnswer && (
             <div className="rounded-2xl border border-border/60 bg-card/60 p-5 text-center sm:p-8">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 sm:mb-5 sm:h-16 sm:w-16">
                 <svg className="h-7 w-7 text-primary sm:h-8 sm:w-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
