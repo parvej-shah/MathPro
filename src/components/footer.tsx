@@ -94,11 +94,14 @@ export default function Footer() {
         </div>
 
         {/* Giant Text */}
-        <div className="mt-4 mb-8 md:mb-4 w-full max-w-[90vw] cursor-default text-center transition-transform duration-500 hover:scale-[1.02]">
-          {/* No rem floor: a fixed minimum keeps the 7-character wordmark wider
-              than a phone screen, and whitespace-nowrap then overflows it. Pure
-              vw scales it down to fit at every width. */}
-          <h1 className="font-logo text-[clamp(2.5rem,13vw,20rem)] leading-none font-black tracking-normal select-none whitespace-nowrap text-emerald-500 transition-colors duration-500 hover:text-slate-50">
+        <div className="@container mt-4 mb-8 md:mb-4 w-full max-w-[90vw] cursor-default text-center transition-transform duration-500 hover:scale-[1.02]">
+          {/* Sized in cqw against this wrapper, not vw. The wrapper is capped at
+              90vw and sits inside the section's px-4, so a vw-based size was
+              measured against a box ~10vw+32px wider than the one the text
+              actually occupies. cqw keeps the two in sync if either changes.
+              No rem floor: a fixed minimum keeps the 7-character wordmark wider
+              than a phone screen, and whitespace-nowrap then overflows it. */}
+          <h1 className="font-logo text-[clamp(2.5rem,14.4cqw,20rem)] leading-none font-black tracking-normal select-none whitespace-nowrap text-emerald-500 transition-colors duration-500 hover:text-slate-50">
             MATHPRO
           </h1>
         </div>

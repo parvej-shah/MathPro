@@ -145,3 +145,15 @@ Format: `YYYY-MM-DD — <what changed> | scope: <files/feature> | why: <reason>`
   Not browser-verified. Noted but untouched (out of scope): the wrapper is `max-w-[90vw]`
   while the text scales against full `100vw`, so the two are measured against different
   boxes — worth reconciling if any clipping remains at the widest phone sizes.
+
+- **Footer wordmark sizing unit mismatch (follow-up to the clamp floor fix).** The text was
+  sized in `vw` (full viewport) while living in a wrapper capped at `max-w-[90vw]` nested
+  inside the section's `px-4` — so the type was scaled against a box ~10vw+32px wider than
+  the one it actually occupied, and staying non-clipped depended on the hand-tuned `13vw`
+  absorbing that slack. Made the wrapper an `@container` and switched the text to
+  `clamp(2.5rem,14.4cqw,20rem)`, so size now derives from the wrapper itself and future
+  padding/max-width edits can't desync it. 14.4cqw ≈ the old 13vw at the 90vw cap, so
+  rendered size is materially unchanged. The 2.5rem floor is now unreachable (needs a
+  <278px container) — kept as a harmless guard. Tailwind v4 container queries were already
+  in use in `ui/card.tsx`. Verified `next build` emits both the cqw clamp and container-type
+  into the CSS chunks; tsc + eslint clean. Still not browser-verified.
