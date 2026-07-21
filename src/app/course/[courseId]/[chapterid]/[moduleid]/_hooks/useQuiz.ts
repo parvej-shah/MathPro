@@ -3,7 +3,16 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "@/api.config";
+import { redirectToLogin } from "@/helpers";
 import type { CourseModule } from "../_components/types";
+
+// A dead/revoked token must never be treated as "no attempt yet" — that left
+// the student staring at a normal-looking "start exam" screen while actually
+// logged out, only to have submit fail later. Send them to log back in.
+function isSessionRevoked(err: unknown): boolean {
+  if (!axios.isAxiosError(err)) return false;
+  return err.response?.status === 401;
+}
 
 interface SubmitResult {
   score: number;
@@ -87,7 +96,9 @@ export function useQuiz(
           setShowQuizAnswer(true);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        if (isSessionRevoked(err)) redirectToLogin();
+      })
       .finally(() => {
         if (!cancelled) setAttemptChecked(true);
       });
@@ -131,6 +142,11 @@ export function useQuiz(
       onProgressSubmit(moduleId, score);
       return { score, answers: quizAnswer, verdict, submitted: true };
     } catch (err) {
+      if (isSessionRevoked(err)) {
+        redirectToLogin();
+        return empty;
+      }
+
       // A rejected duplicate attempt is not a failure: the quiz IS graded
       // server-side, this session just didn't know. Pull the stored attempt so
       // the student sees their result instead of a dead submit button.
