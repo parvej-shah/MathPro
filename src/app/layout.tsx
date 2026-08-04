@@ -20,12 +20,14 @@ const orbitron = Orbitron({
 const SITE_NAME = "Math Pro Academy";
 const SITE_URL = "https://mathpro.academy";
 const SITE_DESCRIPTION =
-  "Math Pro Academy — বাংলায় JSC, SSC ও HSC গণিতের অনলাইন কোর্স। ভিডিও ক্লাস, লাইভ ক্লাস, প্র্যাকটিস ও র‍্যাংকিং দিয়ে A+ এর প্রস্তুতি নাও।";
+  "Math Pro Academy — বাংলায় JSC, SSC ও HSC গণিতের অনলাইন কোর্স। ভিডিও ক্লাস, লাইভ ক্লাস, প্র্যাকটিস ও র‍্যাংকিং দিয়ে A+ এর প্রস্তুতি নাও। " +
+  "Math Pro Academy is an online math coaching platform for JSC, SSC, and HSC students in Bangladesh, offering live classes, recorded video lectures, practice quizzes, and performance ranking.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    default:
+      "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম | Online Math Coaching for JSC, SSC & HSC in Bangladesh",
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -53,12 +55,14 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     locale: "bn_BD",
     url: SITE_URL,
-    title: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    title:
+      "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম | Online Math Coaching for JSC, SSC & HSC in Bangladesh",
     description: SITE_DESCRIPTION,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম",
+    title:
+      "Math Pro Academy — বাংলায় গণিত শেখার সেরা প্ল্যাটফর্ম | Online Math Coaching for JSC, SSC & HSC in Bangladesh",
     description: SITE_DESCRIPTION,
   },
   robots: {
@@ -67,6 +71,27 @@ export const metadata: Metadata = {
   },
   other: {
     google: "notranslate",
+  },
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: SITE_NAME,
+  alternateName: "MathPro",
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
+  description: SITE_DESCRIPTION,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "৫১/১/এ-১, নোবেল ভিলা, উত্তর মুগদা",
+    addressLocality: "Dhaka",
+    postalCode: "1214",
+    addressCountry: "BD",
+  },
+  areaServed: {
+    "@type": "Country",
+    name: "Bangladesh",
   },
 };
 
@@ -82,6 +107,12 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${anekBangla.variable} ${orbitron.variable} h-full antialiased notranslate`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="flex min-h-full flex-col font-sans">
         <Providers>
           <div className="print:hidden">
