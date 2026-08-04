@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 
 const footerLinks = [
   {
@@ -44,24 +44,39 @@ export default function Footer() {
               MATHPRO প্ল্যাটফর্ম:
             </h3>
             <p className="font-semibold text-lg max-w-sm leading-snug text-slate-300">
-              ঢাকায় ৮ম-১২শ শ্রেণির শিক্ষার্থীদের জন্য প্রিমিয়ার অনলাইন গণিত কোচিং প্ল্যাটফর্ম। গণিত শেখো। পরীক্ষায় বিজয়ী হও।
+              ঢাকায় ৮ম-১২শ শ্রেণির শিক্ষার্থীদের জন্য প্রিমিয়ার অনলাইন গণিত কোচিং প্ল্যাটফর্ম। গণিত শেখো। পরীক্ষায় বিজয়ী হও।
             </p>
+            <div className="mt-6 flex items-start gap-2 text-sm text-slate-400 max-w-sm">
+              <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
+              <span>
+                MathPro Academic and Admission Care, ৫১/১/এ-১, নোবেল ভিলা, উত্তর মুগদা, ঢাকা-১২১৪
+              </span>
+            </div>
           </div>
 
           <div className="mt-12">
-            <a 
-              href="#" 
+            <a
+              href="#"
               className="inline-flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors"
             >
               কোর্সগুলো দেখুন <ArrowUpRight className="w-4 h-4" />
             </a>
+
+            <div className="mt-6">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+                পেমেন্ট মাধ্যম
+              </p>
+              <p className="text-xs text-slate-400 max-w-sm">
+                bKash · Nagad · Rocket · Visa · Mastercard · American Express · ইন্টারনেট ব্যাংকিং
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Link Columns */}
         {footerLinks.map((group, i) => (
-          <div 
-            key={i} 
+          <div
+            key={i}
             className="p-8 border-b md:border-b-0 md:border-r last:border-r-0 border-white/10 flex flex-col"
           >
             <h3 className="text-sm font-bold tracking-tight uppercase mb-8 pb-2 border-b border-white/10 inline-block w-full text-emerald-400">
@@ -70,7 +85,7 @@ export default function Footer() {
             <ul className="space-y-4 flex-1">
               {group.links.map((link, j) => (
                 <li key={j}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="font-medium text-sm hover:text-emerald-400 hover:underline underline-offset-4 uppercase tracking-wide opacity-80 hover:opacity-100 transition-all"
                   >
@@ -88,8 +103,12 @@ export default function Footer() {
         {/* Bottom bar texts */}
         <div className="w-full flex justify-between absolute bottom-4 px-4 text-[10px] md:text-xs font-bold uppercase tracking-widest z-10 text-slate-500">
           <span>&copy; {new Date().getFullYear()} MathPro Inc.</span>
-          <span className="hidden sm:inline-block">Terms & Conditions</span>
-          <span className="hidden sm:inline-block">Privacy Policy</span>
+          <Link href="/terms" className="hidden sm:inline-block hover:text-emerald-400 transition-colors">
+            Terms & Conditions
+          </Link>
+          <Link href="/privacy" className="hidden sm:inline-block hover:text-emerald-400 transition-colors">
+            Privacy Policy
+          </Link>
           <span className="hidden md:inline-block">All Rights Reserved.</span>
         </div>
 
