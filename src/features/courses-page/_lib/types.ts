@@ -51,6 +51,7 @@ export interface Feedback {
   description: string;
   imageUploadedLink?: string;
   videoUrl?: string;
+  rating?: number;
 }
 
 export interface CoursesResponse {

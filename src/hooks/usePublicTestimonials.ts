@@ -19,8 +19,9 @@ export function mapPublicTestimonialsToFeedbacks(
     name: item.user_name,
     bio: item.course_name || "MathPro Student",
     description: item.comment,
-    imageUploadedLink: "",
+    imageUploadedLink: item.avatar_url || "",
     videoUrl: item.video_url || undefined,
+    rating: item.rating,
   }));
 }
 

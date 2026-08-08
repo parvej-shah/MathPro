@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 
 // Below-the-fold sections — lazy-loaded to keep the landing page's initial JS small.
-const TestimonialMarquee = dynamic(
-  () => import("@/features/courses-page/components/TestimonialMarquee"),
+const TestimonialShowcase = dynamic(
+  () => import("@/features/courses-page/components/TestimonialShowcase"),
   { ssr: false },
 );
 const FAQSection = dynamic(
@@ -525,8 +525,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* --- STUDENT REVIEWS (MARQUEE) --- */}
-      <TestimonialMarquee
+      {/* --- STUDENT REVIEWS (SHOWCASE) --- */}
+      <TestimonialShowcase
         feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)}
       />
 

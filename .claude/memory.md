@@ -157,3 +157,49 @@ Format: `YYYY-MM-DD — <what changed> | scope: <files/feature> | why: <reason>`
   <278px container) — kept as a harmless guard. Tailwind v4 container queries were already
   in use in `ui/card.tsx`. Verified `next build` emits both the cqw clamp and container-type
   into the CSS chunks; tsc + eslint clean. Still not browser-verified.
+
+2026-08-08 — TestimonialShowcase browser-verified (first real visual pass; prior sessions
+  were tsc/eslint only). Ran Playwright against localhost:3000 with the backend live at
+  :8000. Confirmed: hero band matches the reference two-column layout and cycles slides;
+  real backend ratings render (a 4-star review showed 4 stars, not a hardcoded 5); review
+  row and video row both auto-scroll and pause on hover; YouTube thumbnails load and
+  tap-to-play swaps in a live iframe; centered CTA renders; light + dark + 390px mobile all
+  correct with 0px horizontal overflow on both desktop and mobile. Console had 5 image 404s
+  — all `/_next/image` for deleted R2 course thumbnails in the COURSE CARDS section,
+  pre-existing and unrelated to testimonials. Gotcha for future checks: asserting on
+  `img[src*="youtube.com/vi"]` finds nothing because next/image rewrites src to
+  `/_next/image?url=…`; match the decoded url param or check naturalWidth instead.
+  Backend now returns `avatar_url`, so the shared `mapPublicTestimonialsToFeedbacks`
+  adapter feeds real photos to all 5 marquee/showcase surfaces (initials remain the
+  fallback). The temporary `_lib/testimonial-mock.ts` dev-only backfill is STILL PRESENT
+  and still needs removing once real testimonials carry photos + video URLs.
+
+2026-08-08 — Acted on a human-perspective content review of TestimonialShowcase (agent
+  role-played the target user: a 16-y-o SSC candidate in Bangladesh). FOUR fixes, all in
+  TestimonialShowcase.tsx:
+  (1) REMOVED FABRICATED STATS — the hardcoded HERO_STATS ("১০,০০০+ শিক্ষার্থী", "৯৭%
+  সুপারিশকৃত", "৪.৯/৫", "৮০০+ ৫ স্টার রিভিউ") were invented; the live DB has FOUR
+  testimonials. The reviewer flagged ৯৭% as their top credibility problem ("97% of whom?").
+  Replaced with `buildHeroStats()`, which derives only what real data supports: comment
+  count, true average rating, true five-star count — and renders 1-3 tiles depending on
+  what's available (grid became flex-wrap since the count is now dynamic). Same reasoning
+  that killed the before/after mock-score block earlier: never present invented metrics as
+  real. Also dropped "হাজারো শিক্ষার্থী" from the hero subtext and CTA subtext for the same
+  reason. NOTE: "হাজারো শিক্ষার্থী" still appears in landing-page.tsx:657 (footer CTA) and
+  TestimonialMarquee.tsx:148 — left alone, out of scope, but same unsupported claim if you
+  ever want it consistent.
+  (2) VERIFIED BADGE now has meaning — the bare CheckCircle2 communicated nothing (the
+  explanatory pill text was removed earlier at the user's request). Added
+  VERIFIED_LABEL via title + aria-label. GOTCHA: this lucide-react version does NOT accept
+  a `title` prop (TS2322), so the icon is wrapped in a <span title=...> instead.
+  (3) CTA button "কোর্সগুলো দেখো" -> "আজই শুরু করো" — passive/window-shopping verb replaced
+  with an active one matching the heading's commitment.
+  (4) Mobile stat box was cramped at 390px (icon stacked above value). Icon now sits inline
+  with the value, left-aligned, wrapping naturally. Automated tests had passed this because
+  they only assert overflow — they can't judge "fits but feels tight"; that gap is exactly
+  what the human-perspective pass caught.
+  Verified: tsc + eslint clean; browser-checked at 1440px and 390px (0px overflow, stats
+  now read ৪+ / ৪.৮/৫ / ৩ matching the real DB, 9 badges carry tooltips, old CTA string
+  gone). Content complaints NOT actioned because they are seed-data, not code: English
+  review text and "Test User" names come from the DB, and the placeholder YouTube videos
+  come from the temp mock — all resolve when real testimonials land.

@@ -318,3 +318,15 @@
 .rich-text-content .katex-display {
   margin: 0.5em 0;
 }
+
+/* Horizontal scroll rows (testimonials, filter strips) hide their scrollbar and
+   rely on arrow buttons / auto-scroll for affordance. The class was already used
+   across the codebase but never defined. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

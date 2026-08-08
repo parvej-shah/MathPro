@@ -4,39 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Star, Quote } from "lucide-react";
 import { Feedback } from "../_lib/types";
-
-// ─── YouTube helpers ────────────────────────────────────────────────────────────
-
-function getYouTubeEmbedUrl(url: string): string | null {
-  try {
-    const parsed = new URL(url);
-    const host = parsed.hostname.replace(/^www\./, "");
-
-    if (host === "youtu.be") {
-      const id = parsed.pathname.slice(1);
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      if (parsed.pathname === "/watch") {
-        const id = parsed.searchParams.get("v");
-        return id ? `https://www.youtube.com/embed/${id}` : null;
-      }
-      const shortsMatch = parsed.pathname.match(/^\/shorts\/([^/]+)/);
-      if (shortsMatch) {
-        return `https://www.youtube.com/embed/${shortsMatch[1]}`;
-      }
-      const embedMatch = parsed.pathname.match(/^\/embed\/([^/]+)/);
-      if (embedMatch) {
-        return `https://www.youtube.com/embed/${embedMatch[1]}`;
-      }
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
+import { getYouTubeEmbedUrl } from "../_lib/youtube";
 
 // ─── Single card ───────────────────────────────────────────────────────────────
 
