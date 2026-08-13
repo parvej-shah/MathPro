@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Feedback } from "../_lib/types";
 import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from "../_lib/youtube";
+import TestimonialModal from "./TestimonialModal";
 // TEMP: dev-only preview data — remove with `_lib/testimonial-mock.ts`
 import { MOCK_TESTIMONIALS } from "../_lib/testimonial-mock";
 
@@ -32,24 +33,84 @@ function Avatar({
   imageUploadedLink?: string;
   size: number;
 }) {
+  // Avatar hosts can 404 (e.g. a CDN domain that isn't serving the bucket yet).
+  // Without this, a failed load renders alt text spilling out of the circle.
+  const [failed, setFailed] = useState(false);
+
   return (
     <div
       className="rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center shrink-0"
       style={{ width: size, height: size }}
     >
-      {imageUploadedLink ? (
+      {imageUploadedLink && !failed ? (
         <Image
           src={imageUploadedLink}
-          alt={name}
+          alt=""
           width={size}
           height={size}
           className="w-full h-full object-cover"
+          onError={() => setFailed(true)}
         />
       ) : (
         <span className="text-primary font-bold" style={{ fontSize: size * 0.4 }}>
           {name?.charAt(0) || "?"}
         </span>
       )}
+    </div>
+  );
+}
+
+/** Full-bleed portrait for the featured quote panel, with the same 404 fallback. */
+function PortraitOrInitial({
+  name,
+  imageUploadedLink,
+}: {
+  name: string;
+  imageUploadedLink?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+
+  if (!imageUploadedLink || failed) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-emerald-400 font-extrabold text-6xl">
+          {name?.charAt(0) || "?"}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={imageUploadedLink}
+      alt=""
+      fill
+      sizes="(min-width: 640px) 30vw, 100vw"
+      className="object-cover"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+/** Institution logo + name, replacing the old plain-text course-name subtitle. */
+function InstitutionLine({
+  name,
+  logoUrl,
+  textClassName = "text-xs text-muted-foreground truncate",
+}: {
+  name: string;
+  logoUrl?: string;
+  textClassName?: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <div className="flex items-center gap-1.5 min-w-0">
+      {logoUrl && !failed && (
+        <span className="relative size-4 shrink-0 rounded-full overflow-hidden bg-muted">
+          <Image src={logoUrl} alt="" fill className="object-contain" onError={() => setFailed(true)} />
+        </span>
+      )}
+      <p className={textClassName}>{name}</p>
     </div>
   );
 }
@@ -254,21 +315,10 @@ function HeroBand({ items }: { items: Feedback[] }) {
                   >
                     <div className="flex flex-col sm:flex-row h-full">
                       <div className="relative w-full sm:w-[38%] aspect-square sm:aspect-auto bg-emerald-800/50 shrink-0">
-                        {feedback.imageUploadedLink ? (
-                          <Image
-                            src={feedback.imageUploadedLink}
-                            alt={feedback.name}
-                            fill
-                            sizes="(min-width: 640px) 30vw, 100vw"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-emerald-400 font-extrabold text-6xl">
-                              {feedback.name?.charAt(0) || "?"}
-                            </span>
-                          </div>
-                        )}
+                        <PortraitOrInitial
+                          name={feedback.name}
+                          imageUploadedLink={feedback.imageUploadedLink}
+                        />
                       </div>
 
                       <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0">
@@ -280,7 +330,7 @@ function HeroBand({ items }: { items: Feedback[] }) {
                         />
                         <p className="relative text-base sm:text-lg text-white leading-relaxed mb-6">
                           <Quote className="inline size-4 text-emerald-500/70 -translate-y-1 mr-1" />
-                          {feedback.description}
+                          {feedback.hook || feedback.description}
                         </p>
                         <div className="h-px bg-emerald-800 mb-4" />
                         <div className="flex items-center gap-2">
@@ -293,7 +343,11 @@ function HeroBand({ items }: { items: Feedback[] }) {
                             />
                           </span>
                         </div>
-                        <p className="text-sm text-emerald-200/70 mt-1">{feedback.bio}</p>
+                        <InstitutionLine
+                          name={feedback.bio}
+                          logoUrl={feedback.institutionLogoUrl}
+                          textClassName="text-sm text-emerald-200/70 truncate"
+                        />
                       </div>
                     </div>
                   </div>
@@ -339,19 +393,29 @@ function HeroBand({ items }: { items: Feedback[] }) {
 
 // ─── Review card ────────────────────────────────────────────────────────────────
 
-function ReviewCard({ feedback }: { feedback: Feedback }) {
+function ReviewCard({
+  feedback,
+  onOpen,
+}: {
+  feedback: Feedback;
+  onOpen: () => void;
+}) {
   return (
-    <div className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start text-left bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300"
+    >
       <div className="flex items-start gap-3">
         <Avatar
           name={feedback.name}
           imageUploadedLink={feedback.imageUploadedLink}
-          size={48}
+          size={64}
         />
         <div className="min-w-0 flex-1">
           <StarRow rating={feedback.rating} className="mb-2" />
           <p className="text-sm text-paragraph leading-relaxed line-clamp-4">
-            &ldquo;{feedback.description}&rdquo;
+            &ldquo;{feedback.hook || feedback.description}&rdquo;
           </p>
         </div>
       </div>
@@ -371,9 +435,11 @@ function ReviewCard({ feedback }: { feedback: Feedback }) {
               />
             </span>
         </div>
-        <p className="text-xs text-muted-foreground truncate mt-1">{feedback.bio}</p>
+        <div className="mt-1">
+          <InstitutionLine name={feedback.bio} logoUrl={feedback.institutionLogoUrl} />
+        </div>
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -396,8 +462,8 @@ function VideoShortCard({
   if (!embedUrl) return null;
 
   return (
-    <div className="flex-shrink-0 w-[210px] sm:w-[240px] snap-start">
-      <div className="relative aspect-9/16 rounded-2xl overflow-hidden bg-slate-900 shadow-lg">
+    <div>
+      <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-lg">
         {playing ? (
           <iframe
             src={`${embedUrl}?autoplay=1`}
@@ -417,7 +483,7 @@ function VideoShortCard({
                 src={thumbnailUrl}
                 alt={feedback.name}
                 fill
-                sizes="240px"
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 className="object-cover"
               />
             )}
@@ -441,67 +507,37 @@ function VideoShortCard({
               />
             </span>
         </div>
-        <p className="text-xs text-muted-foreground truncate mt-0.5">{feedback.bio}</p>
+        <div className="mt-0.5">
+          <InstitutionLine name={feedback.bio} logoUrl={feedback.institutionLogoUrl} />
+        </div>
       </div>
     </div>
   );
 }
 
 function VideoPanel({ items }: { items: Feedback[] }) {
-  const rowRef = useRef<HTMLDivElement>(null);
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
-  // Hold the auto-scroll while a video is playing so it can't scroll away.
-  const { scrollBy, pauseHandlers } = useAutoScroll(
-    rowRef,
-    252,
-    3500,
-    playingIndex !== null,
-  );
 
   return (
     <div className="mb-14">
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center gap-2">
-          <span className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <PlayCircle className="size-4 text-primary" />
-          </span>
-          <h3 className="text-lg md:text-xl font-bold text-heading font-heading">
-            ওদের গল্প, ওদের কণ্ঠে
-          </h3>
-        </div>
-        <div className="hidden sm:flex gap-2">
-          <button
-            onClick={() => scrollBy(-1)}
-            aria-label="Scroll videos left"
-            className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-heading hover:bg-primary hover:text-white hover:border-primary transition-colors"
-          >
-            <ChevronLeft className="size-4" />
-          </button>
-          <button
-            onClick={() => scrollBy(1)}
-            aria-label="Scroll videos right"
-            className="size-9 rounded-full bg-card border border-border flex items-center justify-center text-heading hover:bg-primary hover:text-white hover:border-primary transition-colors"
-          >
-            <ChevronRight className="size-4" />
-          </button>
-        </div>
+      <div className="flex items-center gap-2 mb-5">
+        <span className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
+          <PlayCircle className="size-4 text-primary" />
+        </span>
+        <h3 className="text-lg md:text-xl font-bold text-heading font-heading">
+          ওদের গল্প, ওদের কণ্ঠে
+        </h3>
       </div>
 
-      <div className="relative" {...pauseHandlers}>
-        <div className="absolute right-0 top-0 bottom-4 w-10 md:w-16 z-10 pointer-events-none bg-linear-to-l from-section-a to-transparent" />
-        <div
-          ref={rowRef}
-          className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 scrollbar-hide"
-        >
-          {items.map((feedback, i) => (
-            <VideoShortCard
-              key={`${feedback.name}-video-${i}`}
-              feedback={feedback}
-              playing={playingIndex === i}
-              onPlay={() => setPlayingIndex(i)}
-            />
-          ))}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {items.map((feedback, i) => (
+          <VideoShortCard
+            key={`${feedback.name}-video-${i}`}
+            feedback={feedback}
+            playing={playingIndex === i}
+            onPlay={() => setPlayingIndex(i)}
+          />
+        ))}
       </div>
     </div>
   );
@@ -535,6 +571,7 @@ export default function TestimonialShowcase({
   const reviewRowRef = useRef<HTMLDivElement>(null);
   const { scrollBy: scrollReviews, pauseHandlers: reviewPauseHandlers } =
     useAutoScroll(reviewRowRef, 320, 4000);
+  const [activeFeedback, setActiveFeedback] = useState<Feedback | null>(null);
 
   if (source.length === 0) {
     return null;
@@ -584,7 +621,11 @@ export default function TestimonialShowcase({
                 className="flex gap-5 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide"
               >
                 {source.map((feedback, i) => (
-                  <ReviewCard key={`${feedback.name}-${i}`} feedback={feedback} />
+                  <ReviewCard
+                    key={`${feedback.name}-${i}`}
+                    feedback={feedback}
+                    onOpen={() => setActiveFeedback(feedback)}
+                  />
                 ))}
               </div>
             </div>
@@ -617,6 +658,13 @@ export default function TestimonialShowcase({
           </div>
         </div>
       </div>
+
+      <TestimonialModal
+        feedback={activeFeedback}
+        onOpenChange={(open) => {
+          if (!open) setActiveFeedback(null);
+        }}
+      />
     </section>
   );
 }

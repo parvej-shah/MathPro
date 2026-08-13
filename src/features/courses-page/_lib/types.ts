@@ -48,8 +48,12 @@ export interface Instructor {
 export interface Feedback {
   name: string;
   bio: string;
+  /** Full story — shown in the detail modal. */
   description: string;
+  /** Short card teaser, admin-authored. Falls back to a clamped `description` when absent. */
+  hook?: string;
   imageUploadedLink?: string;
+  institutionLogoUrl?: string;
   videoUrl?: string;
   rating?: number;
 }

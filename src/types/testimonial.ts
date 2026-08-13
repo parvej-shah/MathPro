@@ -4,6 +4,9 @@ export interface PublicTestimonial {
   is_active: boolean;
   video_url?: string | null;
   avatar_url?: string | null;
+  institution_name?: string | null;
+  institution_logo_url?: string | null;
+  hook_text?: string | null;
   course_id: string;
   user_id: string;
   rating: number;

@@ -17,9 +17,11 @@ export function mapPublicTestimonialsToFeedbacks(
 ): Feedback[] {
   return testimonials.map((item) => ({
     name: item.user_name,
-    bio: item.course_name || "MathPro Student",
+    bio: item.institution_name || item.course_name || "MathPro Student",
     description: item.comment,
+    hook: item.hook_text || undefined,
     imageUploadedLink: item.avatar_url || "",
+    institutionLogoUrl: item.institution_logo_url || undefined,
     videoUrl: item.video_url || undefined,
     rating: item.rating,
   }));

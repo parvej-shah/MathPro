@@ -36,14 +36,12 @@ import {
   TrendingUp,
   ChevronRight,
   Star,
-  MapPin,
   BookOpen,
   GraduationCap,
   Calculator,
   FlaskConical,
   Laptop,
   Users,
-  ArrowUpRight,
 } from "lucide-react";
 
 const classCategories = [
@@ -497,118 +495,6 @@ export function LandingPage() {
       <TestimonialShowcase
         feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)}
       />
-
-      {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
-      <section id="branches" className="py-32 bg-section-b overflow-hidden relative">
-        {/* Math Motif Background */}
-        <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-muted/20 font-serif font-black select-none pointer-events-none z-0 animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "16s" }}>Ω</div>
-        <div className="container mx-auto px-6 lg:px-12 relative z-[45]">
-          <div className="grid lg:grid-cols-2 gap-16 xl:gap-20 items-center max-w-[1400px] mx-auto">
-
-            {/* Geometric Map Visual (Left Side) */}
-            <div className="relative z-[45] h-[550px] w-full rounded-[3rem] bg-[#0f172a] border border-slate-800/80 flex items-center justify-center overflow-hidden shadow-2xl shadow-slate-900/20 group">
-              {/* Animated Geometric Grid */}
-              <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '48px 48px' }}></div>
-
-              {/* Radar Sweep Effect */}
-              <div
-                className="absolute top-1/2 left-1/2 w-[1000px] h-[1000px] -translate-x-1/2 -translate-y-1/2 origin-center animate-radar-spin"
-                style={{ background: 'conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(16, 185, 129, 0.15) 360deg)', borderRadius: '50%' }}
-              />
-
-              {/* Concentric Geometry */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[250px] rounded-full border border-emerald-500/20"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[450px] rounded-full border border-emerald-500/10"></div>
-
-              {/* SVG Connecting Path */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                <line
-                  x1="35%" y1="35%" x2="65%" y2="65%"
-                  stroke="#10b981" strokeWidth="2" className="opacity-60 branch-line-draw"
-                />
-              </svg>
-
-              {/* Tech UI Overlays */}
-              <div className="absolute top-8 left-8 font-mono text-[11px] text-emerald-400/80 tracking-[0.2em] leading-relaxed uppercase">
-                LAT_ 23.8103° N <br />
-                LON_ 90.4125° E <br />
-                <span className="text-white mt-2 inline-block">SYS.ACTIVE</span>
-              </div>
-              <div className="absolute bottom-8 right-8 font-mono text-[11px] text-slate-400 dark:text-slate-500 tracking-[0.2em] uppercase text-right">
-                MATHPRO_NET_V2 <br />
-                O2O_CONNECT
-              </div>
-
-              {/* Branch Pin 1 - Mirpur */}
-              <a
-                href="https://maps.google.com/?q=Mirpur+10+Center,+Dhaka"
-                target="_blank"
-                rel="noreferrer"
-                className="absolute top-[35%] left-[35%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group/pin cursor-pointer z-10"
-              >
-                <div className="bg-slate-900/90 backdrop-blur-xl px-5 py-2.5 rounded-[1.2rem] shadow-2xl text-[15px] font-extrabold text-white mb-4 border border-emerald-500/30 group-hover/pin:bg-emerald-500 group-hover/pin:border-emerald-400 group-hover/pin:shadow-emerald-500/30 transition-all duration-300 transform group-hover/pin:-translate-y-2 group-hover/pin:scale-105 tracking-wide">
-                  মিরপুর শাখা
-                </div>
-                <div className="size-6 bg-emerald-500 rounded-full border-[3px] border-slate-900 shadow-[0_0_20px_rgba(16,185,129,0.5)] relative flex items-center justify-center group-hover/pin:scale-[1.4] transition-transform duration-300">
-                  <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-60"></div>
-                  <div className="size-1.5 bg-white rounded-full"></div>
-                </div>
-              </a>
-
-              {/* Branch Pin 2 - Uttara */}
-              <a
-                href="https://maps.google.com/?q=Uttara+Sector+7,+Dhaka"
-                target="_blank"
-                rel="noreferrer"
-                className="absolute top-[65%] left-[65%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group/pin cursor-pointer z-10"
-              >
-                <div className="bg-slate-900/90 backdrop-blur-xl px-5 py-2.5 rounded-[1.2rem] shadow-2xl text-[15px] font-extrabold text-white mb-4 border border-emerald-500/30 group-hover/pin:bg-emerald-500 group-hover/pin:border-emerald-400 group-hover/pin:shadow-emerald-500/30 transition-all duration-300 transform group-hover/pin:-translate-y-2 group-hover/pin:scale-105 tracking-wide">
-                  উত্তরা শাখা
-                </div>
-                <div className="size-6 bg-emerald-500 rounded-full border-[3px] border-slate-900 shadow-[0_0_20px_rgba(16,185,129,0.5)] relative flex items-center justify-center group-hover/pin:scale-[1.4] transition-transform duration-300">
-                  <div className="absolute inset-0 bg-emerald-400 rounded-full animate-ping opacity-60"></div>
-                  <div className="size-1.5 bg-white rounded-full"></div>
-                </div>
-              </a>
-            </div>
-
-            {/* Content (Right Side) */}
-            <div className="flex flex-col items-start lg:pl-4 relative z-[45]">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold uppercase tracking-widest mb-6">
-                <MapPin className="size-3.5 stroke-[2.5]" />
-                আমাদের শাখাসমূহ
-              </div>
-              <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 leading-[1.15] text-heading font-heading">
-                অনলাইনে শেখো।<br />অফলাইনে যুক্ত হও।
-              </h2>
-              <p className="text-muted-foreground text-[1.15rem] mb-12 leading-relaxed font-medium">
-                অনলাইনে সেরা অভিজ্ঞতার পাশাপাশি, ঢাকায় MathPro-এর অফলাইন শাখাও রয়েছে। মক এক্সাম দিতে, প্রিন্টেড শিট নিতে বা শিক্ষকদের সাথে সরাসরি কথা বলতে চলে এসো আমাদের শাখায়।
-              </p>
-
-              <div className="space-y-5 w-full">
-                {[
-                  { name: "মিরপুর ১০ সেন্টার", address: "বাড়ি ১২, রোড ৪, ব্লক সি, মিরপুর, ঢাকা", mapUrl: "https://maps.google.com/?q=Mirpur+10+Center,+Dhaka" },
-                  { name: "উত্তরা সেক্টর ৭", address: "সেক্টর ৭, সোনারগাঁও জনপথ রোড, ঢাকা", mapUrl: "https://maps.google.com/?q=Uttara+Sector+7,+Dhaka" }
-                ].map((branch, i) => (
-                  <a key={i} href={branch.mapUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-6 md:p-8 rounded-[1.5rem] border border-border hover:border-emerald-400/50 dark:hover:border-emerald-500/40 transition-all duration-300 bg-card hover:bg-card/80 group cursor-pointer shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 hover:-translate-y-1 relative z-[45]">
-                    <div>
-                      <h4 className="font-extrabold text-[22px] text-heading mb-1.5 font-heading tracking-tight group-hover:text-emerald-600 transition-colors">{branch.name}</h4>
-                      <p className="text-muted-foreground font-medium text-[15px] flex items-center gap-2">
-                        <MapPin className="size-4 text-emerald-500" />
-                        {branch.address}
-                      </p>
-                    </div>
-                    <div className="size-12 rounded-full bg-muted text-muted-foreground group-hover:text-white group-hover:bg-primary flex items-center justify-center transition-all duration-300 shadow-sm group-hover:rotate-45 group-hover:scale-110">
-                      <ArrowUpRight className="size-6 stroke-[2.5]" />
-                    </div>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
       <FAQSection />
 

@@ -259,10 +259,6 @@
   to { transform: translateY(14px); }
 }
 
-@keyframes radar-spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
 .animate-hero-float-up {
   animation: hero-float-up 3s ease-in-out infinite alternate;
   will-change: transform;
@@ -278,21 +274,11 @@
   will-change: transform;
 }
 
-.animate-radar-spin {
-  animation: radar-spin 12s linear infinite;
-  will-change: transform;
-}
-
-.branch-line-draw {
-  stroke-dasharray: 6 6;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .animate-motif-float,
   .animate-hero-float-up,
   .animate-hero-float-card-up,
-  .animate-hero-float-card-down,
-  .animate-radar-spin {
+  .animate-hero-float-card-down {
     animation: none;
   }
 }

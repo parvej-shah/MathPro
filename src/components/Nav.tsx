@@ -232,7 +232,6 @@ export default function Nav({ mode = "default" }: NavProps) {
             {mode === "landing" && (
               <>
                 <a href="#features" className={`transition-colors ${navHoverClass}`}>বৈশিষ্ট্য</a>
-                <a href="#branches" className={`transition-colors ${navHoverClass}`}>শাখাসমূহ</a>
               </>
             )}
           </div>
@@ -421,13 +420,6 @@ export default function Nav({ mode = "default" }: NavProps) {
                           className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white transition-colors hover:bg-white/[0.1]"
                         >
                           বৈশিষ্ট্য
-                        </a>
-                        <a
-                          href="#branches"
-                          onClick={() => setMobileMenuOpen(false)}
-                          className="rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-white transition-colors hover:bg-white/[0.1]"
-                        >
-                          শাখাসমূহ
                         </a>
                       </>
                     )}

@@ -203,3 +203,7 @@ Format: `YYYY-MM-DD — <what changed> | scope: <files/feature> | why: <reason>`
   gone). Content complaints NOT actioned because they are seed-data, not code: English
   review text and "Test User" names come from the DB, and the placeholder YouTube videos
   come from the temp mock — all resolve when real testimonials land.
+
+2026-08-13 — Removed the offline branches section from the landing page at the user's
+  request. Also removed the landing nav links targeting `#branches` and branch-only radar
+  CSS helpers so the page has no stale anchor or unused animation hook.
