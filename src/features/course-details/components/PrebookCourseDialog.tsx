@@ -67,7 +67,7 @@ export default function PrebookCourseDialog({
     >
       <DialogContent
         showCloseButton={false}
-        className="w-full max-w-md lg:max-w-lg text-foreground rounded-2xl bg-primary/5 dark:bg-primary/5 backdrop-blur-lg border border-primary/60 p-0"
+        className="w-[calc(100%-1.5rem)] sm:w-full max-w-md lg:max-w-lg text-foreground rounded-2xl bg-primary/5 dark:bg-primary/5 backdrop-blur-lg border border-primary/60 p-0"
       >
         <button
           onClick={onClose}

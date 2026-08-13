@@ -55,7 +55,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           "fixed left-1/2 top-1/2 z-[9999] -translate-x-1/2 -translate-y-1/2",
-          "w-full max-w-md rounded-2xl border border-border bg-background p-6 text-left align-middle shadow-xl",
+          "w-[calc(100%-2rem)] sm:w-full max-w-md rounded-2xl border border-border bg-background p-6 text-left align-middle shadow-xl",
           "transition-all duration-200 ease-out",
           "data-starting-style:opacity-0 data-starting-style:scale-95",
           "data-ending-style:opacity-0 data-ending-style:scale-95",

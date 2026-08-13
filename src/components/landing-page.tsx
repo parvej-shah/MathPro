@@ -264,7 +264,7 @@ export function LandingPage() {
                 </div>
 
                 {/* Single floating credential — pinned low-right so it never covers the face */}
-                <div className="absolute -right-3 lg:-right-6 bottom-36 sm:bottom-28 lg:bottom-28 bg-emerald-950/90 backdrop-blur-md px-4 py-3 rounded-2xl ring-1 ring-emerald-400/20 shadow-xl flex items-center gap-3">
+                <div className="absolute right-2 sm:-right-3 lg:-right-6 bottom-36 sm:bottom-28 lg:bottom-28 bg-emerald-950/90 backdrop-blur-md px-4 py-3 rounded-2xl ring-1 ring-emerald-400/20 shadow-xl flex items-center gap-3">
                   <div className="size-9 rounded-full bg-emerald-400/15 flex items-center justify-center shrink-0">
                     <TrendingUp className="text-emerald-400 size-4" />
                   </div>
@@ -283,9 +283,9 @@ export function LandingPage() {
       {/* --- TRUST STATS BAR --- */}
       <section className="bg-emerald-900 border-y border-emerald-800 relative z-[45] shadow-xl overflow-hidden">
         <div className="container mx-auto px-6 lg:px-12 py-6 md:py-8">
-          <div className="flex flex-wrap justify-center lg:justify-between gap-6 md:gap-10 lg:gap-12 items-center max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-10 lg:gap-12 items-center max-w-5xl mx-auto">
 
-            <div className="flex items-center gap-3 md:gap-5">
+            <div className="flex items-center justify-center sm:justify-start gap-3 md:gap-5">
               <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
                 <Users className="size-5 md:size-7" />
               </div>
@@ -295,9 +295,7 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="hidden lg:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
-
-            <div className="flex items-center gap-3 md:gap-5">
+            <div className="flex items-center justify-center sm:justify-start gap-3 md:gap-5">
               <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
                 <CheckCircle2 className="size-5 md:size-7" />
               </div>
@@ -307,9 +305,7 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="hidden lg:block w-px h-16 bg-gradient-to-b from-transparent via-emerald-700 to-transparent"></div>
-
-            <div className="flex items-center gap-3 md:gap-5">
+            <div className="flex items-center justify-center sm:justify-start gap-3 md:gap-5">
               <div className="size-10 md:size-14 rounded-full bg-emerald-800/50 flex items-center justify-center text-emerald-400 border border-emerald-700/50 shadow-inner shrink-0">
                 <Star className="size-5 md:size-7 fill-emerald-400" />
               </div>

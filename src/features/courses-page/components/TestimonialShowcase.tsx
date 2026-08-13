@@ -306,19 +306,24 @@ function HeroBand({ items }: { items: Feedback[] }) {
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
-            <div className="rounded-[1.75rem] border border-emerald-800/80 bg-emerald-900/30 overflow-hidden shadow-2xl">
-              <div className="relative min-h-[380px] sm:min-h-[300px]">
+            <div className="rounded-[1.75rem] border border-emerald-500/25 bg-linear-to-br from-emerald-900/70 via-emerald-950/90 to-slate-950 backdrop-blur-xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden">
+              {/* Subtle radial emerald highlight inside card top-right */}
+              <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none" aria-hidden="true" />
+
+              <div className="relative">
                 {items.map((feedback, i) => (
                   <div
                     key={`${feedback.name}-${i}`}
-                    className={`absolute inset-0 transition-opacity duration-500 ${i === index ? "opacity-100 z-10" : "opacity-0 pointer-events-none z-0"}`}
+                    className={`transition-opacity duration-500 ${i === index ? "opacity-100 z-10 relative" : "opacity-0 pointer-events-none z-0 absolute inset-0"}`}
                   >
-                    <div className="flex flex-col sm:flex-row h-full">
-                      <div className="relative w-full sm:w-[38%] aspect-square sm:aspect-auto bg-emerald-800/50 shrink-0">
+                    <div className="flex flex-col sm:flex-row h-full min-h-[320px]">
+                      <div className="relative w-full aspect-square sm:aspect-auto sm:w-[38%] bg-emerald-900/60 shrink-0 overflow-hidden">
                         <PortraitOrInitial
                           name={feedback.name}
                           imageUploadedLink={feedback.imageUploadedLink}
                         />
+                        {/* Soft mobile gradient scrim blending photo into text card below */}
+                        <div className="absolute inset-0 bg-linear-to-t from-emerald-950/90 via-transparent to-transparent sm:hidden pointer-events-none" />
                       </div>
 
                       <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0">
@@ -332,7 +337,7 @@ function HeroBand({ items }: { items: Feedback[] }) {
                           <Quote className="inline size-4 text-emerald-500/70 -translate-y-1 mr-1" />
                           {feedback.hook || feedback.description}
                         </p>
-                        <div className="h-px bg-emerald-800 mb-4" />
+                        <div className="h-px bg-emerald-800/80 mb-4" />
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-white">{feedback.name}</span>
                           <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
@@ -360,16 +365,16 @@ function HeroBand({ items }: { items: Feedback[] }) {
                 <button
                   onClick={() => goTo(index - 1)}
                   aria-label="Previous testimonial"
-                  className="absolute -left-3 lg:-left-5 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-emerald-950 hover:bg-emerald-400 transition-colors z-20"
+                  className="absolute -left-3 sm:-left-4 lg:-left-5 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-white text-emerald-950 shadow-[0_10px_25px_rgba(0,0,0,0.5)] border border-emerald-100 flex items-center justify-center hover:bg-emerald-400 hover:scale-110 active:scale-95 transition-all duration-200 z-20 cursor-pointer"
                 >
-                  <ChevronLeft className="size-5" />
+                  <ChevronLeft className="size-5 stroke-[2.5]" />
                 </button>
                 <button
                   onClick={() => goTo(index + 1)}
                   aria-label="Next testimonial"
-                  className="absolute -right-3 lg:-right-5 top-1/2 -translate-y-1/2 size-10 rounded-full bg-white shadow-lg flex items-center justify-center text-emerald-950 hover:bg-emerald-400 transition-colors z-20"
+                  className="absolute -right-3 sm:-right-4 lg:-right-5 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-white text-emerald-950 shadow-[0_10px_25px_rgba(0,0,0,0.5)] border border-emerald-100 flex items-center justify-center hover:bg-emerald-400 hover:scale-110 active:scale-95 transition-all duration-200 z-20 cursor-pointer"
                 >
-                  <ChevronRight className="size-5" />
+                  <ChevronRight className="size-5 stroke-[2.5]" />
                 </button>
 
                 <div className="flex justify-center gap-2 mt-5">

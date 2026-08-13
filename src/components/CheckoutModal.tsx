@@ -271,7 +271,7 @@ export default function CheckoutModal({
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent
         showCloseButton={false}
-        className="w-[98vw] sm:w-[96vw] max-w-4xl max-h-[95vh] sm:max-h-[92vh] overflow-hidden p-0 rounded-xl sm:rounded-2xl border border-border/30 bg-background shadow-2xl"
+        className="w-[calc(100%-1.5rem)] sm:w-[96vw] max-w-4xl max-h-[95vh] sm:max-h-[92vh] overflow-hidden p-0 rounded-xl sm:rounded-2xl border border-border/30 bg-background shadow-2xl"
         overlayClassName="backdrop-blur-sm"
       >
         <DialogTitle render={<div />} className="sr-only">

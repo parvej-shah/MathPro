@@ -300,7 +300,7 @@ export default function NotificationModal({
       <DialogContent
         showCloseButton={false}
         overlayClassName="bg-black/40 backdrop-blur-sm"
-        className="w-full max-w-2xl rounded-2xl bg-white/95 dark:bg-[#0B060D]/95 backdrop-blur-xl border border-border/30 p-0"
+        className="w-[calc(100%-1.5rem)] sm:w-full max-w-2xl rounded-2xl bg-white/95 dark:bg-[#0B060D]/95 backdrop-blur-xl border border-border/30 p-0"
       >
                 {/* Header */}
                 <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/30 px-6 py-4">
