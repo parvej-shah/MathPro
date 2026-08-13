@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 
 // Below-the-fold sections — lazy-loaded to keep the landing page's initial JS small.
 const TestimonialShowcase = dynamic(
@@ -16,10 +17,10 @@ const AboutSection = dynamic(
   () => import("@/features/courses-page/components/AboutSection"),
   { ssr: false },
 );
-const LandingCourseSections = dynamic(
+const LandingCourseTabs = dynamic(
   () =>
-    import("@/components/LandingCourseSections").then(
-      (module) => module.LandingCourseSections,
+    import("@/components/LandingCourseTabs").then(
+      (module) => module.LandingCourseTabs,
     ),
   { ssr: false },
 );
@@ -32,164 +33,18 @@ import { usePublicInstructors } from "@/hooks/usePublicInstructors";
 import Link from "next/link";
 import {
   CheckCircle2,
-  PlayCircle,
   TrendingUp,
   ChevronRight,
   Star,
   MapPin,
   BookOpen,
-  Sparkles,
   GraduationCap,
   Calculator,
   FlaskConical,
   Laptop,
   Users,
   ArrowUpRight,
-  Video,
 } from "lucide-react";
-
-const slides = [
-  {
-    id: 1,
-    title: "গণিতে আত্মবিশ্বাস গড়ুন",
-    subtitle: "ক্লাস ৮ থেকে HSC পর্যন্ত শিক্ষার্থীদের জন্য লাইভ ক্লাস, রেকর্ডেড লেকচার, প্র্যাকটিস ও প্রগ্রেস ট্র্যাকিং।",
-    cta: "কোর্সগুলো দেখুন",
-    href: "/courses",
-    bgClass: "bg-emerald-950",
-    pattern: "bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-emerald-400/20 via-emerald-950 to-slate-950",
-    visual: (
-      <div className="relative w-full h-full flex items-center justify-center">
-        {/* Coordinate Axis Background */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-20">
-          <div className="w-full h-px bg-emerald-400 absolute"></div>
-          <div className="h-full w-px bg-emerald-400 absolute"></div>
-          {/* Subtle math equations floating in background */}
-          <div className="absolute top-[20%] left-[10%] text-emerald-400/40 font-serif text-2xl md:text-3xl -rotate-12 select-none">f(x) = x²</div>
-          <div className="absolute bottom-[20%] right-[10%] text-emerald-400/40 font-serif text-2xl md:text-3xl rotate-12 select-none">∫ e^x dx</div>
-        </div>
-        {/* Single prominent cap icon */}
-        <div className="relative flex items-center justify-center animate-hero-float-up">
-          {/* Glow rings */}
-          <div className="absolute size-[280px] sm:size-[340px] md:size-[400px] lg:size-[440px] rounded-full border border-emerald-500/10 animate-pulse"></div>
-          <div className="absolute size-[220px] sm:size-[280px] md:size-[320px] lg:size-[340px] rounded-full border border-emerald-500/15"></div>
-          <div className="absolute size-[160px] sm:size-[220px] md:size-[240px] lg:size-[240px] rounded-full bg-emerald-500/5 border border-emerald-400/20 shadow-[0_0_60px_rgba(16,185,129,0.2)]"></div>
-
-          {/* Main icon */}
-          <div className="relative size-32 md:size-52 rounded-full bg-gradient-to-br from-emerald-500/20 to-teal-600/10 flex items-center justify-center backdrop-blur-xl border border-emerald-400/30 shadow-[0_0_80px_rgba(16,185,129,0.25)]">
-            <span className="text-[5rem] md:text-[9rem] drop-shadow-[0_0_30px_rgba(16,185,129,0.6)] select-none leading-none">🎓</span>
-          </div>
-        </div>
-
-        {/* Floating elements */}
-        <div className="absolute -top-4 -right-4 md:top-6 md:right-6 lg:top-16 lg:right-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100 animate-hero-float-card-up">
-          <div className="size-8 md:size-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-            <TrendingUp className="text-emerald-400 size-4 md:size-5" />
-          </div>
-          <div>
-            <div className="text-white font-extrabold text-lg md:text-xl">১০০%</div>
-            <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সিলেবাস কভার</div>
-          </div>
-        </div>
-
-        <div className="absolute -bottom-4 -left-4 md:bottom-10 md:left-6 lg:bottom-20 lg:left-16 bg-white/5 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 shadow-2xl flex items-center gap-3 md:gap-4 scale-90 md:scale-95 lg:scale-100 animate-hero-float-card-down">
-          <div className="text-emerald-400 font-bold text-3xl md:text-4xl font-serif leading-none mt-1">∑</div>
-          <div>
-            <div className="text-white font-extrabold text-base md:text-lg">গণিতভীতি দূর</div>
-            <div className="text-emerald-200/60 text-[9px] md:text-[11px] font-bold tracking-widest uppercase">সহজ সমাধান</div>
-          </div>
-        </div>
-      </div>
-    )
-  },
-  {
-    id: 2,
-    title: "লাইভ ও রেকর্ডেড ক্লাসের দারুণ সমন্বয়",
-    subtitle: "সরাসরি শিক্ষকদের কাছে প্রশ্ন করো, কিংবা মিস করা ক্লাসগুলো এইচডি রেকর্ডিংয়ে দেখে নাও যেকোনো সময়।",
-    cta: "ফ্রি ক্লাসগুলো দেখুন",
-    href: "/courses",
-    bgClass: "bg-slate-900",
-    pattern: "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-teal-500/10 via-slate-900 to-slate-950",
-    visual: (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="w-[90%] md:w-[85%] aspect-video bg-[#0b1120] rounded-[2rem] border border-slate-800/80 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col relative group">
-          <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
-
-          {/* Video Player Header */}
-          <div className="h-12 bg-[#0f172a] border-b border-slate-800/50 flex items-center px-5 gap-2 relative z-10">
-            <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
-            <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-            <div className="ml-auto px-3 py-1 bg-slate-800/50 rounded-md text-[10px] text-emerald-400 font-mono tracking-widest border border-emerald-500/20 flex items-center gap-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              LIVE
-            </div>
-          </div>
-
-          {/* Video Area */}
-          <div className="flex-1 bg-slate-900/50 flex items-center justify-center relative backdrop-blur-sm">
-            <div className="size-16 md:size-24 rounded-full bg-emerald-500/20 flex items-center justify-center backdrop-blur-md border border-emerald-500/30 group-hover:scale-110 transition-transform duration-500 cursor-pointer shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-              <PlayCircle className="w-8 h-8 md:w-12 md:h-12 text-emerald-400 drop-shadow-lg ml-1" />
-            </div>
-
-            {/* Progress bar */}
-            <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 right-4 md:right-6 flex items-center gap-3 md:gap-4">
-              <span className="text-[10px] md:text-xs text-slate-400 font-mono">12:45</span>
-              <div className="flex-1 h-1 md:h-1.5 bg-slate-800 rounded-full overflow-hidden cursor-pointer group/progress">
-                <div className="w-1/3 h-full bg-emerald-500 relative group-hover/progress:bg-emerald-400 transition-colors">
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 size-2 md:size-2.5 bg-white rounded-full shadow-[0_0_10px_rgba(16,185,129,1)] scale-0 group-hover/progress:scale-100 transition-transform"></div>
-                </div>
-              </div>
-              <span className="text-[10px] md:text-xs text-slate-400 font-mono">45:00</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  },
-  {
-    id: 3,
-    title: "প্রগ্রেস ট্র্যাকিং ও ইন্টারঅ্যাকটিভ কুইজ",
-    subtitle: "অধ্যায়ভিত্তিক কুইজ ও মক টেস্ট দিয়ে নিজের ভুলগুলো শুধরে নাও এবং পরীক্ষার জন্য ১০০% প্রস্তুত হও।",
-    cta: "মডেল টেস্ট দিন",
-    href: "/courses",
-    bgClass: "bg-teal-950",
-    pattern: "bg-[conic-gradient(at_center_right,_var(--tw-gradient-stops))] from-emerald-950 via-teal-950 to-slate-900",
-    visual: (
-      <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 flex-col md:flex-row scale-90 md:scale-100 lg:scale-110">
-        {[1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className={`bg-white/5 backdrop-blur-sm p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border w-[260px] md:w-64 lg:w-72 shadow-2xl relative ${i === 2 ? 'border-emerald-400/40 bg-emerald-900/30 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.3)] z-10 md:-translate-y-8 lg:-translate-y-10' : 'border-white/10 opacity-70 scale-95 hidden sm:block'}`}
-          >
-            {i === 2 && (
-              <div className="absolute -top-4 -right-4 size-10 rounded-full bg-emerald-500 flex items-center justify-center border-[3px] border-teal-950 text-white shadow-xl rotate-12">
-                <Star className="size-5 fill-white" />
-              </div>
-            )}
-
-            <div className="h-5 w-1/2 bg-white/20 rounded-md mb-8"></div>
-            <div className="space-y-4">
-              <div className={`h-14 w-full rounded-2xl border flex items-center px-4 gap-4 transition-all ${i === 2 ? 'bg-emerald-500/20 border-emerald-500/30 translate-x-2' : 'bg-white/5 border-white/5'}`}>
-                <div className={`size-6 rounded-full border-2 flex items-center justify-center shrink-0 ${i === 2 ? 'border-emerald-400 bg-emerald-400' : 'border-white/20'}`}>
-                  {i === 2 && <CheckCircle2 className="size-4 text-emerald-950" />}
-                </div>
-                <div className="h-2.5 w-1/2 bg-white/20 rounded-full"></div>
-              </div>
-
-              <div className="h-14 w-full bg-white/5 border border-white/5 rounded-2xl flex items-center px-4 gap-4">
-                <div className="size-6 rounded-full border-2 border-white/20 shrink-0"></div>
-                <div className="h-2.5 w-2/3 bg-white/10 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-];
 
 const classCategories = [
   {
@@ -254,44 +109,62 @@ const classCategories = [
   }
 ];
 
-const features = [
-  { icon: Users, title: "অভিজ্ঞ ম্যাথ মেন্টর", desc: "পরীক্ষাকেন্দ্রিক পড়াশোনা ও বিশেষ টেকনিকের মাধ্যমে কঠিন অংক খুব সহজভাবে বোঝানো হয়।" },
-  { icon: Video, title: "লাইভ + রেকর্ডেড শেখা", desc: "সরাসরি ক্লাসে প্রশ্ন করার সুযোগ। ক্লাস মিস হলেও পরে যতবার খুশি রেকর্ডিং দেখে নেওয়া যাবে।" },
-  { icon: BookOpen, title: "অধ্যায়ভিত্তিক গোছানো প্রস্তুতি", desc: "এলোমেলো পড়া নয়, একদম বেসিক থেকে অ্যাডভান্সড লেভেল পর্যন্ত ধাপে ধাপে ম্যাথ শেখানো হয়।" },
-  { icon: CheckCircle2, title: "প্রচুর প্র্যাকটিস ও কুইজ", desc: "প্রতিটি ক্লাসের পর লেকচার শিট, অধ্যায়ভিত্তিক কুইজ ও মডেল টেস্ট দিয়ে নিজেকে যাচাই করার সুযোগ।" },
-  { icon: TrendingUp, title: "স্মার্ট প্রগ্রেস ট্র্যাকিং", desc: "পড়াশোনার অগ্রগতি ড্যাশবোর্ডে ট্র্যাক করো এবং নিজের ভুলগুলো চিহ্নিত করে দ্রুত উন্নতি করো।" },
-  { icon: Laptop, title: "দ্রুত ও সহজ এক্সেস", desc: "বিকাশ বা নগদে পেমেন্ট করেই সাথে সাথে কোর্সে যুক্ত হও। যেকোনো ডিভাইস থেকে অনায়াসে ক্লাস করার সুবিধা।" },
+/**
+ * Value props, tiered by how much they actually persuade a scared math student.
+ * The bento grid below gives each tier a different size — six equal-weight cards
+ * read as a generic feature list and get scrolled past.
+ *
+ * Copy is written from the student's fear ("I'll fall behind", "I don't know where
+ * I'm weak"), not from the feature name.
+ */
+
+/** Tier 1 — the strongest objection to kill: falling behind permanently. */
+const heroFeature = {
+  title: "ক্লাস মিস হলেও পিছিয়ে পড়বে না",
+  desc: "লাইভ ক্লাসে সরাসরি প্রশ্ন করো। না বুঝলে বা ক্লাস মিস হলে রেকর্ডিং আছেই — যতবার খুশি দেখে নাও, যতক্ষণ না পুরোটা পরিষ্কার হয়।",
+  stat: "∞",
+  statLabel: "আনলিমিটেড রিপ্লে",
+};
+
+/** Tier 2 — the two promises that carry the most weight after the hero. */
+const majorFeatures = [
+  {
+    icon: BookOpen,
+    title: "গোড়া থেকে, ধাপে ধাপে",
+    desc: "এলোমেলো পড়া নয়। প্রতিটি অধ্যায় একদম বেসিক থেকে অ্যাডভান্সড পর্যন্ত সাজানো — আগেরটা না বুঝে পরেরটায় যেতে হয় না।",
+  },
+  {
+    icon: TrendingUp,
+    title: "কোথায় দুর্বল, নিজেই দেখো",
+    desc: "কোন অধ্যায়ে আটকে যাচ্ছো ড্যাশবোর্ড বলে দেবে। পরীক্ষার আগে অনুমান করে পড়তে হবে না।",
+  },
+];
+
+/** Tier 3 — hygiene factors. They reassure; they don't sell. One line each. */
+const minorFeatures = [
+  {
+    icon: Users,
+    title: "অভিজ্ঞ ম্যাথ মেন্টর",
+    desc: "কঠিন অংক সহজ টেকনিকে বোঝানো হয়।",
+  },
+  {
+    icon: CheckCircle2,
+    title: "প্র্যাকটিস ও কুইজ",
+    desc: "প্রতি ক্লাসের পর শিট, কুইজ ও মডেল টেস্ট।",
+  },
+  {
+    icon: Laptop,
+    title: "সাথে সাথে শুরু",
+    desc: "বিকাশ বা নগদে পেমেন্ট করেই ক্লাস শুরু।",
+  },
 ];
 
 export function LandingPage() {
-  // Lightweight overlapping-crossfade hero slider (no carousel library). Every slide
-  // stays mounted and layered; only opacity/transform animate, so there is no empty
-  // frame between slides — the incoming slide fills in as the outgoing one fades out.
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const HERO_DURATION = 6000;
-
-  const scrollTo = useCallback((index: number) => {
-    setSelectedIndex(index);
-  }, []);
-
-  const nextSlide = useCallback(() => {
-    setSelectedIndex((i) => (i + 1) % slides.length);
-  }, []);
-
-  useEffect(() => {
-    if (slides.length <= 1 || paused) return;
-    timerRef.current = setTimeout(nextSlide, HERO_DURATION);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [selectedIndex, paused, nextSlide]);
-
   // Live category sections from GET /user/course/directory (COURSE_DIRECTORY_API_SPEC.md).
   const { categories: courseCategories, loading: coursesLoading } = useCourseDirectory();
   const { testimonials } = usePublicTestimonials();
   const { instructors } = usePublicInstructors();
+  const founder = instructors[0];
 
   return (
     <div className="min-h-screen bg-page-bg font-sans text-foreground overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 dark:selection:bg-emerald-800 dark:selection:text-emerald-100 relative z-0">
@@ -300,91 +173,112 @@ export function LandingPage() {
       {/* Dark mode ambient glow — top-center emerald radial, invisible in light */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none z-[39] hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.07) 0%, transparent 70%)' }}></div>
 
-      {/* --- HERO CAROUSEL --- */}
-      <section
-        className="relative h-[100dvh] min-h-[700px] w-full bg-slate-950 overflow-hidden"
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
-        <style>{`
-          @keyframes hero-kenburns { from { transform: scale(1); } to { transform: scale(1.12); } }
-          .hero-kenburns { animation: hero-kenburns 8s ease-out forwards; }
-        `}</style>
+      {/* --- HERO --- */}
+      <section className="relative w-full overflow-hidden bg-emerald-950">
+        {/* Depth: soft emerald bloom top-right, deep fade bottom-left */}
+        <div className="absolute inset-0 bg-linear-to-br from-emerald-900 via-emerald-950 to-slate-950"></div>
+        <div className="absolute -top-40 -right-32 w-[720px] h-[720px] rounded-full bg-emerald-500/12 blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[520px] h-[520px] rounded-full bg-teal-500/8 blur-3xl pointer-events-none"></div>
 
-        {/* All slides stay mounted and layered; the active one crossfades in over the
-            outgoing one (overlapping opacity), so the frame is never empty — no blink. */}
-        {slides.map((slide, index) => {
-          const active = selectedIndex === index;
-          return (
-            <div
-              key={slide.id}
-              aria-hidden={!active}
-              className={`absolute inset-0 h-full transition-opacity duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${active ? "opacity-100 z-[2]" : "opacity-0 z-[1] pointer-events-none"}`}
-              style={{ willChange: "opacity" }}
-            >
-              {/* Background with slow Ken-Burns zoom while active */}
-              <div className={`absolute inset-0 ${slide.bgClass} ${slide.pattern} opacity-90 ${active ? "hero-kenburns" : ""}`}></div>
+        {/* Faint math motifs — kept to the edges so the text column stays quiet */}
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden hidden lg:block" aria-hidden="true">
+          <div className="absolute top-[8%] left-[2%] text-emerald-300/[0.06] font-serif text-6xl -rotate-12">f(x) = x²</div>
+          <div className="absolute bottom-[10%] left-[3%] text-emerald-300/[0.06] font-serif text-5xl rotate-6">∫ e<sup>x</sup> dx</div>
+        </div>
 
-              <div className="relative z-[45] h-full container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center pt-32 md:pt-24 lg:pt-0 pb-12 md:pb-0">
+        {/* Top padding clears the fixed, transparent navbar (~96px at lg) with room to breathe */}
+        <div className="relative z-10 container mx-auto px-6 lg:px-12 pt-32 md:pt-36 lg:pt-40 pb-16 lg:pb-20">
+          <div className="grid lg:grid-cols-[1fr_0.85fr] gap-12 lg:gap-20 items-center">
 
-                {/* Text Content */}
-                <div className="w-full md:w-1/2 z-10 flex flex-col items-center md:items-start text-center md:text-left">
-                  <div
-                    className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-6 transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[350ms]" : "opacity-0 translate-y-4"}`}
-                  >
-                    <Sparkles className="size-3.5" />
-                    প্ল্যাটফর্ম ২.০ লাইভ
-                  </div>
+            {/* ── Left: message — one idea, read top to bottom in a single glance ── */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+              {/* Headline — the promise, in the student's own words */}
+              <h1 className="font-heading text-[2.75rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
+                গণিত ভয়ের নয়,
+                <br />
+                <span className="text-emerald-400">বোঝার বিষয়</span>
+              </h1>
 
-                  <h1
-                    className={`font-heading text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] tracking-tight mb-4 md:mb-6 drop-shadow-sm transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[450ms]" : "opacity-0 translate-y-4"}`}
-                  >
-                    {slide.title}
-                  </h1>
+              {/* Subhead — who it's for and what happens, in one breath */}
+              <p className="text-lg lg:text-xl text-emerald-50/65 mb-10 max-w-sm leading-relaxed">
+                ক্লাস ৮ থেকে HSC — প্রতিটি অধ্যায় গোড়া থেকে বুঝিয়ে শেখানো হয়,
+                যতবার দরকার ততবার।
+              </p>
 
-                  <p
-                    className={`text-lg md:text-2xl text-emerald-50/90 mb-8 md:mb-10 max-w-lg leading-relaxed font-medium transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[550ms]" : "opacity-0 translate-y-4"}`}
-                  >
-                    {slide.subtitle}
-                  </p>
-
-                  <div
-                    className={`transition-all duration-500 ease-out ${active ? "opacity-100 translate-y-0 delay-[650ms]" : "opacity-0 translate-y-4"}`}
-                  >
-                    <Link
-                      href={slide.href}
-                      className="group inline-flex items-center gap-2 px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-full transition-colors hover:scale-105 active:scale-95 shadow-xl shadow-emerald-500/20 text-lg"
-                    >
-                      {slide.cta}
-                      <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Visual Content */}
-                <div className="w-full md:w-1/2 h-[35vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] relative mt-8 md:mt-16 lg:mt-24">
-                  <div
-                    className={`absolute inset-0 flex items-center justify-center transition-all duration-[600ms] ease-out will-change-[opacity,transform] ${active ? "opacity-100 scale-100 delay-[400ms]" : "opacity-0 scale-[0.92]"}`}
-                  >
-                    {slide.visual}
-                  </div>
-                </div>
-
+              {/* One action. The secondary path stays quiet. */}
+              <div className="flex flex-col sm:flex-row items-center gap-x-7 gap-y-4 w-full sm:w-auto">
+                <Link
+                  href="/courses"
+                  className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-9 py-4 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold rounded-full transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-emerald-500/25 text-lg"
+                >
+                  কোর্সগুলো দেখো
+                  <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  href="#student-reviews"
+                  className="text-emerald-100/70 hover:text-white font-semibold text-base underline-offset-4 hover:underline transition-colors"
+                >
+                  শিক্ষার্থীরা কী বলছে
+                </Link>
               </div>
             </div>
-          );
-        })}
 
-        {/* Custom Pips */}
-        <div className="absolute bottom-6 md:bottom-12 left-0 right-0 flex justify-center gap-2 md:gap-3 z-20">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollTo(i)}
-              className={`h-2 rounded-full transition-all duration-500 ${selectedIndex === i ? 'w-12 bg-emerald-400' : 'w-3 bg-white/30 hover:bg-white/50'}`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
+            {/* ── Right: the teacher ── */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative w-[300px] sm:w-[360px] lg:w-[420px]">
+                {/* Halo behind the portrait */}
+                <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-400/10 blur-2xl pointer-events-none"></div>
+
+                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-emerald-900/60 ring-1 ring-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]">
+                  {founder?.image ? (
+                    <Image
+                      src={founder.image}
+                      alt={founder.name}
+                      fill
+                      priority
+                      className="object-cover object-top"
+                      sizes="(max-width: 1024px) 360px, 420px"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <GraduationCap className="size-24 text-emerald-400/30" />
+                    </div>
+                  )}
+
+                  {/* Scrim — fuses the photo into the dark scene and gives the name plate a bed */}
+                  <div className="absolute inset-0 bg-linear-to-t from-emerald-950 via-emerald-950/25 to-transparent pointer-events-none"></div>
+
+                  {/* Name plate — inside the frame, over the scrim, clear of the face */}
+                  <div className="absolute left-0 right-0 bottom-0 p-5 lg:p-6">
+                    <div className="text-white font-extrabold text-xl lg:text-2xl font-heading leading-tight">
+                      {founder?.name ?? "MathPro"}
+                    </div>
+                    <div className="text-emerald-300 text-sm font-semibold mt-0.5">
+                      {founder?.role?.trim() ?? "ফাউন্ডার ও ইন্সট্রাক্টর"}
+                    </div>
+                    {founder?.university && (
+                      <div className="flex items-center gap-1.5 text-emerald-100/50 text-xs mt-2">
+                        <GraduationCap className="size-3.5 shrink-0" />
+                        {founder.university}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Single floating credential — pinned low-right so it never covers the face */}
+                <div className="absolute -right-3 lg:-right-6 bottom-36 sm:bottom-28 lg:bottom-28 bg-emerald-950/90 backdrop-blur-md px-4 py-3 rounded-2xl ring-1 ring-emerald-400/20 shadow-xl flex items-center gap-3">
+                  <div className="size-9 rounded-full bg-emerald-400/15 flex items-center justify-center shrink-0">
+                    <TrendingUp className="text-emerald-400 size-4" />
+                  </div>
+                  <div>
+                    <div className="text-white font-extrabold text-base leading-none mb-1">১০+ বছর</div>
+                    <div className="text-emerald-200/50 text-[10px] font-bold tracking-wide">শিক্ষকতার অভিজ্ঞতা</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </section>
 
@@ -431,78 +325,73 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* --- CLASS CATEGORIES --- */}
-      <section className="py-24 bg-section-b relative border-b border-border overflow-hidden">
-        {/* Math Motif Background */}
-        <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}>∫</div>
-        <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-9px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDelay: "-5s", animationDuration: "16s" }}>π</div>
-        <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "45deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-9s", animationDuration: "13s" }}>√</div>
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-2xl mx-auto mb-16 relative z-[45]">
-            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-teal font-heading">
-              আমাদের ক্যাটাগরিসমূহ
-            </h2>
-            <p className="text-muted-foreground text-lg font-medium">
-              তোমার সুবিধামতো বেছে নাও যেকোনো একটি ক্যাটাগরি এবং শুরু করো তোমার শেখার যাত্রা।
-            </p>
-          </div>
+      {/* --- CLASS CATEGORIES (COMMENTED OUT — 2026-08-13) ---
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {classCategories.map((category, i) => (
-              <Link key={i} href={category.href} className="group outline-none relative z-[45] block">
-                <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:hover:shadow-primary/15 border border-transparent dark:border-white/5 dark:hover:border-white/10 relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
-                  <div>
-                    <div className={`size-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-sm ${category.iconBgClass}`}>
-                      <category.icon className="size-7" />
-                    </div>
-                    <h3 className={`text-2xl font-bold mb-2 font-heading ${category.titleClass}`}>{category.title}</h3>
-                    <p className={`font-medium text-sm leading-relaxed ${category.descClass}`}>{category.desc}</p>
-                  </div>
-                  <div className="flex justify-end mt-8">
-                    <span className={`text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all ${category.titleClass}`}>
-                      Explore <span>&gt;</span>
-                    </span>
-                  </div>
+      Kept, not deleted, so it can be restored if the reasons below stop holding.
+
+      Why it was removed:
+      1. Redundant with the course tabs directly below. Both answer the same student
+      question — "which class am I?" — but the tabs answer it in place, with live
+      data, while these cards navigate away to /courses. Asking twice in a row
+      raised cognitive load on the landing page for no added information.
+      2. The list is hardcoded (six classes) while the catalog is driven by
+      GET /user/course/directory (currently four categories). The cards could
+      therefore advertise class levels that have no courses behind them yet.
+
+      When to bring it back:
+      - If the courses tab row is removed or moved far down the page, this becomes
+      the only class-level entry point again.
+      - If it returns, drive `classCategories` from the directory API instead of the
+      hardcoded array above, so it can never promise a class the catalog lacks.
+
+      Note: the `classCategories` array near the top of this file is now unused and
+      is retained only for this block. `Link` and the lucide icons it references are
+      still used by other sections.
+
+
+      --- markup preserved below ---
+            <section className="py-24 bg-section-b relative border-b border-border overflow-hidden">
+              {/* Math Motif Background *\/}
+              <div className="absolute top-10 left-4 md:left-10 text-[6rem] md:text-[10rem] text-[#3b82f6]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}>∫</div>
+              <div className="absolute bottom-10 right-4 md:right-20 text-[5rem] md:text-[8rem] text-[#10b981]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-9px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDelay: "-5s", animationDuration: "16s" }}>π</div>
+              <div className="absolute top-40 right-4 md:right-10 text-[4rem] md:text-[6rem] text-[#a855f7]/5 font-serif font-bold select-none pointer-events-none animate-motif-float" style={{ ["--motif-rot" as string]: "45deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-9s", animationDuration: "13s" }}>√</div>
+              <div className="container mx-auto px-6 lg:px-12">
+                <div className="text-center max-w-2xl mx-auto mb-16 relative z-[45]">
+                  <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-teal font-heading">
+                    আমাদের ক্যাটাগরিসমূহ
+                  </h2>
+                  <p className="text-muted-foreground text-lg font-medium">
+                    তোমার সুবিধামতো বেছে নাও যেকোনো একটি ক্যাটাগরি এবং শুরু করো তোমার শেখার যাত্রা।
+                  </p>
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* --- VALUE PROP SECTION --- */}
-      <section id="features" className="py-28 bg-section-a relative overflow-hidden">
-        {/* Math Motif Background */}
-        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-100/60 dark:text-emerald-900/30 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
-        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-100/50 dark:text-emerald-900/20 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-20 relative z-[45]">
-            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">কেন MathPro বেছে নিবে?</h2>
-            <p className="text-muted-foreground text-xl font-medium leading-relaxed">আমরা শুধু গণিত পড়াই না। আমরা এমন সিস্টেম তৈরি করি যা তোমাকে গণিতে দক্ষ করে তুলবে।</p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-            {features.map((feature, i) => (
-              <div
-                key={i}
-                className="p-8 md:p-10 rounded-[2rem] bg-card border border-border shadow-sm hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex flex-col items-start relative z-[45]"
-              >
-                <div className="size-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-300">
-                  <feature.icon className="size-7 stroke-[2.5]" />
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                  {classCategories.map((category, i) => (
+                    <Link key={i} href={category.href} className="group outline-none relative z-[45] block">
+                      <div className={`p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-xl dark:hover:shadow-primary/15 border border-transparent dark:border-white/5 dark:hover:border-white/10 relative flex flex-col justify-between min-h-[220px] ${category.bgClass}`}>
+                        <div>
+                          <div className={`size-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-sm ${category.iconBgClass}`}>
+                            <category.icon className="size-7" />
+                          </div>
+                          <h3 className={`text-2xl font-bold mb-2 font-heading ${category.titleClass}`}>{category.title}</h3>
+                          <p className={`font-medium text-sm leading-relaxed ${category.descClass}`}>{category.desc}</p>
+                        </div>
+                        <div className="flex justify-end mt-8">
+                          <span className={`text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all ${category.titleClass}`}>
+                            Explore <span>&gt;</span>
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <h3 className="text-2xl font-extrabold mb-4 text-heading font-heading tracking-tight">{feature.title}</h3>
-                <p className="text-muted-foreground leading-relaxed font-medium text-[15px]">{feature.desc}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- ABOUT SECTION --- */}
-      <AboutSection instructors={instructors} />
+            </section>
+      --- END CLASS CATEGORIES ---
+      */}
 
       {/* --- FEATURED COURSES (Grouped) --- */}
-      <section id="courses" className="py-28 bg-section-b relative overflow-hidden">
+      <section id="courses" className="py-28 bg-section-a relative overflow-hidden">
         {/* Math Motif Background */}
         <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[11rem] text-muted/40 dark:text-muted/20 font-serif font-bold -rotate-12 select-none pointer-events-none">θ</div>
         <div className="absolute top-2/3 right-0 md:right-10 text-[6rem] md:text-[11rem] text-muted/50 dark:text-muted/20 font-serif font-bold rotate-12 select-none pointer-events-none">Φ</div>
@@ -516,14 +405,93 @@ export function LandingPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-24">
-            <LandingCourseSections
-              categories={courseCategories}
-              loading={coursesLoading}
-            />
+          <LandingCourseTabs
+            categories={courseCategories}
+            loading={coursesLoading}
+          />
+        </div>
+      </section>
+
+      {/* --- VALUE PROP SECTION --- */}
+      <section id="features" className="py-28 bg-section-b relative overflow-hidden">
+        {/* Math Motif Background */}
+        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-emerald-100/60 dark:text-emerald-900/30 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
+        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-emerald-100/50 dark:text-emerald-900/20 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center max-w-3xl mx-auto mb-16 relative z-[45]">
+            <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">কেন MathPro বেছে নিবে?</h2>
+            <p className="text-muted-foreground text-xl font-medium leading-relaxed">গণিতে ভয়ের কারণ একটাই — কোথাও একটা ধাপ বাদ পড়ে গেছে। আমরা সেই ফাঁকটাই বন্ধ করি।</p>
+          </div>
+
+          {/*
+            Bento grid: one hero cell, two major cells, three compact cells.
+            Deliberate asymmetry — size encodes how much each claim matters.
+          */}
+          <div className="grid lg:grid-cols-3 gap-5 xl:gap-6 relative z-[45]">
+
+            {/* Hero cell — spans 2 cols on desktop. Type carries it; no icon. */}
+            <div className="lg:col-span-2 relative overflow-hidden p-9 md:p-12 rounded-[2rem] bg-linear-to-br from-emerald-950 via-emerald-900 to-slate-950 shadow-lg flex flex-col justify-center min-h-[320px]">
+              {/* Soft bloom for depth, matching the hero section's treatment */}
+              <div className="absolute -top-24 -right-16 w-96 h-96 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+              <div className="relative">
+                <h3 className="font-heading text-3xl md:text-4xl lg:text-[2.75rem] font-extrabold text-white leading-[1.15] tracking-tight mb-5 max-w-xl">
+                  {heroFeature.title}
+                </h3>
+                <p className="text-emerald-50/70 text-base md:text-lg leading-relaxed max-w-lg">
+                  {heroFeature.desc}
+                </p>
+              </div>
+
+              <div className="relative flex items-center gap-3 mt-8 pt-6 border-t border-emerald-400/15">
+                <span className="font-heading text-4xl font-extrabold text-emerald-400 leading-none">
+                  {heroFeature.stat}
+                </span>
+                <span className="text-sm font-semibold text-emerald-100/60 tracking-wide">
+                  {heroFeature.statLabel}
+                </span>
+              </div>
+            </div>
+
+            {/* Major cells — stacked beside the hero on desktop */}
+            <div className="grid gap-5 xl:gap-6">
+              {majorFeatures.map((feature, i) => (
+                <div
+                  key={i}
+                  className="p-7 md:p-8 rounded-[2rem] bg-card border border-border shadow-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex flex-col"
+                >
+                  <div className="size-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
+                    <feature.icon className="size-6 stroke-[2.5]" />
+                  </div>
+                  <h3 className="text-xl font-extrabold mb-2.5 text-heading font-heading tracking-tight">{feature.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed font-medium text-[15px]">{feature.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Compact cells — hygiene factors, one line each, icon inline */}
+            {minorFeatures.map((feature, i) => (
+              <div
+                key={i}
+                className="p-6 md:p-7 rounded-[2rem] bg-card border border-border shadow-sm hover:-translate-y-1 hover:shadow-lg hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/10 dark:hover:border-emerald-500/30 transition-all duration-300 group flex items-start gap-4"
+              >
+                <div className="size-11 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                  <feature.icon className="size-5 stroke-[2.5]" />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold mb-1 text-heading font-heading tracking-tight">{feature.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed font-medium text-sm">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+
           </div>
         </div>
       </section>
+
+      {/* --- ABOUT SECTION --- */}
+      <AboutSection instructors={instructors} />
+
 
       {/* --- STUDENT REVIEWS (SHOWCASE) --- */}
       <TestimonialShowcase
@@ -531,7 +499,7 @@ export function LandingPage() {
       />
 
       {/* --- OFFLINE BRANCHES (O2O Strategy) --- */}
-      <section id="branches" className="py-32 bg-section-a overflow-hidden relative">
+      <section id="branches" className="py-32 bg-section-b overflow-hidden relative">
         {/* Math Motif Background */}
         <div className="absolute -bottom-4 md:bottom-10 right-0 md:right-10 text-[10rem] md:text-[20rem] text-muted/20 font-serif font-black select-none pointer-events-none z-0 animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "-12px", ["--motif-dr" as string]: "2deg", animationDuration: "16s" }}>Ω</div>
         <div className="container mx-auto px-6 lg:px-12 relative z-[45]">

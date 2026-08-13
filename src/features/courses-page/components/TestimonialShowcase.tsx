@@ -544,7 +544,7 @@ export default function TestimonialShowcase({
   const videoItems = source.filter((feedback) => Boolean(feedback.videoUrl));
 
   return (
-    <section className="relative overflow-hidden">
+    <section id="student-reviews" className="relative overflow-hidden">
       {/* 1 — Hero band */}
       <HeroBand items={featured} />
 

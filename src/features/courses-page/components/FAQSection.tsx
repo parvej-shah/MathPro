@@ -179,7 +179,7 @@ export default function FAQSection() {
   const collapseAll = () => setOpenItems(new Set());
 
   return (
-    <section className="relative py-20 md:py-24 bg-section-b overflow-hidden">
+    <section className="relative py-20 md:py-24 bg-section-a overflow-hidden">
       <div
         aria-hidden
         className="absolute top-4 -left-10 md:-left-6 text-[10rem] md:text-[18rem] text-primary/10 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"

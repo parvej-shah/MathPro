@@ -78,8 +78,8 @@
   --paragraph: oklch(0.40 0.018 238);
   --page-bg: oklch(0.97 0.006 280);
   /* Zebra-striped section backgrounds (light/dark adapt). */
-  --section-a: oklch(1 0 0);                 /* near-white */
-  --section-b: oklch(0.965 0.014 250);       /* soft cool tint */
+  --section-a: oklch(1 0 0);                 /* pure white */
+  --section-b: oklch(0.945 0.016 240);       /* cool tint — wide enough step to read as a break */
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.17 0.02 238);
@@ -138,8 +138,8 @@
   --paragraph: oklch(0.72 0.008 240);
   --page-bg: oklch(0.13 0.008 240);
   /* Dark mode zebra stripes — slight emerald tint for depth */
-  --section-a: oklch(0.158 0.010 220);
-  --section-b: oklch(0.185 0.012 230);
+  --section-a: oklch(0.150 0.010 220);
+  --section-b: oklch(0.200 0.014 230);
 
   --background: oklch(0.13 0.008 240);
   --foreground: oklch(0.96 0.006 240);
