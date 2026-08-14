@@ -168,7 +168,7 @@ export function LandingPage() {
   return (
     <div className="min-h-screen bg-page-bg font-sans text-foreground overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900 dark:selection:bg-emerald-800 dark:selection:text-emerald-100 relative z-0">
       {/* Global subtle graph paper grid overlay */}
-      <div className="fixed inset-0 z-[40] pointer-events-none" style={{ backgroundImage: 'linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="graph-paper-overlay fixed inset-0 z-[40] pointer-events-none"></div>
       {/* Dark mode ambient glow — top-center emerald radial, invisible in light */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] pointer-events-none z-[39] hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.07) 0%, transparent 70%)' }}></div>
 

@@ -313,15 +313,7 @@ export default function CourseDetailsPage() {
       {/* Dark mode ambient top glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-250 h-125 pointer-events-none z-39 hidden dark:block" style={{ background: 'radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)' }} />
       {/* Graph paper grid overlay */}
-      <div
-        aria-hidden
-        className="fixed inset-0 z-39 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <div aria-hidden className="graph-paper-overlay fixed inset-0 z-39 pointer-events-none" />
 
       {/* Loading State */}
       {(loading || !courseId) && <CourseDetailsSkeleton />}

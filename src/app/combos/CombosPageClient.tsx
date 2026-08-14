@@ -102,15 +102,7 @@ function CombosLoading() {
             "radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)",
         }}
       />
-      <div
-        aria-hidden
-        className="fixed inset-0 z-40 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <div aria-hidden className="graph-paper-overlay fixed inset-0 z-40 pointer-events-none" />
       <main className="relative min-h-screen overflow-hidden bg-section-a pt-20">
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">
           <div
@@ -337,15 +329,7 @@ export default function CombosPageClient() {
         }}
       />
 
-      <div
-        aria-hidden
-        className="fixed inset-0 z-40 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <div aria-hidden className="graph-paper-overlay fixed inset-0 z-40 pointer-events-none" />
 
       <main className="relative min-h-screen overflow-hidden bg-section-a pt-20">
         <div aria-hidden className="pointer-events-none absolute inset-0 z-0 select-none overflow-hidden">

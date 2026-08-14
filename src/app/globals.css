@@ -80,6 +80,10 @@
   /* Zebra-striped section backgrounds (light/dark adapt). */
   --section-a: oklch(1 0 0);                 /* pure white */
   --section-b: oklch(0.945 0.016 240);       /* cool tint — wide enough step to read as a break */
+  /* Site-wide graph-paper grid overlay line color/opacity — tuned per theme so
+     it stays a faint texture, not a dominant pattern (dark needs a lower alpha
+     since emerald-on-near-black reads far stronger than emerald-on-white). */
+  --grid-line: rgba(16, 185, 129, 0.04);
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.17 0.02 238);
@@ -140,6 +144,7 @@
   /* Dark mode zebra stripes — slight emerald tint for depth */
   --section-a: oklch(0.150 0.010 220);
   --section-b: oklch(0.200 0.014 230);
+  --grid-line: rgba(16, 185, 129, 0.02);
 
   --background: oklch(0.13 0.008 240);
   --foreground: oklch(0.96 0.006 240);
@@ -339,4 +344,14 @@
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-muted-foreground);
+}
+
+/* Shared full-page graph-paper texture — used behind hero/section backgrounds
+   across the landing, courses, and combos pages. Line color/opacity comes from
+   the theme-aware --grid-line token so dark mode stays subtle instead of the
+   lines reading as a dominant pattern against a near-black background. */
+.graph-paper-overlay {
+  background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
 }

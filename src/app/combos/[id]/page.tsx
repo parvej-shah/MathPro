@@ -122,15 +122,7 @@ function ComboBackgroundLayers() {
             "radial-gradient(ellipse at top, rgba(16, 185, 129, 0.06) 0%, transparent 65%)",
         }}
       />
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-40"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgba(16, 185, 129, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.04) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+      <div aria-hidden className="graph-paper-overlay pointer-events-none fixed inset-0 z-40" />
     </>
   );
 }
