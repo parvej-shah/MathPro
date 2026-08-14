@@ -436,17 +436,17 @@ function ReviewCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex-shrink-0 w-[280px] sm:w-[300px] snap-start text-left bg-card border border-border rounded-2xl p-5 flex flex-col gap-3 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300"
+      className="flex-shrink-0 w-[320px] sm:w-[380px] snap-start text-left bg-card border border-border rounded-[1.75rem] p-7 flex flex-col gap-5 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300"
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-4">
         <Avatar
           name={feedback.name}
           imageUploadedLink={feedback.imageUploadedLink}
-          size={64}
+          size={88}
         />
-        <div className="min-w-0 flex-1">
-          <StarRow rating={feedback.rating} className="mb-2" />
-          <p className="text-sm text-paragraph leading-relaxed line-clamp-4">
+        <div className="min-w-0 flex-1 pt-1">
+          <StarRow rating={feedback.rating} className="mb-2.5" />
+          <p className="text-base text-paragraph leading-relaxed line-clamp-4">
             &ldquo;{feedback.hook || feedback.description}&rdquo;
           </p>
         </div>
@@ -455,19 +455,19 @@ function ReviewCard({
       <div className="h-px bg-border" />
 
       <div className="min-w-0">
-        <div className="flex items-center gap-1">
-          <p className="text-sm font-bold text-heading leading-none truncate">
+        <div className="flex items-center gap-1.5">
+          <p className="text-base font-bold text-heading leading-none truncate">
             {feedback.name}
           </p>
           <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
               <CheckCircle2
-                className="size-3.5 text-primary"
+                className="size-4 text-primary"
                 role="img"
                 aria-label={VERIFIED_LABEL}
               />
             </span>
         </div>
-        <div className="mt-1">
+        <div className="mt-1.5">
           <InstitutionLine name={feedback.bio} logoUrl={feedback.institutionLogoUrl} />
         </div>
       </div>
@@ -602,7 +602,7 @@ export default function TestimonialShowcase({
 
   const reviewRowRef = useRef<HTMLDivElement>(null);
   const { scrollBy: scrollReviews, pauseHandlers: reviewPauseHandlers } =
-    useAutoScroll(reviewRowRef, 320, 4000);
+    useAutoScroll(reviewRowRef, 400, 4000);
   const [activeFeedback, setActiveFeedback] = useState<Feedback | null>(null);
 
   if (source.length === 0) {
