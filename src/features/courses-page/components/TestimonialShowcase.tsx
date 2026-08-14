@@ -24,6 +24,18 @@ import { MOCK_TESTIMONIALS } from "../_lib/testimonial-mock";
 /** Explains the check badge on hover / to screen readers. */
 const VERIFIED_LABEL = "কোর্সে ভর্তি হওয়া শিক্ষার্থীর যাচাইকৃত রিভিউ";
 
+/** Roughly how many characters the hero card's 4-line clamp can hold before clipping. */
+const HERO_TEXT_CLAMP_THRESHOLD = 220;
+
+/** True when the hero card's displayed text is likely clipped by its 4-line clamp, or a longer full story exists. */
+function isHeroTextTruncated(feedback: Feedback) {
+  const displayed = feedback.hook || feedback.description;
+  if (displayed.length > HERO_TEXT_CLAMP_THRESHOLD) return true;
+  return Boolean(
+    feedback.hook && feedback.description && feedback.description !== feedback.hook,
+  );
+}
+
 function Avatar({
   name,
   imageUploadedLink,
@@ -227,7 +239,13 @@ function buildHeroStats(items: Feedback[]) {
   return stats;
 }
 
-function HeroBand({ items }: { items: Feedback[] }) {
+function HeroBand({
+  items,
+  onOpen,
+}: {
+  items: Feedback[];
+  onOpen: (feedback: Feedback) => void;
+}) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const heroStats = useMemo(() => buildHeroStats(items), [items]);
@@ -326,18 +344,27 @@ function HeroBand({ items }: { items: Feedback[] }) {
                         <div className="absolute inset-0 bg-linear-to-t from-emerald-950/90 via-transparent to-transparent sm:hidden pointer-events-none" />
                       </div>
 
-                      <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0">
+                      <button
+                        type="button"
+                        onClick={() => onOpen(feedback)}
+                        className="flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0 text-left"
+                      >
                         <StarRow
                           rating={feedback.rating}
                           size="size-4"
                           className="mb-4"
                           emptyClassName="text-emerald-700"
                         />
-                        <p className="relative text-base sm:text-lg text-white leading-relaxed mb-6">
+                        <p className="relative text-base sm:text-lg text-white leading-relaxed line-clamp-4">
                           <Quote className="inline size-4 text-emerald-500/70 -translate-y-1 mr-1" />
                           {feedback.hook || feedback.description}
                         </p>
-                        <div className="h-px bg-emerald-800/80 mb-4" />
+                        {isHeroTextTruncated(feedback) && (
+                          <span className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 mb-6 mt-1 inline-block">
+                            সম্পূর্ণ পড়ুন
+                          </span>
+                        )}
+                        <div className="h-px bg-emerald-800/80 mb-4 mt-6" />
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-white">{feedback.name}</span>
                           <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
@@ -353,7 +380,7 @@ function HeroBand({ items }: { items: Feedback[] }) {
                           logoUrl={feedback.institutionLogoUrl}
                           textClassName="text-sm text-emerald-200/70 truncate"
                         />
-                      </div>
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -588,7 +615,7 @@ export default function TestimonialShowcase({
   return (
     <section id="student-reviews" className="relative overflow-hidden">
       {/* 1 — Hero band */}
-      <HeroBand items={featured} />
+      <HeroBand items={featured} onOpen={setActiveFeedback} />
 
       {/* 2 + 3 — light band */}
       <div className="bg-section-a py-12 md:py-16">
