@@ -135,7 +135,11 @@ function FAQAccordionItem({
   );
 }
 
-export default function FAQSection() {
+export interface FAQSectionProps {
+  background?: "a" | "b";
+}
+
+export default function FAQSection({ background = "a" }: FAQSectionProps) {
   const { faqs: faqData, loading } = usePublicFaqs();
   const [openItems, setOpenItems] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
@@ -179,7 +183,11 @@ export default function FAQSection() {
   const collapseAll = () => setOpenItems(new Set());
 
   return (
-    <section className="relative py-20 md:py-24 bg-section-a overflow-hidden">
+    <section
+      className={`relative py-20 md:py-24 overflow-hidden ${
+        background === "b" ? "bg-section-b" : "bg-section-a"
+      }`}
+    >
       <div
         aria-hidden
         className="absolute top-4 -left-10 md:-left-6 text-[10rem] md:text-[18rem] text-primary/10 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"

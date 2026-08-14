@@ -3,6 +3,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import founderPhoto from "../../public/assets/proffesionalFounder.webp";
 
 // Below-the-fold sections — lazy-loaded to keep the landing page's initial JS small.
 const TestimonialShowcase = dynamic(
@@ -228,20 +229,14 @@ export function LandingPage() {
                 <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-400/10 blur-2xl pointer-events-none"></div>
 
                 <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-emerald-900/60 ring-1 ring-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]">
-                  {founder?.image ? (
-                    <Image
-                      src={founder.image}
-                      alt={founder.name}
-                      fill
-                      priority
-                      className="object-cover object-top"
-                      sizes="(max-width: 1024px) 360px, 420px"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <GraduationCap className="size-24 text-emerald-400/30" />
-                    </div>
-                  )}
+                  <Image
+                    src={founderPhoto}
+                    alt={founder?.name ?? "MathPro"}
+                    fill
+                    priority
+                    className="object-cover object-top"
+                    sizes="(max-width: 1024px) 360px, 420px"
+                  />
 
                   {/* Scrim — fuses the photo into the dark scene and gives the name plate a bed */}
                   <div className="absolute inset-0 bg-linear-to-t from-emerald-950 via-emerald-950/25 to-transparent pointer-events-none"></div>

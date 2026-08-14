@@ -104,10 +104,12 @@ function MarqueeRow({
 
 export interface TestimonialMarqueeProps {
   feedbacks?: Feedback[];
+  background?: "a" | "b";
 }
 
 export default function TestimonialMarquee({
   feedbacks = [],
+  background = "a",
 }: TestimonialMarqueeProps) {
   const [paused, setPaused] = useState(false);
 
@@ -126,7 +128,11 @@ export default function TestimonialMarquee({
   const row2 = source.filter((_, i) => i % 2 === 1);
 
   return (
-    <section className="relative py-16 md:py-20 bg-section-a overflow-hidden dark:border-t dark:border-white/5">
+    <section
+      className={`relative py-16 md:py-20 overflow-hidden dark:border-t dark:border-white/5 ${
+        background === "b" ? "bg-section-b" : "bg-section-a"
+      }`}
+    >
       {/* Math motif background */}
       <div
         aria-hidden

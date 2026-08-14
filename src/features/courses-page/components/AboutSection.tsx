@@ -6,6 +6,7 @@ import type { Instructor } from "../_lib/types";
 
 interface AboutSectionProps {
   instructors: Instructor[];
+  background?: "a" | "b";
 }
 
 function SocialLinks({ social }: { social: Instructor["social"] }) {
@@ -54,9 +55,19 @@ function SocialLinks({ social }: { social: Instructor["social"] }) {
 }
 
 
-function SingleInstructor({ instructor }: { instructor: Instructor }) {
+function SingleInstructor({
+  instructor,
+  background = "a",
+}: {
+  instructor: Instructor;
+  background?: "a" | "b";
+}) {
   return (
-    <section className="bg-section-a relative overflow-hidden py-10 sm:py-14 lg:py-20">
+    <section
+      className={`relative overflow-hidden py-10 sm:py-14 lg:py-20 ${
+        background === "b" ? "bg-section-b" : "bg-section-a"
+      }`}
+    >
       <div className="container mx-auto px-6 sm:px-12 lg:px-24 xl:px-36 grid lg:grid-cols-[1fr_40%] gap-6 lg:gap-10 items-stretch min-h-125">
         {/* Left — content */}
         <div className="flex flex-col justify-center order-2 lg:order-1">
@@ -137,9 +148,19 @@ function SingleInstructor({ instructor }: { instructor: Instructor }) {
   );
 }
 
-function MultipleInstructors({ instructors }: { instructors: Instructor[] }) {
+function MultipleInstructors({
+  instructors,
+  background = "a",
+}: {
+  instructors: Instructor[];
+  background?: "a" | "b";
+}) {
   return (
-    <section className="py-24 bg-section-a relative overflow-hidden">
+    <section
+      className={`py-24 relative overflow-hidden ${
+        background === "b" ? "bg-section-b" : "bg-section-a"
+      }`}
+    >
       <div className="container mx-auto px-6 lg:px-12">
 
         {/* Header */}
@@ -225,12 +246,12 @@ function MultipleInstructors({ instructors }: { instructors: Instructor[] }) {
   );
 }
 
-export default function AboutSection({ instructors }: AboutSectionProps) {
+export default function AboutSection({ instructors, background = "a" }: AboutSectionProps) {
   if (!instructors || instructors.length === 0) return null;
 
   if (instructors.length === 1) {
-    return <SingleInstructor instructor={instructors[0]} />;
+    return <SingleInstructor instructor={instructors[0]} background={background} />;
   }
 
-  return <MultipleInstructors instructors={instructors} />;
+  return <MultipleInstructors instructors={instructors} background={background} />;
 }

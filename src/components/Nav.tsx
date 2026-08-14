@@ -149,6 +149,7 @@ export default function Nav({ mode = "default" }: NavProps) {
     ? "hover:text-emerald-600 dark:hover:text-emerald-400"
     : "hover:text-emerald-400";
   const coursesActive = pathname?.startsWith("/courses");
+  const combosActive = pathname?.startsWith("/combos");
   const booksActive = pathname?.startsWith("/books");
   const dashboardActive = pathname?.startsWith("/dashboard");
   const profileActive = pathname?.startsWith("/profile");
@@ -200,6 +201,12 @@ export default function Nav({ mode = "default" }: NavProps) {
               className={`transition-colors ${navHoverClass} ${coursesActive ? "text-emerald-600" : ""}`}
             >
               কোর্সসমূহ
+            </Link>
+            <Link
+              href="/combos"
+              className={`transition-colors ${navHoverClass} ${combosActive ? "text-emerald-600" : ""}`}
+            >
+              কম্বো সমূহ
             </Link>
             <Link
               href="/books"
@@ -350,6 +357,17 @@ export default function Nav({ mode = "default" }: NavProps) {
                       }`}
                     >
                       কোর্সসমূহ
+                    </Link>
+                    <Link
+                      href="/combos"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`rounded-xl border px-4 py-3 transition-colors ${
+                        combosActive
+                          ? "border-emerald-400/30 bg-emerald-400/15 text-emerald-200"
+                          : "border-white/10 bg-white/[0.06] text-white hover:bg-white/[0.1]"
+                      }`}
+                    >
+                      কম্বো সমূহ
                     </Link>
                     <Link
                       href="/books"

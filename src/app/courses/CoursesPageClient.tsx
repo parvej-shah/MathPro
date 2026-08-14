@@ -181,10 +181,15 @@ export default function CoursesPageClient() {
           </div>
         </div>
 
-          {instructors.length > 0 && <AboutSection instructors={instructors} />}
+          {instructors.length > 0 && (
+            <AboutSection instructors={instructors} background="b" />
+          )}
           {/* <FacebookCommunityCTASection /> */}
-          <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
-          <FAQSection />
+          <TestimonialMarquee
+            feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)}
+            background="a"
+          />
+          <FAQSection background="b" />
         </div>
       </main>
       <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />
