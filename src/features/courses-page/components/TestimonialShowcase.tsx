@@ -109,21 +109,39 @@ function InstitutionLine({
   name,
   logoUrl,
   textClassName = "text-xs text-muted-foreground truncate",
+  showLogo = true,
 }: {
   name: string;
   logoUrl?: string;
   textClassName?: string;
+  showLogo?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   return (
     <div className="flex items-center gap-1.5 min-w-0">
-      {logoUrl && !failed && (
+      {showLogo && logoUrl && !failed && (
         <span className="relative size-4 shrink-0 rounded-full overflow-hidden bg-muted">
           <Image src={logoUrl} alt="" fill className="object-contain" onError={() => setFailed(true)} />
         </span>
       )}
       <p className={textClassName}>{name}</p>
     </div>
+  );
+}
+
+/** Large institution logo seal, anchored to a card's bottom-right corner so it reads at a glance. */
+function InstitutionBadge({ logoUrl, name }: { logoUrl?: string; name: string }) {
+  const [failed, setFailed] = useState(false);
+  if (!logoUrl || failed) return null;
+  return (
+    <span
+      className="absolute -bottom-3.5 -right-3.5 size-16 shrink-0 rounded-2xl overflow-hidden bg-card border-2 border-background shadow-lg ring-1 ring-border p-1.5"
+      title={name}
+    >
+      <span className="relative block size-full rounded-lg overflow-hidden bg-muted">
+        <Image src={logoUrl} alt="" fill className="object-contain" onError={() => setFailed(true)} />
+      </span>
+    </span>
   );
 }
 
@@ -436,7 +454,7 @@ function ReviewCard({
     <button
       type="button"
       onClick={onOpen}
-      className="flex-shrink-0 w-[320px] sm:w-[380px] snap-start text-left bg-card border border-border rounded-[1.75rem] p-7 flex flex-col gap-5 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300"
+      className="relative flex-shrink-0 w-[320px] sm:w-[380px] snap-start text-left bg-card border border-border rounded-[1.75rem] p-7 flex flex-col gap-5 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/8 dark:hover:border-emerald-500/25 dark:hover:shadow-emerald-400/10 transition-all duration-300"
     >
       <div className="flex items-start gap-4">
         <Avatar
@@ -454,7 +472,7 @@ function ReviewCard({
 
       <div className="h-px bg-border" />
 
-      <div className="min-w-0">
+      <div className="min-w-0 pr-10">
         <div className="flex items-center gap-1.5">
           <p className="text-base font-bold text-heading leading-none truncate">
             {feedback.name}
@@ -468,9 +486,11 @@ function ReviewCard({
             </span>
         </div>
         <div className="mt-1.5">
-          <InstitutionLine name={feedback.bio} logoUrl={feedback.institutionLogoUrl} />
+          <InstitutionLine name={feedback.bio} showLogo={false} />
         </div>
       </div>
+
+      <InstitutionBadge logoUrl={feedback.institutionLogoUrl} name={feedback.bio} />
     </button>
   );
 }
