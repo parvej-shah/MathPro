@@ -104,24 +104,30 @@ function PortraitOrInitial({
   );
 }
 
-/** Institution logo + name, replacing the old plain-text course-name subtitle. */
+/** Institution logo + name — the logo reads as a small circular crest sitting next to the name it identifies. */
 function InstitutionLine({
   name,
   logoUrl,
   textClassName = "text-xs text-muted-foreground truncate",
-  showLogo = true,
+  logoSize = "size-4",
+  dark = false,
 }: {
   name: string;
   logoUrl?: string;
   textClassName?: string;
-  showLogo?: boolean;
+  logoSize?: string;
+  dark?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   return (
-    <div className="flex items-center gap-1.5 min-w-0">
-      {showLogo && logoUrl && !failed && (
-        <span className="relative size-4 shrink-0 rounded-full overflow-hidden bg-muted">
-          <Image src={logoUrl} alt="" fill className="object-contain" onError={() => setFailed(true)} />
+    <div className="flex items-center gap-2 min-w-0">
+      {logoUrl && !failed && (
+        <span
+          className={`relative ${logoSize} shrink-0 rounded-full overflow-hidden bg-white ${
+            dark ? "ring-1 ring-emerald-400/30" : "ring-1 ring-border"
+          }`}
+        >
+          <Image src={logoUrl} alt="" fill className="object-cover" onError={() => setFailed(true)} />
         </span>
       )}
       <p className={textClassName}>{name}</p>
@@ -129,18 +135,38 @@ function InstitutionLine({
   );
 }
 
-/** Large institution logo seal, anchored to a card's bottom-right corner so it reads at a glance. */
-function InstitutionBadge({ logoUrl, name }: { logoUrl?: string; name: string }) {
+/** Institution logo shown as a framed mark. `anchor="corner"` pins it to a card's own corner
+ *  padding (needs a tall `relative` ancestor); `anchor="center"` centers it on the right edge
+ *  of its immediate `relative` parent, so it tracks a short content row instead of the whole card. */
+function InstitutionMark({
+  logoUrl,
+  name,
+  size = "size-14",
+  dark = false,
+  anchor = "corner",
+}: {
+  logoUrl?: string;
+  name: string;
+  size?: string;
+  dark?: boolean;
+  anchor?: "corner" | "center";
+}) {
   const [failed, setFailed] = useState(false);
   if (!logoUrl || failed) return null;
   return (
     <span
-      className="absolute -bottom-3.5 -right-3.5 size-16 shrink-0 rounded-2xl overflow-hidden bg-card border-2 border-background shadow-lg ring-1 ring-border p-1.5"
+      className={`absolute ${
+        anchor === "center"
+          ? "top-1/2 right-0 -translate-y-1/2"
+          : "bottom-6 right-6 sm:bottom-8 sm:right-8"
+      } ${size} shrink-0 rounded-xl overflow-hidden shadow-lg ${
+        dark
+          ? "bg-white/95 ring-1 ring-emerald-400/25"
+          : "bg-white ring-1 ring-border"
+      }`}
       title={name}
     >
-      <span className="relative block size-full rounded-lg overflow-hidden bg-muted">
-        <Image src={logoUrl} alt="" fill className="object-contain" onError={() => setFailed(true)} />
-      </span>
+      <Image src={logoUrl} alt="" fill className="object-cover" onError={() => setFailed(true)} />
     </span>
   );
 }
@@ -365,7 +391,7 @@ function HeroBand({
                       <button
                         type="button"
                         onClick={() => onOpen(feedback)}
-                        className="flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0 text-left"
+                        className="relative flex-1 p-6 sm:p-8 flex flex-col justify-center min-w-0 text-left"
                       >
                         <StarRow
                           rating={feedback.rating}
@@ -383,21 +409,32 @@ function HeroBand({
                           </span>
                         )}
                         <div className="h-px bg-emerald-800/80 mb-4 mt-6" />
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-white">{feedback.name}</span>
-                          <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
-                            <CheckCircle2
-                              className="size-4 text-emerald-400"
-                              role="img"
-                              aria-label={VERIFIED_LABEL}
+                        <div className="relative flex items-center gap-4 pr-16 sm:pr-20">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-white">{feedback.name}</span>
+                              <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
+                                <CheckCircle2
+                                  className="size-4 text-emerald-400"
+                                  role="img"
+                                  aria-label={VERIFIED_LABEL}
+                                />
+                              </span>
+                            </div>
+                            <InstitutionLine
+                              name={feedback.bio}
+                              textClassName="text-sm text-emerald-200/70 truncate"
+                              dark
                             />
-                          </span>
+                          </div>
+                          <InstitutionMark
+                            logoUrl={feedback.institutionLogoUrl}
+                            name={feedback.bio}
+                            size="size-14 sm:size-16"
+                            dark
+                            anchor="center"
+                          />
                         </div>
-                        <InstitutionLine
-                          name={feedback.bio}
-                          logoUrl={feedback.institutionLogoUrl}
-                          textClassName="text-sm text-emerald-200/70 truncate"
-                        />
                       </button>
                     </div>
                   </div>
@@ -472,25 +509,32 @@ function ReviewCard({
 
       <div className="h-px bg-border" />
 
-      <div className="min-w-0 pr-10">
-        <div className="flex items-center gap-1.5">
-          <p className="text-base font-bold text-heading leading-none truncate">
-            {feedback.name}
-          </p>
-          <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
-              <CheckCircle2
-                className="size-4 text-primary"
-                role="img"
-                aria-label={VERIFIED_LABEL}
-              />
-            </span>
+      <div className="relative flex items-center gap-3 pr-16">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="text-base font-bold text-heading leading-none truncate">
+              {feedback.name}
+            </p>
+            <span title={VERIFIED_LABEL} className="inline-flex shrink-0">
+                <CheckCircle2
+                  className="size-4 text-primary"
+                  role="img"
+                  aria-label={VERIFIED_LABEL}
+                />
+              </span>
+          </div>
+          <div className="mt-1.5">
+            <InstitutionLine name={feedback.bio} />
+          </div>
         </div>
-        <div className="mt-1.5">
-          <InstitutionLine name={feedback.bio} showLogo={false} />
-        </div>
-      </div>
 
-      <InstitutionBadge logoUrl={feedback.institutionLogoUrl} name={feedback.bio} />
+        <InstitutionMark
+          logoUrl={feedback.institutionLogoUrl}
+          name={feedback.bio}
+          size="size-14"
+          anchor="center"
+        />
+      </div>
     </button>
   );
 }
