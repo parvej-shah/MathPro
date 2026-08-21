@@ -58,10 +58,19 @@ export function LandingCourseTabs({
     }));
   }, [bundlesData]);
 
-  const allCourses = useMemo(
-    () => categories.flatMap((cat) => cat.courses),
-    [categories],
-  );
+  const allCourses = useMemo(() => {
+    const seen = new Set<number>();
+    const unique = [];
+    for (const cat of categories) {
+      for (const course of cat.courses) {
+        if (!seen.has(course.id)) {
+          seen.add(course.id);
+          unique.push(course);
+        }
+      }
+    }
+    return unique;
+  }, [categories]);
 
   const tabs = useMemo(() => {
     const built = [
