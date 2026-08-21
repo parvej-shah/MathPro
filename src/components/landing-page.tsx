@@ -187,10 +187,10 @@ export function LandingPage() {
 
         {/* Top padding clears the fixed, transparent navbar (~96px at lg) with room to breathe */}
         <div className="relative z-10 container mx-auto px-6 lg:px-12 pt-32 md:pt-36 lg:pt-40 pb-16 lg:pb-20">
-          <div className="grid lg:grid-cols-[1fr_0.85fr] gap-12 lg:gap-20 items-center">
+          <div className="grid lg:grid-cols-[1fr_0.85fr] gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
 
             {/* ── Left: message — one idea, read top to bottom in a single glance ── */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:pr-8">
               {/* Headline — the promise, in the student's own words */}
               <h1 className="font-heading text-[2.75rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
                 গণিত ভয়ের নয়,
@@ -223,7 +223,7 @@ export function LandingPage() {
             </div>
 
             {/* ── Right: the teacher ── */}
-            <div className="flex justify-center lg:justify-end">
+            <div className="flex justify-center lg:justify-center">
               <div className="relative w-[300px] sm:w-[360px] lg:w-[420px]">
                 {/* Halo behind the portrait */}
                 <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-400/10 blur-2xl pointer-events-none"></div>
