@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingCart, BookOpen } from "lucide-react";
 
 // ─── Deterministic gradient from title ───────────────────────────────────────
 
@@ -171,7 +171,7 @@ export default function LandingStyleCourseCard({
         <div className="mt-auto flex gap-3 pt-5 border-t border-border">
           <Link
             href={href}
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-muted hover:bg-muted/70 text-foreground text-sm font-bold transition-all duration-300 border border-border hover:border-foreground/30 hover:shadow-sm"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-muted/60 hover:bg-muted text-foreground text-sm font-bold transition-all duration-300 border border-border/80 hover:border-foreground/30 hover:shadow-xs"
           >
             বিস্তারিত দেখুন
             <ArrowRight className="size-4" />
@@ -180,8 +180,17 @@ export default function LandingStyleCourseCard({
             href={href}
             className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold transition-all duration-300 shadow-md shadow-primary/25 hover:shadow-lg hover:shadow-primary/35 hover:-translate-y-0.5"
           >
-            <ShoppingCart className="size-4" />
-            এখনই কিনুন
+            {isFree ? (
+              <>
+                <BookOpen className="size-4" />
+                ফ্রি এনরোল
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="size-4" />
+                এখনই কিনুন
+              </>
+            )}
           </Link>
         </div>
       </div>

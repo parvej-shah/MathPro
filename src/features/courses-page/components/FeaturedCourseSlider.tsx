@@ -143,8 +143,9 @@ export default function FeaturedCourseSlider({
           />
 
           {/* Multi-layer gradient */}
-          <div className="absolute inset-0 bg-linear-to-r from-black/75 via-black/30 to-transparent" />
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/75 via-transparent to-black/10" />
+          <div className="absolute -bottom-10 -left-10 w-96 h-96 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none" />
 
           {/* Content */}
           <Link
@@ -155,7 +156,7 @@ export default function FeaturedCourseSlider({
             <div className="w-full max-w-full min-w-0 rounded-2xl bg-black/40 p-4 backdrop-blur-md sm:rounded-none sm:bg-transparent sm:p-0 sm:backdrop-blur-0">
               {/* Badge row */}
               <div className="flex items-center gap-3 mb-2 sm:mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-primary/80 text-white backdrop-blur-sm border border-primary/30 shadow-lg">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest rounded-full bg-primary text-white backdrop-blur-sm border border-primary/30 shadow-lg">
                   ফিচার্ড
                 </span>
               </div>

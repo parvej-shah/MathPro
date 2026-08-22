@@ -51,6 +51,8 @@ export default function CoursesPageClient() {
     selectedCategory,
     setSelectedCategory,
     refetch,
+    searchTerm,
+    setSearchTerm,
   } = useCoursesPage(requestedCategory);
   const { testimonials } = usePublicTestimonials();
 
@@ -145,6 +147,8 @@ export default function CoursesPageClient() {
             categories={categories}
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
           />
 
 
