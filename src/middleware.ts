@@ -75,7 +75,7 @@ export function middleware(req: NextRequest) {
 
   if (isProtectedPath(pathname) && !loggedIn) {
     const loginUrl = new URL("/auth/login", req.url);
-    loginUrl.searchParams.set("redirect", `${req.nextUrl.origin}${pathname}${search}`);
+    loginUrl.searchParams.set("redirect", `${pathname}${search}`);
     return NextResponse.redirect(loginUrl);
   }
 
