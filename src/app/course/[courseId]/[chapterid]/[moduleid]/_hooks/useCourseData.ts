@@ -154,6 +154,30 @@ export function useCourseData(
     refreshCourseData();
   }, [refreshCourseData]);
 
+  // Instant in-memory sync when route params (chapterId, moduleId) change
+  useEffect(() => {
+    if (!courseData || !moduleId) return;
+    const modIdNum = parseInt(moduleId);
+    const chIdNum = chapterId ? parseInt(chapterId) : undefined;
+    for (const ch of courseData.chapters) {
+      if (chIdNum !== undefined && ch.id !== chIdNum) continue;
+      const found = ch.modules?.find((m) => m.id === modIdNum);
+      if (found) {
+        setActiveModule(found);
+        saveLastAccessedModule(courseId as string, found.id, found.chapter_id).catch(() => {});
+        return;
+      }
+    }
+    for (const ch of courseData.chapters) {
+      const found = ch.modules?.find((m) => m.id === modIdNum);
+      if (found) {
+        setActiveModule(found);
+        saveLastAccessedModule(courseId as string, found.id, found.chapter_id).catch(() => {});
+        return;
+      }
+    }
+  }, [courseData, chapterId, moduleId, courseId]);
+
   useEffect(() => {
     if (courseId) {
       fetchCourse();
