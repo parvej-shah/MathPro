@@ -22,6 +22,7 @@ const MATH_OVERFLOW =
 
 interface ModulePlayerProps {
   activeModule: CourseModule;
+  initialTime?: number;
   // quiz state
   quizAnswer: Record<number, string>;
   setQuizAnswer: React.Dispatch<React.SetStateAction<Record<number, string>>>;
@@ -45,6 +46,7 @@ interface ModulePlayerProps {
 
 const ModulePlayer = memo(function ModulePlayer({
   activeModule,
+  initialTime,
   quizAnswer,
   setQuizAnswer,
   quizVerdict,
@@ -181,7 +183,10 @@ const ModulePlayer = memo(function ModulePlayer({
         (activeModule.data.videoUrl as string).trim() === "" ? (
           <ModuleUpcoming />
         ) : (
-          <ReactYoutubePlayer videoUrl={activeModule.data.videoUrl as string} />
+          <ReactYoutubePlayer
+            videoUrl={activeModule.data.videoUrl as string}
+            initialTime={initialTime}
+          />
         ))}
 
       {category === "VIDEO" && !isLiveOverlay && activeModule?.data?.videoHost === "BunnyCDN" &&

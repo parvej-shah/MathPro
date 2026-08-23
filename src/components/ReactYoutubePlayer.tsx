@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BsPlayFill,
   BsPauseFill,
@@ -9,7 +9,9 @@ import {
   BsArrowsFullscreen,
   BsGear,
   BsArrowClockwise,
+  BsShare,
 } from "react-icons/bs";
+import { parseTimestamp } from "@/utils/timestampUtils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
@@ -76,8 +78,27 @@ const QUALITY_LABELS: Record<string, string> = {
   default: "অটো",
 };
 
-const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
+export interface ReactYoutubePlayerProps {
+  videoUrl: string;
+  initialTime?: number;
+}
+
+const ReactYoutubePlayer = ({ videoUrl, initialTime }: ReactYoutubePlayerProps) => {
   const videoId = extractVideoId(videoUrl);
+  const detectedStartTime = useMemo(() => {
+    if (typeof initialTime === "number" && initialTime > 0) return initialTime;
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      return parseTimestamp(sp.get("t") || sp.get("start") || sp.get("time"));
+    }
+    return undefined;
+  }, [initialTime]);
+  const startTime = detectedStartTime ?? 0;
+  const startTimeRef = useRef(startTime);
+  useEffect(() => {
+    startTimeRef.current = startTime;
+  }, [startTime]);
+
   const wrapperRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<any>(null);
@@ -107,6 +128,9 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   const [volume, setVolume] = useState(100);
   const [showSettings, setShowSettings] = useState(false);
   const [settingsTab, setSettingsTab] = useState<"main" | "quality" | "speed">("main");
+  const [showShare, setShowShare] = useState(false);
+  const [shareWithTimestamp, setShareWithTimestamp] = useState(true);
+  const [copied, setCopied] = useState(false);
   const [qualities, setQualities] = useState<string[]>([]);
   const [quality, setQuality] = useState("auto");
   const [speed, setSpeed] = useState(1);
@@ -135,6 +159,7 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
           playsinline: 1,
           autoplay: 1,
           mute: 1,
+          start: startTime > 0 ? Math.floor(startTime) : undefined,
           origin: typeof window !== "undefined" ? window.location.origin : undefined,
         },
         events: {
@@ -143,6 +168,10 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
             setDuration(e.target.getDuration());
             setVolume(e.target.getVolume() || 100);
             setMuted(true);
+            if (startTimeRef.current > 0) {
+              e.target.seekTo(startTimeRef.current, true);
+              setCurrent(startTimeRef.current);
+            }
             const rates = e.target.getAvailablePlaybackRates?.() || [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
             setAvailableSpeeds(rates);
             e.target.playVideo();
@@ -222,25 +251,23 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
   const revealControls = useCallback(() => {
     setControlsVisible(true);
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    if (playing) {
+    if (playing && !showSettings && !showShare) {
       hideTimerRef.current = setTimeout(() => setControlsVisible(false), 4500);
     }
-  }, [playing]);
+  }, [playing, showSettings, showShare]);
 
   useEffect(() => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    // No timer while buffering — controls hold through the stall (onStateChange sets
-    // controlsVisible), then the timer restarts here on resume so they linger 4.5s
-    // instead of vanishing instantly.
-    if (playing && !buffering) {
+    // No timer while buffering or when popover is open
+    if (playing && !buffering && !showSettings && !showShare) {
       hideTimerRef.current = setTimeout(() => setControlsVisible(false), 4500);
     }
     return () => {
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
     };
-  }, [playing, buffering]);
+  }, [playing, buffering, showSettings, showShare]);
 
-  const showControls = !playing || controlsVisible || buffering;
+  const showControls = !playing || controlsVisible || buffering || showSettings || showShare;
 
   const dismissPoster = useCallback(() => {
     const p = playerRef.current;
@@ -253,8 +280,54 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
       setMuted(false);
       setVolume(100);
     }
+    if (startTimeRef.current > 0) {
+      p.seekTo(startTimeRef.current, true);
+    }
     p.playVideo();
   }, []);
+
+  const handleCopyLink = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (shareWithTimestamp && current > 0) {
+      url.searchParams.set("t", String(Math.floor(current)));
+    } else {
+      url.searchParams.delete("t");
+      url.searchParams.delete("start");
+      url.searchParams.delete("time");
+    }
+    const textToCopy = url.toString();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = textToCopy;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = textToCopy;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+      setShowShare(false);
+    }, 2000);
+  }, [shareWithTimestamp, current]);
 
   const togglePlay = useCallback(() => {
     const p = playerRef.current;
@@ -507,12 +580,68 @@ const ReactYoutubePlayer = ({ videoUrl }: { videoUrl: string }) => {
             </span>
 
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Share link popover */}
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() => { setShowSettings((s) => !s); setSettingsTab("main"); }}
+                  onClick={() => {
+                    setShowShare((s) => !s);
+                    setShowSettings(false);
+                  }}
+                  aria-label="share"
+                  title="নির্দিষ্ট সময়ের লিঙ্ক শেয়ার করুন"
+                  className="flex items-center justify-center text-white/90 hover:text-white transition-colors"
+                >
+                  <BsShare className="text-sm sm:text-base" />
+                </button>
+                {showShare && (
+                  <div className="absolute bottom-8 right-0 w-64 rounded-xl bg-black/95 border border-white/20 p-3 text-xs text-white shadow-2xl backdrop-blur-md z-50">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-bold text-xs text-emerald-400">ভিডিও লিঙ্ক শেয়ার করুন</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowShare(false)}
+                        className="text-white/60 hover:text-white p-0.5"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <label className="flex items-center gap-2 mb-3 cursor-pointer select-none text-slate-200 text-[11px]">
+                      <input
+                        type="checkbox"
+                        checked={shareWithTimestamp}
+                        onChange={(e) => setShareWithTimestamp(e.target.checked)}
+                        className="rounded border-white/20 accent-emerald-500 size-3.5"
+                      />
+                      <span>
+                        বর্তমান সময় থেকে শুরু <span className="text-emerald-400 font-mono">({formatTime(current)})</span>
+                      </span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className="w-full py-1.5 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 active:scale-98 font-bold text-slate-950 flex items-center justify-center gap-1.5 transition-all text-xs"
+                    >
+                      {copied ? (
+                        <>✓ কপি করা হয়েছে!</>
+                      ) : (
+                        <>🔗 লিঙ্ক কপি করুন</>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSettings((s) => !s);
+                    setShowShare(false);
+                    setSettingsTab("main");
+                  }}
                   aria-label="settings"
-                  className="flex items-center justify-center"
+                  className="flex items-center justify-center text-white/90 hover:text-white transition-colors"
                 >
                   <BsGear className="text-base sm:text-lg" />
                 </button>

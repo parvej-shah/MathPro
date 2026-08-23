@@ -4,8 +4,9 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { UserContext } from "@/Contexts/UserContext";
 import { Toaster, toast } from "react-hot-toast";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { saveLastAccessedModule } from "@/utils/moduleAccessUtils";
+import { parseTimestamp } from "@/utils/timestampUtils";
 import DiscussionSection from "@/components/DiscussionSection";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import ModuleFeedback from "@/components/ModuleFeedback";
@@ -48,9 +49,13 @@ export default function CourseDetailsPage() {
   const [, setUser] = useContext(UserContext);
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const courseId = params?.courseId as string | undefined;
   const chapterId = params?.chapterid as string | undefined;
   const moduleId = params?.moduleid as string | undefined;
+  const initialTime = parseTimestamp(
+    searchParams.get("t") || searchParams.get("start") || searchParams.get("time"),
+  );
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const activeModuleRef = useRef<HTMLButtonElement>(null);
@@ -428,6 +433,7 @@ export default function CourseDetailsPage() {
                   {activeModule && (
                     <ModulePlayer
                       activeModule={activeModule}
+                      initialTime={initialTime}
                       quizAnswer={quizAnswer}
                       setQuizAnswer={setQuizAnswer}
                       quizVerdict={quizVerdict}
