@@ -48,6 +48,39 @@ export function useCourseData(
           return;
         }
 
+        let targetModule: CourseModule | null = null;
+
+        // Fast path: if moduleId is specified in URL, find it immediately without extra network calls
+        if (moduleId) {
+          const modIdNum = parseInt(moduleId);
+          const chIdNum = chapterId ? parseInt(chapterId) : undefined;
+          for (const ch of data.chapters) {
+            if (chIdNum !== undefined && ch.id !== chIdNum) continue;
+            const found = ch.modules?.find((m) => m.id === modIdNum);
+            if (found) {
+              targetModule = found;
+              break;
+            }
+          }
+          if (!targetModule) {
+            // Search all chapters if not found in specific chapter
+            for (const ch of data.chapters) {
+              const found = ch.modules?.find((m) => m.id === modIdNum);
+              if (found) {
+                targetModule = found;
+                break;
+              }
+            }
+          }
+        }
+
+        if (targetModule) {
+          setActiveModule(targetModule);
+          setLoading(false);
+          saveLastAccessedModule(courseId, targetModule.id, targetModule.chapter_id).catch(() => {});
+          return;
+        }
+
         try {
           const selected = await selectOptimalModule({
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +90,6 @@ export function useCourseData(
             requestedChapterId: chapterId ? parseInt(chapterId) : undefined,
           });
 
-          let targetModule: CourseModule | null = null;
           for (const chapter of data.chapters) {
             for (const mod of chapter.modules) {
               if (mod.id === selected.moduleId && mod.chapter_id === selected.chapterId) {

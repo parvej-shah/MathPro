@@ -159,14 +159,27 @@ export async function selectOptimalModule(
   const { courseData, courseId, requestedModuleId, requestedChapterId } = input;
 
   // Priority 1: URL parameters (explicit user intent)
-  if (requestedModuleId && requestedChapterId) {
-    const foundModule = findModuleById(courseData, requestedModuleId, requestedChapterId);
-    if (foundModule) {
-      return {
-        moduleId: foundModule.id,
-        chapterId: foundModule.chapter_id,
-        reason: "url",
-      };
+  if (requestedModuleId) {
+    if (requestedChapterId) {
+      const foundModule = findModuleById(courseData, requestedModuleId, requestedChapterId);
+      if (foundModule) {
+        return {
+          moduleId: foundModule.id,
+          chapterId: foundModule.chapter_id,
+          reason: "url",
+        };
+      }
+    }
+    for (const chapter of courseData?.chapters || []) {
+      for (const mod of chapter?.modules || []) {
+        if (mod.id === requestedModuleId) {
+          return {
+            moduleId: mod.id,
+            chapterId: mod.chapter_id,
+            reason: "url",
+          };
+        }
+      }
     }
   }
 
