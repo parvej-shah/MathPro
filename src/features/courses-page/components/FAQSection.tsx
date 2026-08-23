@@ -208,16 +208,16 @@ export default function FAQSection({ background = "a" }: FAQSectionProps) {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-5">
             <Sparkles className="size-4 text-primary" />
             <span className="text-sm font-bold uppercase tracking-widest text-primary">
-              সাধারণ প্রশ্নোত্তর
+              তোমার যা জানা প্রয়োজন
             </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-heading leading-tight mb-4">
-            সচরাচর জিজ্ঞাসিত প্রশ্নাবলী
+            সচরাচর জিজ্ঞাসিত প্রশ্ন ও উত্তর
           </h2>
 
           <p className="text-base text-paragraph max-w-xl mx-auto">
-            কোর্স, পেমেন্ট ও সাপোর্ট সম্পর্কে তোমার প্রশ্নের উত্তর এখানেই খুঁজে নাও।
+            ভর্তি, লাইভ ক্লাস, ডাউট সলভ ও পেমেন্ট নিয়ে তোমার সব প্রশ্নের স্পষ্ট উত্তর।
           </p>
         </div>
 
@@ -226,7 +226,7 @@ export default function FAQSection({ background = "a" }: FAQSectionProps) {
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="প্রশ্ন খুঁজো..."
+              placeholder="যেকোনো প্রশ্ন লিখে খুঁজুন (যেমন: লাইভ ক্লাস, ডাউট সলভ, পেমেন্ট)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-14 pr-6 py-4 rounded-2xl bg-card border border-border text-heading placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/15 dark:focus:border-emerald-500/60 transition-all text-base"

@@ -1,7 +1,7 @@
 # MathPro Landing Page Copywriting & ICP Matrix
 
 > **Source of Truth for Marketing Copy & ICP Messaging**  
-> Dual Language Reference (Bengali & English) for student & parent conversion.
+> Dual Language Reference (Bengali & English) for student & parent conversion across all sections.
 
 ---
 
@@ -26,9 +26,9 @@
 
 ---
 
-## 2. Bilingual Copy Matrix
+## 2. Bilingual Section-by-Section Matrix
 
-### Hero Section
+### 1. Hero Section
 
 | Element | Bengali (Live in App) | English Translation (Future Toggle) |
 |---|---|---|
@@ -41,7 +41,7 @@
 
 ---
 
-### Trust Stats Bar
+### 2. Trust Stats Bar
 
 | Metric | Bengali | English Translation |
 |---|---|---|
@@ -51,7 +51,16 @@
 
 ---
 
-### Value Proposition Bento Grid ("কেন MathPro?")
+### 3. Featured Courses Section Header
+
+| Element | Bengali | English Translation |
+|---|---|---|
+| **Title** | `তোমার ক্লাসের উপযোগী সেরা <span class="text-primary">কোর্সসমূহ</span>` | `Top Curated <span class="text-primary">Courses</span> For Your Batch` |
+| **Subtitle** | `SSC ও HSC-র General Math এবং Higher Math-এর পূর্ণাঙ্গ প্রস্তুতি—সিলেবাস শেষ করা থেকে রিভিশন ও মডেল টেস্ট।` | `Complete General & Higher Math preparation for SSC and HSC — from foundational concepts to revision and model tests.` |
+
+---
+
+### 4. Value Proposition Bento Grid ("কেন MathPro?")
 
 | Bento Cell | Bengali (Live in App) | English Translation |
 |---|---|---|
@@ -68,19 +77,46 @@
 
 ---
 
-### Featured Courses Section Header
+### 5. Instructor Section ("আমার সম্পর্কে")
 
-| Element | Bengali | English Translation |
+| Element | Bengali (Live in App) | English Translation |
 |---|---|---|
-| **Title** | `তোমার ক্লাসের উপযোগী সেরা <span class="text-primary">কোর্সসমূহ</span>` | `Top Curated <span class="text-primary">Courses</span> For Your Batch` |
-| **Subtitle** | `SSC ও HSC-র General Math এবং Higher Math-এর পূর্ণাঙ্গ প্রস্তুতি—সিলেবাস শেষ করা থেকে রিভিশন ও মডেল টেস্ট।` | `Complete General & Higher Math preparation for SSC and HSC — from foundational concepts to revision and model tests.` |
+| **Badge** | `প্রতিষ্ঠাতা ও প্রধান মেন্টর` | `Founder & Lead Instructor` |
+| **Title** | `আব্দুল আজিজ (Abdul Aziz)` | `Abdul Aziz` |
+| **Pedigree Lead** | `ঢাকা বিশ্ববিদ্যালয়ের গণিত বিভাগ থেকে স্নাতক এবং দেশের শীর্ষস্থানীয় কোচিং সেন্টারে ৮+ বছর সিনিয়র ফ্যাকাল্টি হিসেবে ৪,০০০+ শিক্ষার্থীকে পড়ানোর অভিজ্ঞতা।` | `Mathematics graduate from the University of Dhaka with 8+ years experience as a senior faculty at top academic coaching centers.` |
 
 ---
 
-### Closing Action Banner
+### 6. Student Success Stories & Reviews (`TestimonialShowcase.tsx`)
 
-| Element | Bengali | English Translation |
+| Element | Bengali (Live in App) | English Translation |
 |---|---|---|
-| **Headline** | `গণিতের ভয় কাটিয়ে A+ নিশ্চিত করতে প্রস্তুত?` | `Ready to Overcome Math Fear and Secure Your A+?` |
-| **Subtitle** | `আজই যুক্ত হও MathPro-এর লাইভ ও ইন্টারেক্টিভ ব্যাচে। প্রথম ক্লাস থেকেই গণিতের প্রতি তোমার দৃষ্টিভঙ্গি বদলে যাবে।` | `Join MathPro's interactive live batches today. Experience the breakthrough in your mathematical intuition from day one.` |
-| **CTA Button** | `তোমার পছন্দের কোর্স বেছে নাও →` | `Find Your Batch Now →` |
+| **Section Badge** | `সাফল্যের গল্প` | `Success Stories` |
+| **Main Header** | `গণিতের ভয় জয় করে`<br/>`বোর্ড পরীক্ষায় A+` | `Overcoming Math Anxiety,`<br/>`Securing Board A+` |
+| **Subhead** | `কীভাবে শত শত শিক্ষার্থী মুখস্থ নির্ভরতা কাটিয়ে বোর্ড পরীক্ষা ও ভর্তি পরীক্ষায় সেরা ফলাফল করেছে—শোনো তাদের বাস্তব অভিজ্ঞতা।` | `Hear how hundreds of students broke free from rote memorization and achieved top board and admission results.` |
+| **Video Row Title** | `শিক্ষার্থীদের ভিডিও রিভিউ ও অভিজ্ঞতা` | `Student Video Testimonials` |
+| **Mid CTA Header** | `পরবর্তী A+ অর্জনকারী হতে তুমি প্রস্তুত?` | `Ready to Be the Next A+ Achiever?` |
+| **Mid CTA Subhead** | `আজই যুক্ত হও MathPro-এর ইন্টারেক্টিভ লাইভ ক্লাসে এবং শুরু করো তোমার গণিত জয়ের যাত্রা।` | `Join MathPro's interactive live classes today and start your journey to mathematical mastery.` |
+| **Mid CTA Button** | `তোমার ব্যাচ বেছে নাও →` | `Choose Your Batch →` |
+
+---
+
+### 7. FAQ Section (`FAQSection.tsx`)
+
+| Element | Bengali (Live in App) | English Translation |
+|---|---|---|
+| **Badge** | `তোমার যা জানা প্রয়োজন` | `What You Need to Know` |
+| **Header** | `সচরাচর জিজ্ঞাসিত প্রশ্ন ও উত্তর` | `Frequently Asked Questions` |
+| **Subhead** | `ভর্তি, লাইভ ক্লাস, ডাউট সলভ ও পেমেন্ট নিয়ে তোমার সব প্রশ্নের স্পষ্ট উত্তর।` | `Clear answers regarding enrollment, live classes, doubt solving, and payments.` |
+| **Search Placeholder** | `যেকোনো প্রশ্ন লিখে খুঁজুন (যেমন: লাইভ ক্লাস, ডাউট সলভ, পেমেন্ট)...` | `Search any question (e.g. live classes, doubt solving, payment)...` |
+
+---
+
+### 8. Closing Footer Action & Brand Bar
+
+| Element | Bengali (Live in App) | English Translation |
+|---|---|---|
+| **Footer CTA Header** | `গণিতের ভয় কাটিয়ে A+ নিশ্চিত করতে প্রস্তুত?` | `Ready to Overcome Math Fear and Secure Your A+?` |
+| **Footer CTA Subhead** | `আজই যুক্ত হও MathPro-এর লাইভ ও ইন্টারেক্টিভ ব্যাচে। প্রথম ক্লাস থেকেই গণিতের প্রতি তোমার দৃষ্টিভঙ্গি বদলে যাবে।` | `Join MathPro's interactive live batches today. Experience the breakthrough in your mathematical intuition from day one.` |
+| **Footer CTA Button** | `তোমার পছন্দের কোর্স বেছে নাও →` | `Find Your Batch Now →` |
+| **Brand Tagline** | `JSC, SSC ও HSC শিক্ষার্থীদের গণিত ভীতি দূর করে বোর্ড পরীক্ষায় A+ নিশ্চিত করার বিশ্বস্ত অনলাইন প্ল্যাটফর্ম। (Bangla Medium & English Version)` | `The trusted online platform helping JSC, SSC & HSC students eliminate math fear and secure Board A+. (Bangla Medium & English Version)` |

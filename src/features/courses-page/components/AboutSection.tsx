@@ -73,8 +73,8 @@ function SingleInstructor({
         <div className="flex flex-col justify-center order-2 lg:order-1">
           <div className="max-w-xl">
             <div className="h-1 w-16 bg-primary rounded-full mb-4" />
-            <p className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">
-              আমার সম্পর্কে
+            <p className="text-sm font-bold uppercase tracking-widest text-primary mb-4">
+              প্রতিষ্ঠাতা ও প্রধান মেন্টর
             </p>
 
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-heading font-heading mb-2">

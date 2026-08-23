@@ -330,13 +330,12 @@ function HeroBand({
               সাফল্যের গল্প
             </p>
             <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-[1.15] mb-4 font-heading">
-              সত্যিকারের শিক্ষার্থী।
+              গণিতের ভয় জয় করে
               <br />
-              <span className="text-emerald-400">সত্যিকারের ফলাফল।</span>
+              <span className="text-emerald-400">বোর্ড পরীক্ষায় A+</span>
             </h2>
             <p className="text-emerald-100/80 leading-relaxed max-w-md mb-8">
-              MathPro-র শিক্ষার্থীরা কীভাবে গণিতের ভয় জয় করেছে, শোনো তাদের নিজের
-              কথায়।
+              কীভাবে শত শত শিক্ষার্থী মুখস্থ নির্ভরতা কাটিয়ে বোর্ড পরীক্ষা ও ভর্তি পরীক্ষায় সেরা ফলাফল করেছে—শোনো তাদের বাস্তব অভিজ্ঞতা।
             </p>
 
             <div className="rounded-2xl border border-emerald-800/80 bg-emerald-900/40 px-5 py-5">
@@ -621,7 +620,7 @@ function VideoPanel({ items }: { items: Feedback[] }) {
           <PlayCircle className="size-4 text-primary" />
         </span>
         <h3 className="text-lg md:text-xl font-bold text-heading font-heading">
-          ওদের গল্প, ওদের কণ্ঠে
+          শিক্ষার্থীদের ভিডিও রিভিউ ও অভিজ্ঞতা
         </h3>
       </div>
 
@@ -737,18 +736,17 @@ export default function TestimonialShowcase({
               className="absolute -bottom-12 -right-8 size-64 text-emerald-400/10 rotate-12 pointer-events-none"
             />
             <h3 className="relative text-3xl md:text-4xl font-extrabold text-white leading-snug mb-4 font-heading">
-              পরবর্তী সাফল্যের গল্পটি{" "}
-              <span className="text-emerald-400">তোমারই হোক</span>
+              পরবর্তী A+ অর্জনকারী হতে{" "}
+              <span className="text-emerald-400">তুমি প্রস্তুত?</span>
             </h3>
             <p className="relative text-emerald-100/80 mb-8 max-w-xl mx-auto">
-              তুমিও যুক্ত হও MathPro-তে এবং নিজের গণিত জয়ের গল্প
-              শুরু করো।
+              আজই যুক্ত হও MathPro-এর ইন্টারেক্টিভ লাইভ ক্লাসে এবং শুরু করো তোমার গণিত জয়ের যাত্রা।
             </p>
             <a
               href="#courses"
               className="relative inline-flex items-center gap-2 px-10 py-4 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-lg transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50"
             >
-              আজই শুরু করো
+              তোমার ব্যাচ বেছে নাও
               <ArrowRight className="size-5" />
             </a>
           </div>

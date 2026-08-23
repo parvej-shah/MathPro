@@ -44,7 +44,7 @@ export default function Footer() {
               MATHPRO প্ল্যাটফর্ম:
             </h3>
             <p className="font-semibold text-lg max-w-sm leading-snug text-slate-300">
-              ঢাকায় ৮ম-১২শ শ্রেণির শিক্ষার্থীদের জন্য প্রিমিয়ার অনলাইন গণিত কোচিং প্ল্যাটফর্ম। গণিত শেখো। পরীক্ষায় বিজয়ী হও।
+              JSC, SSC ও HSC শিক্ষার্থীদের গণিত ভীতি দূর করে বোর্ড পরীক্ষায় A+ নিশ্চিত করার বিশ্বস্ত অনলাইন প্ল্যাটফর্ম। (Bangla Medium & English Version)
             </p>
             <div className="mt-6 flex items-start gap-2 text-sm text-slate-400 max-w-sm">
               <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-emerald-400" />
@@ -55,12 +55,12 @@ export default function Footer() {
           </div>
 
           <div className="mt-12">
-            <a
-              href="#"
+            <Link
+              href="/courses"
               className="inline-flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full font-bold text-sm hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-colors"
             >
-              কোর্সগুলো দেখুন <ArrowUpRight className="w-4 h-4" />
-            </a>
+              তোমার কোর্স বেছে নাও <ArrowUpRight className="w-4 h-4" />
+            </Link>
 
             <div className="mt-6">
               <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
