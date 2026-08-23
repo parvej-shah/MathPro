@@ -68,7 +68,23 @@ function SingleInstructor({
         background === "b" ? "bg-section-b" : "bg-section-a"
       }`}
     >
-      <div className="container mx-auto px-6 sm:px-12 lg:px-24 xl:px-36 grid lg:grid-cols-[1fr_40%] gap-6 lg:gap-10 items-stretch min-h-125">
+      {/* Decorative math motifs */}
+      <div
+        aria-hidden
+        className="absolute top-6 -left-8 md:left-4 text-[10rem] md:text-[16rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"
+        style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}
+      >
+        ∫
+      </div>
+      <div
+        aria-hidden
+        className="absolute -bottom-10 right-4 md:right-12 text-[8rem] md:text-[14rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"
+        style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-3deg", animationDelay: "-5s", animationDuration: "16s" }}
+      >
+        π
+      </div>
+
+      <div className="container relative z-10 mx-auto px-6 sm:px-12 lg:px-24 xl:px-36 grid lg:grid-cols-[1fr_40%] gap-6 lg:gap-10 items-stretch min-h-125">
         {/* Left — content */}
         <div className="flex flex-col justify-center order-2 lg:order-1">
           <div className="max-w-xl">
@@ -149,7 +165,23 @@ function MultipleInstructors({
         background === "b" ? "bg-section-b" : "bg-section-a"
       }`}
     >
-      <div className="container mx-auto px-6 lg:px-12">
+      {/* Decorative math motifs */}
+      <div
+        aria-hidden
+        className="absolute top-6 -left-8 md:left-4 text-[10rem] md:text-[16rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"
+        style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "8px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "2deg", animationDuration: "14s" }}
+      >
+        ∫
+      </div>
+      <div
+        aria-hidden
+        className="absolute -bottom-10 right-4 md:right-12 text-[8rem] md:text-[14rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none z-0 animate-motif-float"
+        style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-3deg", animationDelay: "-5s", animationDuration: "16s" }}
+      >
+        π
+      </div>
+
+      <div className="container relative z-10 mx-auto px-6 lg:px-12">
 
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">

@@ -384,8 +384,8 @@ export function LandingPage() {
       {/* --- FEATURED COURSES (Grouped) --- */}
       <section id="courses" className="py-28 bg-section-a relative overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[11rem] text-muted/40 dark:text-muted/20 font-serif font-bold -rotate-12 select-none pointer-events-none">θ</div>
-        <div className="absolute top-2/3 right-0 md:right-10 text-[6rem] md:text-[11rem] text-muted/50 dark:text-muted/20 font-serif font-bold rotate-12 select-none pointer-events-none">Φ</div>
+        <div className="absolute top-6 md:top-1/4 left-10 md:left-5 text-[10rem] md:text-[14rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-8px", ["--motif-ty" as string]: "10px", ["--motif-dr" as string]: "-2deg", animationDuration: "16s" }}>θ</div>
+        <div className="absolute top-2/3 right-0 md:right-10 text-[8rem] md:text-[14rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "2deg", animationDelay: "-6s", animationDuration: "14s" }}>Φ</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20 lg:mb-24 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">
@@ -406,8 +406,8 @@ export function LandingPage() {
       {/* --- VALUE PROP SECTION --- */}
       <section id="features" className="py-28 bg-section-b relative overflow-hidden">
         {/* Math Motif Background */}
-        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-muted/40 dark:text-muted/20 font-serif font-bold select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
-        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-muted/40 dark:text-muted/20 font-serif font-bold select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
+        <div className="absolute top-10 md:top-20 right-0 md:right-10 text-[8rem] md:text-[14rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "-12deg", ["--motif-tx" as string]: "-10px", ["--motif-ty" as string]: "12px", ["--motif-dr" as string]: "-2deg", animationDuration: "15s" }}>∑</div>
+        <div className="absolute bottom-10 left-0 md:left-10 text-[6rem] md:text-[12rem] text-primary/10 dark:text-primary/15 font-serif font-black select-none pointer-events-none leading-none animate-motif-float" style={{ ["--motif-rot" as string]: "12deg", ["--motif-tx" as string]: "10px", ["--motif-ty" as string]: "-10px", ["--motif-dr" as string]: "3deg", animationDelay: "-7s", animationDuration: "17s" }}>∞</div>
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">কেন MathPro বেছে নিবে?</h2>
