@@ -43,6 +43,7 @@ import {
   FlaskConical,
   Laptop,
   Users,
+  Sparkles,
 } from "lucide-react";
 
 const classCategories = [
@@ -110,32 +111,28 @@ const classCategories = [
 
 /**
  * Value props, tiered by how much they actually persuade a scared math student.
- * The bento grid below gives each tier a different size — six equal-weight cards
- * read as a generic feature list and get scrolled past.
- *
- * Copy is written from the student's fear ("I'll fall behind", "I don't know where
- * I'm weak"), not from the feature name.
+ * Deliberate asymmetry — size encodes how much each claim matters.
  */
 
 /** Tier 1 — the strongest objection to kill: falling behind permanently. */
 const heroFeature = {
-  title: "ক্লাস মিস হলেও পিছিয়ে পড়বে না",
-  desc: "লাইভ ক্লাসে সরাসরি প্রশ্ন করো। না বুঝলে বা ক্লাস মিস হলে রেকর্ডিং আছেই — যতবার খুশি দেখে নাও, যতক্ষণ না পুরোটা পরিষ্কার হয়।",
+  title: "লাইভ ক্লাসে সরাসরি প্রশ্ন, না বুঝলে আনলিমিটেড রিপ্লে",
+  desc: "ক্লাসে না বুঝলে সাথে সাথে প্রশ্ন করার সুযোগ। প্রতিটি ক্লাসের ফুল HD রেকর্ডিং ও ডিজিটাল লেকচার নোট অ্যাপে সাজানো থাকে—যতবার ইচ্ছা রিভিশন দাও পরীক্ষার আগের দিন পর্যন্ত।",
   stat: "∞",
-  statLabel: "আনলিমিটেড রিপ্লে",
+  statLabel: "আনলিমিটেড রিভিশন সুবিধা",
 };
 
 /** Tier 2 — the two promises that carry the most weight after the hero. */
 const majorFeatures = [
   {
-    icon: BookOpen,
-    title: "গোড়া থেকে, ধাপে ধাপে",
-    desc: "এলোমেলো পড়া নয়। প্রতিটি অধ্যায় একদম বেসিক থেকে অ্যাডভান্সড পর্যন্ত সাজানো — আগেরটা না বুঝে পরেরটায় যেতে হয় না।",
+    icon: GraduationCap,
+    title: "English Version ও Bangla Medium—উভয় মাধ্যমেই সমান দক্ষতা",
+    desc: "ইংরেজি ভার্সনের ম্যাথ টার্মিনোলজি এবং বাংলা মাধ্যমের সৃজনশীল প্রশ্ন—উভয় মাধ্যমের শিক্ষার্থীদের জন্য আলাদা যত্ন ও স্পেশালাইজড কনটেন্ট।",
   },
   {
-    icon: TrendingUp,
-    title: "কোথায় দুর্বল, নিজেই দেখো",
-    desc: "কোন অধ্যায়ে আটকে যাচ্ছো ড্যাশবোর্ড বলে দেবে। পরীক্ষার আগে অনুমান করে পড়তে হবে না।",
+    icon: CheckCircle2,
+    title: "ডেইলি কুইজ ও বোর্ড-স্ট্যান্ডার্ড মডেল টেস্ট",
+    desc: "শুধু অংক দেখলেই শেখা হয় না, নিজে করতে হয়। প্রতিটি চ্যাপ্টারের পর থাকছে টাইপ-ভিত্তিক MCQ ও CQ এক্সাম এবং ইনস্ট্যান্ট রেজাল্ট অ্যানালাইসিস।",
   },
 ];
 
@@ -143,18 +140,18 @@ const majorFeatures = [
 const minorFeatures = [
   {
     icon: Users,
-    title: "অভিজ্ঞ ম্যাথ মেন্টর",
-    desc: "কঠিন অংক সহজ টেকনিকে বোঝানো হয়।",
+    title: "২৪/৭ ডেডিকেটেড ডাউট সলভিং",
+    desc: "যেকোনো সময় অংকে আটকে গেলে টেলিগ্রাম গ্রুপে সরাসরি মেন্টরের সাপোর্ট।",
   },
   {
-    icon: CheckCircle2,
-    title: "প্র্যাকটিস ও কুইজ",
-    desc: "প্রতি ক্লাসের পর শিট, কুইজ ও মডেল টেস্ট।",
+    icon: TrendingUp,
+    title: "ড্যাশবোর্ডে দুর্বলতা চিহ্নিতকরণ",
+    desc: "কোন অধ্যায়ে তোমার প্রস্তুতি কতটুকু, ড্যাশবোর্ড দেখিয়ে দেবে নির্ভুলভাবে।",
   },
   {
     icon: Laptop,
-    title: "সাথে সাথে শুরু",
-    desc: "বিকাশ বা নগদে পেমেন্ট করেই ক্লাস শুরু।",
+    title: "বিকাশ/নগদে সহজ পেমেন্ট",
+    desc: "১ মিনিটে সুরক্ষিত পেমেন্ট সম্পন্ন করে সাথে সাথে ক্লাসের অ্যাক্সেস বুঝে নাও।",
   },
 ];
 
@@ -191,17 +188,22 @@ export function LandingPage() {
 
             {/* ── Left: message — one idea, read top to bottom in a single glance ── */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:pr-8">
+              {/* Cohort Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 text-emerald-300 text-xs sm:text-sm font-semibold mb-6 shadow-xs backdrop-blur-xs">
+                <Sparkles className="size-3.5 text-emerald-400" />
+                <span>English Version ও Bangla Medium | JSC, SSC ও HSC</span>
+              </div>
+
               {/* Headline — the promise, in the student's own words */}
               <h1 className="font-heading text-[2.75rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
                 গণিত ভয়ের নয়,
                 <br />
-                <span className="text-emerald-400">বোঝার বিষয়</span>
+                <span className="text-emerald-400">বোঝার এবং জয়ের বিষয়</span>
               </h1>
 
               {/* Subhead — who it's for and what happens, in one breath */}
-              <p className="text-lg lg:text-xl text-emerald-50/65 mb-10 max-w-sm leading-relaxed">
-                ক্লাস ৮ থেকে HSC — প্রতিটি অধ্যায় গোড়া থেকে বুঝিয়ে শেখানো হয়,
-                যতবার দরকার ততবার।
+              <p className="text-lg lg:text-xl text-emerald-50/75 mb-10 max-w-lg leading-relaxed font-normal">
+                ক্লাস ৮ থেকে HSC — মুখস্থ নয়, প্রতিটি কনসেপ্ট গোড়া থেকে বুঝে শেখো। লাইভ ডাউট সলভ, রেগুলার এক্সাম ও টেস্ট পেপার সলভিংয়ে বোর্ড পরীক্ষায় গণিতে নিশ্চিত করো A+।
               </p>
 
               {/* One action. The secondary path stays quiet. */}
@@ -210,14 +212,14 @@ export function LandingPage() {
                   href="/courses"
                   className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-9 py-4 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold rounded-full transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-emerald-500/25 text-lg"
                 >
-                  কোর্সগুলো দেখো
+                  তোমার কোর্স বেছে নাও
                   <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="#student-reviews"
                   className="text-emerald-100/70 hover:text-white font-semibold text-base underline-offset-4 hover:underline transition-colors"
                 >
-                  শিক্ষার্থীরা কী বলছে
+                  শিক্ষার্থীদের অভিজ্ঞতা দেখো
                 </Link>
               </div>
             </div>
@@ -265,7 +267,7 @@ export function LandingPage() {
                   </div>
                   <div>
                     <div className="text-white font-extrabold text-base leading-none mb-1">১০+ বছর</div>
-                    <div className="text-emerald-200/50 text-[10px] font-bold tracking-wide">শিক্ষকতার অভিজ্ঞতা</div>
+                    <div className="text-emerald-200/60 text-[11px] font-bold tracking-wide">৪,০০০+ শিক্ষার্থী মেন্টরড</div>
                   </div>
                 </div>
               </div>
@@ -285,8 +287,8 @@ export function LandingPage() {
                 <Users className="size-5 md:size-7" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৫০,০০০+</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">শিক্ষার্থী যুক্ত আছে</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৪,০০০+</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">শিক্ষার্থী মেন্টরড</div>
               </div>
             </div>
 
@@ -296,7 +298,7 @@ export function LandingPage() {
               </div>
               <div>
                 <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">১,০০০+</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">লাইভ ও রেকর্ডেড ক্লাস</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">ইন্টারেক্টিভ ক্লাস</div>
               </div>
             </div>
 
@@ -305,8 +307,8 @@ export function LandingPage() {
                 <Star className="size-5 md:size-7 fill-emerald-400" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৪.৮/৫</div>
-                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">গড় রেটিং</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৯৮%</div>
+                <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">সন্তুষ্ট শিক্ষার্থী ও অভিভাবক</div>
               </div>
             </div>
 
@@ -387,10 +389,10 @@ export function LandingPage() {
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20 lg:mb-24 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">
-              আমাদের জনপ্রিয় <span className="text-primary">কোর্সসমূহ</span>
+              তোমার ক্লাসের উপযোগী সেরা <span className="text-primary">কোর্সসমূহ</span>
             </h2>
             <p className="text-muted-foreground text-xl font-medium leading-relaxed">
-              দেশের সেরা শিক্ষকদের সাথে তোমার স্বপ্ন পূরণের যাত্রা শুরু হোক এখান থেকেই।
+              SSC ও HSC-র General Math এবং Higher Math-এর পূর্ণাঙ্গ প্রস্তুতি—সিলেবাস শেষ করা থেকে রিভিশন ও মডেল টেস্ট।
             </p>
           </div>
 
@@ -409,7 +411,7 @@ export function LandingPage() {
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16 relative z-[45]">
             <h2 className="text-5xl md:text-6xl font-extrabold tracking-tighter mb-6 text-heading font-heading">কেন MathPro বেছে নিবে?</h2>
-            <p className="text-muted-foreground text-xl font-medium leading-relaxed">গণিতে ভয়ের কারণ একটাই — কোথাও একটা ধাপ বাদ পড়ে গেছে। আমরা সেই ফাঁকটাই বন্ধ করি।</p>
+            <p className="text-muted-foreground text-xl font-medium leading-relaxed">গণিতে ভয়ের কারণ একটাই — মুখস্থ করতে যাওয়া। আমরা প্রতিটি অংক লজিক ও রিয়েল লাইফ উদাহরণের মাধ্যমে গোড়া থেকে শেখাই।</p>
           </div>
 
           {/*
@@ -498,11 +500,15 @@ export function LandingPage() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-teal-800 rounded-full mix-blend-multiply filter blur-[100px] opacity-50"></div>
 
         <div className="container mx-auto px-6 relative z-[45] text-center">
-          <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 tracking-tight font-heading">গণিত জয় করতে প্রস্তুত?</h2>
-          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">একটি ফ্রি ডেমো ক্লাস করে দেখো এবং বুঝো, কেন হাজারো শিক্ষার্থী MathPro বেছে নিয়েছে তাদের গণিতের ভয় জয় করতে।</p>
-          <button className="px-16 py-6 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50">
-            ফ্রি ডেমো ক্লাস দেখো
-          </button>
+          <h2 className="text-5xl md:text-6xl font-extrabold text-white mb-8 tracking-tight font-heading">গণিতের ভয় কাটিয়ে A+ নিশ্চিত করতে প্রস্তুত?</h2>
+          <p className="text-emerald-100 text-xl md:text-2xl mb-12 max-w-2xl mx-auto font-medium">আজই যুক্ত হও MathPro-এর লাইভ ও ইন্টারেক্টিভ ব্যাচে। প্রথম ক্লাস থেকেই গণিতের প্রতি তোমার দৃষ্টিভঙ্গি বদলে যাবে।</p>
+          <Link
+            href="/courses"
+            className="inline-flex items-center justify-center gap-2 px-12 py-5 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold rounded-full text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-emerald-900/50"
+          >
+            তোমার পছন্দের কোর্স বেছে নাও
+            <ChevronRight className="size-6" />
+          </Link>
         </div>
       </section>
 
