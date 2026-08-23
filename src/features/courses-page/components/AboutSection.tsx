@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { GraduationCap, BookOpen, Users } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 import type { Instructor } from "../_lib/types";
 
 interface AboutSectionProps {
@@ -107,18 +107,6 @@ function SingleInstructor({
                   <span>{instructor.university}</span>
                 </div>
               )}
-              {instructor.coursesCount > 0 && (
-                <div className="flex items-center gap-2.5 text-base text-muted-foreground">
-                  <BookOpen className="size-5 shrink-0 text-primary" />
-                  <span>{instructor.coursesCount} টি কোর্স</span>
-                </div>
-              )}
-              {instructor.totalStudents > 0 && (
-                <div className="flex items-center gap-2.5 text-base text-muted-foreground">
-                  <Users className="size-5 shrink-0 text-primary" />
-                  <span>{instructor.totalStudents.toLocaleString()} জন শিক্ষার্থী</span>
-                </div>
-              )}
             </div>
 
             <SocialLinks social={instructor.social} />
@@ -221,16 +209,6 @@ function MultipleInstructors({
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                       <GraduationCap className="size-3.5 shrink-0 text-primary/70" />
                       <span className="line-clamp-1">{instructor.university}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <BookOpen className="size-3.5 shrink-0 text-primary/70" />
-                    <span>{instructor.coursesCount} টি কোর্স</span>
-                  </div>
-                  {instructor.totalStudents > 0 && (
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                      <Users className="size-3.5 shrink-0 text-primary/70" />
-                      <span>{instructor.totalStudents.toLocaleString()} জন শিক্ষার্থী</span>
                     </div>
                   )}
                 </div>
