@@ -15,16 +15,27 @@ interface UsePublicTestimonialsResult {
 export function mapPublicTestimonialsToFeedbacks(
   testimonials: PublicTestimonial[],
 ): Feedback[] {
-  return testimonials.map((item) => ({
-    name: item.user_name,
-    bio: item.institution_name || item.course_name || "MathPro Student",
-    description: item.comment,
-    hook: item.hook_text || undefined,
-    imageUploadedLink: item.avatar_url || "",
-    institutionLogoUrl: item.institution_logo_url || undefined,
-    videoUrl: item.video_url || undefined,
-    rating: item.rating,
-  }));
+  return testimonials.map((item) => {
+    const rawVideo = item.video_url?.trim();
+    const cleanVideo =
+      rawVideo &&
+      rawVideo.toLowerCase() !== "null" &&
+      rawVideo.toLowerCase() !== "undefined" &&
+      rawVideo !== ""
+        ? rawVideo
+        : undefined;
+
+    return {
+      name: item.user_name,
+      bio: item.institution_name || item.course_name || "MathPro Student",
+      description: item.comment,
+      hook: item.hook_text || undefined,
+      imageUploadedLink: item.avatar_url || "",
+      institutionLogoUrl: item.institution_logo_url || undefined,
+      videoUrl: cleanVideo,
+      rating: item.rating,
+    };
+  });
 }
 
 export function usePublicTestimonials(): UsePublicTestimonialsResult {

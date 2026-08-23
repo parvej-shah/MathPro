@@ -16,8 +16,6 @@ import {
 import { Feedback } from "../_lib/types";
 import { getYouTubeEmbedUrl, getYouTubeThumbnailUrl } from "../_lib/youtube";
 import TestimonialModal from "./TestimonialModal";
-// TEMP: dev-only preview data — remove with `_lib/testimonial-mock.ts`
-import { MOCK_TESTIMONIALS } from "../_lib/testimonial-mock";
 
 // ─── Shared bits ────────────────────────────────────────────────────────────────
 
@@ -613,6 +611,8 @@ function VideoShortCard({
 function VideoPanel({ items }: { items: Feedback[] }) {
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
 
+  if (!items || items.length === 0) return null;
+
   return (
     <div className="mb-14">
       <div className="flex items-center gap-2 mb-5">
@@ -648,19 +648,12 @@ export default function TestimonialShowcase({
   feedbacks = [],
 }: TestimonialShowcaseProps) {
   const source = useMemo(() => {
-    const valid = feedbacks.filter(
+    return feedbacks.filter(
       (feedback) =>
         Boolean(feedback.name?.trim()) &&
         Boolean(feedback.bio?.trim()) &&
         Boolean(feedback.description?.trim()),
     );
-
-    // TEMP (dev only): backfill sample entries so the video row is previewable
-    // until real testimonials carry photos and video URLs.
-    if (process.env.NODE_ENV !== "development") return valid;
-    if (valid.length === 0) return MOCK_TESTIMONIALS;
-    if (valid.some((feedback) => feedback.videoUrl)) return valid;
-    return [...valid, ...MOCK_TESTIMONIALS.filter((mock) => mock.videoUrl)];
   }, [feedbacks]);
 
   const reviewRowRef = useRef<HTMLDivElement>(null);
@@ -673,7 +666,15 @@ export default function TestimonialShowcase({
   }
 
   const featured = source.slice(0, 5);
-  const videoItems = source.filter((feedback) => Boolean(feedback.videoUrl));
+  const videoItems = source.filter(
+    (feedback) =>
+      Boolean(
+        feedback.videoUrl &&
+          feedback.videoUrl.trim() !== "" &&
+          feedback.videoUrl.toLowerCase() !== "null" &&
+          feedback.videoUrl.toLowerCase() !== "undefined",
+      ),
+  );
 
   return (
     <section id="student-reviews" className="relative overflow-hidden">
