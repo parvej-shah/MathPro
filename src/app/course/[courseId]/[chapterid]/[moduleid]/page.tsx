@@ -12,6 +12,7 @@ import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import ModuleFeedback from "@/components/ModuleFeedback";
 import { ModulePageSkeleton } from "@/components/Skeletons";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { isLoggedIn } from "@/helpers";
 import CourseSidebar from "./_components/CourseSidebar";
 import ModulePlayer from "./_components/ModulePlayer";
 import ModuleNavButtons from "./_components/ModuleNavButtons";
@@ -239,6 +240,31 @@ export default function CourseDetailsPage() {
     }
   }, [courseData?.maxModuleSerialProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Access Protection: Paid module gate ──────────────────────────────────
+  const isPaidModuleLocked = Boolean(
+    courseData &&
+      activeModule &&
+      !activeModule.is_free &&
+      !courseData.isTaken
+  );
+
+  useEffect(() => {
+    if (!courseData || !activeModule || pageLoading) return;
+
+    if (!activeModule.is_free && !courseData.isTaken) {
+      if (!isLoggedIn()) {
+        const currentPath =
+          typeof window !== "undefined"
+            ? window.location.pathname + window.location.search
+            : `/course/${courseId}/${chapterId}/${moduleId}`;
+        router.replace(`/auth/login?redirect=${encodeURIComponent(currentPath)}`);
+      } else {
+        toast.error("এই কনটেন্টটি দেখতে কোর্সটি এনরোল করুন।");
+        router.replace(`/courses/${courseData.slug || courseId}`);
+      }
+    }
+  }, [courseData, activeModule, pageLoading, router, courseId, chapterId, moduleId]);
+
   // ── Error state ───────────────────────────────────────────────────────────
   if (pageError) {
     return (
@@ -262,6 +288,49 @@ export default function CourseDetailsPage() {
           >
             Try Again
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Locked state for non-enrolled students on paid modules ─────────────────
+  if (isPaidModuleLocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-page-bg px-4">
+        <Toaster />
+        <div className="text-center max-w-md p-8 rounded-3xl border border-border/40 bg-card/80 backdrop-blur-lg shadow-2xl">
+          <div className="mb-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-primary/15 text-primary">
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-3">কনটেন্টটি লক করা আছে</h2>
+          <p className="text-muted-foreground mb-6">
+            এই প্রিমিয়াম ক্লাস ও রিসোর্স অ্যাক্সেস করতে অনুগ্রহ করে কোর্সটি এনরোল করুন।
+          </p>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => {
+                if (!isLoggedIn()) {
+                  const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : `/course/${courseId}/${chapterId}/${moduleId}`;
+                  router.push(`/auth/login?redirect=${encodeURIComponent(currentPath)}`);
+                } else {
+                  router.push(`/courses/${courseData?.slug || courseId}`);
+                }
+              }}
+              className="w-full bg-primary text-primary-foreground font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              {isLoggedIn() ? "কোর্স বিস্তারিত ও এনরোল করুন" : "লগইন করুন"}
+            </button>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="w-full bg-muted/20 text-muted-foreground font-semibold px-6 py-2.5 rounded-xl hover:bg-muted/30 transition-colors cursor-pointer"
+            >
+              ড্যাশবোর্ডে ফিরে যান
+            </button>
+          </div>
         </div>
       </div>
     );
