@@ -77,6 +77,12 @@ export const useUserProfile = (): UseUserProfileReturn => {
       }
     } catch (err: unknown) {
       console.error('Error fetching user profile:', err);
+      if (axios.isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 403)) {
+        if (typeof window !== 'undefined') {
+          window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+          return;
+        }
+      }
       // Backend error response: { success: false, error: "..." }
       const errorMessage = axios.isAxiosError<{ error?: string; message?: string }>(err)
         ? err.response?.data?.error ||
