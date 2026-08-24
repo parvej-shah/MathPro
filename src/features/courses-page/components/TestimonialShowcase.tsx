@@ -308,12 +308,12 @@ function HeroBand({
       {/* Math motif */}
       <div
         aria-hidden
-        className="absolute -top-10 right-10 text-[16rem] text-emerald-900/40 font-serif font-black select-none pointer-events-none leading-none animate-motif-float"
+        className="absolute -top-10 left-4 md:left-10 text-[16rem] text-emerald-900/40 font-serif font-black select-none pointer-events-none leading-none animate-motif-float"
         style={{
-          ["--motif-rot" as string]: "10deg",
-          ["--motif-tx" as string]: "10px",
+          ["--motif-rot" as string]: "-10deg",
+          ["--motif-tx" as string]: "-10px",
           ["--motif-ty" as string]: "-12px",
-          ["--motif-dr" as string]: "2deg",
+          ["--motif-dr" as string]: "-2deg",
           animationDuration: "16s",
         }}
       >
