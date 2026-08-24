@@ -28,16 +28,14 @@ export function useCourseData(
 
   const fetchCourse = useCallback(() => {
     if (!courseId) return;
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     setLoading(true);
     setError(false);
 
     axios
-      .get(`${BACKEND_URL}/user/course/getfull/${courseId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`${BACKEND_URL}/user/course/getfull/${courseId}`, { headers })
       .then(async (res) => {
         const data: Course = res.data;
         setCourseData(data);
@@ -135,13 +133,11 @@ export function useCourseData(
   // touching the active module — the module is already set via goToModule.
   const refreshCourseData = useCallback(() => {
     if (!courseId) return;
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
     axios
-      .get(`${BACKEND_URL}/user/course/getfull/${courseId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`${BACKEND_URL}/user/course/getfull/${courseId}`, { headers })
       .then((res) => {
         setCourseData(res.data);
       })
