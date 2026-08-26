@@ -224,51 +224,71 @@ export function LandingPage() {
               </div>
             </div>
 
-            {/* ── Right: the teacher ── */}
-            <div className="flex justify-center lg:justify-center">
-              <div className="relative w-[300px] sm:w-[360px] lg:w-[420px]">
-                {/* Halo behind the portrait */}
-                <div className="absolute -inset-6 rounded-[2.5rem] bg-emerald-400/10 blur-2xl pointer-events-none"></div>
+            {/* ── Right: Founder / Teacher (Neon Rim Glow & Sparkline 3D Presentation) ── */}
+            <div className="flex justify-center items-end lg:justify-center">
+              <div className="relative w-[340px] sm:w-[420px] lg:w-[480px] pt-6 sm:pt-10 flex flex-col items-center">
+                {/* 1. Enhanced Vibrant Emerald Spotlight & Neon Halo */}
+                <div
+                  className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[420px] h-[340px] sm:h-[420px] rounded-full pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(52, 211, 153, 0.45) 0%, rgba(16, 185, 129, 0.22) 40%, rgba(6, 78, 59, 0.08) 65%, transparent 80%)",
+                  }}
+                />
+                <div
+                  className="absolute top-[32%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] sm:w-[300px] h-[240px] sm:h-[300px] rounded-full pointer-events-none blur-xl"
+                  style={{
+                    background:
+                      "radial-gradient(circle, rgba(110, 231, 183, 0.35) 0%, rgba(16, 185, 129, 0.15) 60%, transparent 80%)",
+                  }}
+                />
 
-                <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden bg-emerald-900/60 ring-1 ring-white/10 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]">
-                  <Image
-                    src={founderPhoto}
-                    alt={founder?.name ?? "MathPro"}
-                    fill
-                    priority
-                    className="object-cover object-top"
-                    sizes="(max-width: 1024px) 360px, 420px"
-                  />
-
-                  {/* Scrim — fuses the photo into the dark scene and gives the name plate a bed */}
-                  <div className="absolute inset-0 bg-linear-to-t from-emerald-950 via-emerald-950/25 to-transparent pointer-events-none"></div>
-
-                  {/* Name plate — inside the frame, over the scrim, clear of the face */}
-                  <div className="absolute left-0 right-0 bottom-0 p-5 lg:p-6">
-                    <div className="text-white font-extrabold text-xl lg:text-2xl font-heading leading-tight">
-                      {founder?.name ?? "MathPro"}
-                    </div>
-                    <div className="text-emerald-300 text-sm font-semibold mt-0.5">
-                      {founder?.role?.trim() ?? "ফাউন্ডার ও ইন্সট্রাক্টর"}
-                    </div>
-                    {founder?.university && (
-                      <div className="flex items-center gap-1.5 text-emerald-100/50 text-xs mt-2">
-                        <GraduationCap className="size-3.5 shrink-0" />
-                        {founder.university}
-                      </div>
-                    )}
+                {/* 2. Hand Positioned Sparkline Metric Badge (Matches Sample) */}
+                <div className="absolute right-1 sm:-right-2 lg:-right-4 bottom-22 sm:bottom-28 z-20 bg-slate-950/95 backdrop-blur-xl px-4 py-2.5 sm:py-3 rounded-2xl border border-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.35),0_15px_35px_rgba(0,0,0,0.7)] flex items-center gap-3">
+                  <div className="size-8 sm:size-9 rounded-xl bg-linear-to-tr from-emerald-400 to-teal-300 flex items-center justify-center text-slate-950 shadow-md shrink-0">
+                    <TrendingUp className="size-4 stroke-[3]" />
+                  </div>
+                  <div>
+                    <div className="text-white font-extrabold text-sm sm:text-base leading-none mb-0.5">১১+ বছর</div>
+                    <div className="text-emerald-300 text-[10px] sm:text-[11px] font-bold tracking-wide">৫,০০০+ শিক্ষার্থী</div>
                   </div>
                 </div>
 
-                {/* Single floating credential — pinned low-right so it never covers the face */}
-                <div className="absolute right-2 sm:-right-3 lg:-right-6 bottom-36 sm:bottom-28 lg:bottom-28 bg-emerald-950/90 backdrop-blur-md px-4 py-3 rounded-2xl ring-1 ring-emerald-400/20 shadow-xl flex items-center gap-3">
-                  <div className="size-9 rounded-full bg-emerald-400/15 flex items-center justify-center shrink-0">
-                    <TrendingUp className="text-emerald-400 size-4" />
+                {/* 3. Enlarged Instructor Cutout with Neon Rim Glow & 3D Depth */}
+                <div className="relative z-10 w-full flex items-end justify-center select-none pointer-events-none pb-8 sm:pb-10">
+                  <Image
+                    src={founderPhoto}
+                    alt={founder?.name ?? "MathPro"}
+                    priority
+                    className="w-full h-auto object-contain object-bottom drop-shadow-[0_0_35px_rgba(52,211,153,0.42)] drop-shadow-[0_25px_45px_rgba(0,0,0,0.85)] brightness-[1.09] contrast-[1.06] saturate-[1.08]"
+                    sizes="(max-width: 1024px) 420px, 480px"
+                  />
+                </div>
+
+                {/* 4. Grounding soft shadow under the figure */}
+                <div className="w-[75%] h-6 rounded-[100%] bg-black/75 blur-lg -mt-10 z-10 pointer-events-none" />
+
+                {/* 5. Sleek Modern Glassmorphic Nameplate at base */}
+                <div className="absolute left-2 right-2 sm:left-4 sm:right-4 bottom-0 z-20 bg-emerald-950/95 backdrop-blur-xl px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-emerald-400/35 shadow-[0_20px_40px_rgba(0,0,0,0.85)] flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-white font-extrabold text-base sm:text-xl font-heading leading-tight tracking-tight truncate">
+                        {founder?.name ?? "Abdul Aziz"}
+                      </span>
+                      <span className="inline-flex items-center justify-center size-4 rounded-full bg-emerald-400/20 text-emerald-400 shrink-0">
+                        <CheckCircle2 className="size-3.5 text-emerald-400" />
+                      </span>
+                    </div>
+                    <div className="text-emerald-300/80 text-xs sm:text-sm font-medium mt-0.5 truncate">
+                      {founder?.role?.trim() ?? "ফাউন্ডার ও প্রধান মেন্টর"}
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-white font-extrabold text-base leading-none mb-1">১০+ বছর</div>
-                    <div className="text-emerald-200/60 text-[11px] font-bold tracking-wide">৪,০০০+ শিক্ষার্থী মেন্টরড</div>
-                  </div>
+                  {founder?.university && (
+                    <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-900/70 border border-emerald-400/30 text-emerald-200 text-xs font-medium shrink-0">
+                      <GraduationCap className="size-3.5 shrink-0 text-emerald-400" />
+                      <span>{founder.university}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -287,7 +307,7 @@ export function LandingPage() {
                 <Users className="size-5 md:size-7" />
               </div>
               <div>
-                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৪,০০০+</div>
+                <div className="text-white font-extrabold text-xl md:text-3xl font-heading tracking-tight leading-none mb-1">৫,০০০+</div>
                 <div className="text-emerald-300/80 font-bold tracking-widest text-[9px] md:text-xs uppercase">শিক্ষার্থী মেন্টরড</div>
               </div>
             </div>
