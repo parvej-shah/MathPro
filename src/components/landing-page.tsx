@@ -183,41 +183,41 @@ export function LandingPage() {
         </div>
 
         {/* Top padding clears the fixed, transparent navbar (~96px at lg) with room to breathe */}
-        <div className="relative z-10 container mx-auto px-6 lg:px-12 pt-32 md:pt-36 lg:pt-40 pb-16 lg:pb-20">
-          <div className="grid lg:grid-cols-[1fr_0.85fr] gap-12 lg:gap-16 items-center max-w-6xl mx-auto">
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-12 pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-12 sm:pb-16 lg:pb-20">
+          <div className="grid md:grid-cols-[1.1fr_0.9fr] lg:grid-cols-[1fr_0.85fr] gap-8 md:gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
 
             {/* ── Left: message — one idea, read top to bottom in a single glance ── */}
-            <div className="flex flex-col items-center lg:items-start text-center lg:text-left lg:pr-8">
+            <div className="flex flex-col items-center md:items-start text-center md:text-left lg:pr-6">
               {/* Cohort Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 text-emerald-300 text-xs sm:text-sm font-semibold mb-6 shadow-xs backdrop-blur-xs">
-                <Sparkles className="size-3.5 text-emerald-400" />
+              <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-emerald-400/10 border border-emerald-400/25 text-emerald-300 text-xs sm:text-sm font-semibold mb-4 sm:mb-6 shadow-xs backdrop-blur-xs">
+                <Sparkles className="size-3.5 text-emerald-400 shrink-0" />
                 <span>English Version ও Bangla Medium | JSC, SSC ও HSC</span>
               </div>
 
               {/* Headline — the promise, in the student's own words */}
-              <h1 className="font-heading text-[2.75rem] sm:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] tracking-tight mb-6">
+              <h1 className="font-heading text-3xl sm:text-5xl md:text-4xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.15] md:leading-[1.1] tracking-tight mb-4 sm:mb-6">
                 গণিত ভয়ের নয়,
                 <br />
                 <span className="text-emerald-400">বোঝার এবং জয়ের বিষয়</span>
               </h1>
 
               {/* Subhead — who it's for and what happens, in one breath */}
-              <p className="text-lg lg:text-xl text-emerald-50/75 mb-10 max-w-lg leading-relaxed font-normal">
+              <p className="text-sm sm:text-base md:text-base lg:text-xl text-emerald-50/75 mb-6 sm:mb-8 md:mb-10 max-w-lg leading-relaxed font-normal">
                 ক্লাস ৮ থেকে HSC — মুখস্থ নয়, প্রতিটি কনসেপ্ট গোড়া থেকে বুঝে শেখো। লাইভ ডাউট সলভ, রেগুলার এক্সাম ও টেস্ট পেপার সলভিংয়ে বোর্ড পরীক্ষায় গণিতে নিশ্চিত করো A+।
               </p>
 
               {/* One action. The secondary path stays quiet. */}
-              <div className="flex flex-col sm:flex-row items-center gap-x-7 gap-y-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row items-center gap-x-6 gap-y-3.5 w-full sm:w-auto">
                 <Link
                   href="/courses"
-                  className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-9 py-4 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold rounded-full transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-emerald-500/25 text-lg"
+                  className="group inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 sm:px-9 py-3.5 sm:py-4 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-bold rounded-full transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-emerald-500/25 text-base sm:text-lg"
                 >
                   তোমার কোর্স বেছে নাও
                   <ChevronRight className="size-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
                   href="#student-reviews"
-                  className="text-emerald-100/70 hover:text-white font-semibold text-base underline-offset-4 hover:underline transition-colors"
+                  className="text-emerald-100/70 hover:text-white font-semibold text-sm sm:text-base underline-offset-4 hover:underline transition-colors"
                 >
                   শিক্ষার্থীদের অভিজ্ঞতা দেখো
                 </Link>
@@ -225,67 +225,67 @@ export function LandingPage() {
             </div>
 
             {/* ── Right: Founder / Teacher (Neon Rim Glow & Sparkline 3D Presentation) ── */}
-            <div className="flex justify-center items-end lg:justify-center">
-              <div className="relative w-[340px] sm:w-[420px] lg:w-[480px] pt-6 sm:pt-10 flex flex-col items-center">
+            <div className="flex justify-center items-end w-full">
+              <div className="relative w-full max-w-[300px] xs:max-w-[340px] sm:max-w-[380px] md:max-w-[390px] lg:max-w-[460px] pt-4 sm:pt-6 md:pt-8 flex flex-col items-center mx-auto">
                 {/* 1. Enhanced Vibrant Emerald Spotlight & Neon Halo */}
                 <div
-                  className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[420px] h-[340px] sm:h-[420px] rounded-full pointer-events-none"
+                  className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[360px] md:w-[340px] lg:w-[420px] h-[280px] sm:h-[360px] md:h-[340px] lg:h-[420px] rounded-full pointer-events-none"
                   style={{
                     background:
                       "radial-gradient(circle, rgba(52, 211, 153, 0.45) 0%, rgba(16, 185, 129, 0.22) 40%, rgba(6, 78, 59, 0.08) 65%, transparent 80%)",
                   }}
                 />
                 <div
-                  className="absolute top-[32%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] sm:w-[300px] h-[240px] sm:h-[300px] rounded-full pointer-events-none blur-xl"
+                  className="absolute top-[32%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] sm:w-[260px] md:w-[250px] lg:w-[300px] h-[200px] sm:h-[260px] md:h-[250px] lg:h-[300px] rounded-full pointer-events-none blur-xl"
                   style={{
                     background:
                       "radial-gradient(circle, rgba(110, 231, 183, 0.35) 0%, rgba(16, 185, 129, 0.15) 60%, transparent 80%)",
                   }}
                 />
 
-                {/* 2. Hand Positioned Sparkline Metric Badge (Matches Sample) */}
-                <div className="absolute right-1 sm:-right-2 lg:-right-4 bottom-22 sm:bottom-28 z-20 bg-slate-950/95 backdrop-blur-xl px-4 py-2.5 sm:py-3 rounded-2xl border border-emerald-400/50 shadow-[0_0_30px_rgba(16,185,129,0.35),0_15px_35px_rgba(0,0,0,0.7)] flex items-center gap-3">
-                  <div className="size-8 sm:size-9 rounded-xl bg-linear-to-tr from-emerald-400 to-teal-300 flex items-center justify-center text-slate-950 shadow-md shrink-0">
-                    <TrendingUp className="size-4 stroke-[3]" />
+                {/* 2. Hand Positioned Sparkline Metric Badge (Responsive across all screens) */}
+                <div className="absolute right-0 sm:-right-2 md:-right-2 lg:-right-4 bottom-18 sm:bottom-22 md:bottom-24 lg:bottom-28 z-20 bg-slate-950/95 backdrop-blur-xl px-3 sm:px-4 py-2 sm:py-2.5 md:py-3 rounded-2xl border border-emerald-400/50 shadow-[0_0_25px_rgba(16,185,129,0.3),0_15px_35px_rgba(0,0,0,0.7)] flex items-center gap-2.5 sm:gap-3">
+                  <div className="size-7 sm:size-8 md:size-9 rounded-xl bg-linear-to-tr from-emerald-400 to-teal-300 flex items-center justify-center text-slate-950 shadow-md shrink-0">
+                    <TrendingUp className="size-3.5 sm:size-4 stroke-[3]" />
                   </div>
                   <div>
-                    <div className="text-white font-extrabold text-sm sm:text-base leading-none mb-0.5">১১+ বছর</div>
-                    <div className="text-emerald-300 text-[10px] sm:text-[11px] font-bold tracking-wide">৫,০০০+ শিক্ষার্থী</div>
+                    <div className="text-white font-extrabold text-xs sm:text-sm md:text-base leading-none mb-0.5">১১+ বছর</div>
+                    <div className="text-emerald-300 text-[9px] sm:text-[10px] md:text-[11px] font-bold tracking-wide">৫,০০০+ শিক্ষার্থী</div>
                   </div>
                 </div>
 
-                {/* 3. Enlarged Instructor Cutout with Neon Rim Glow & 3D Depth */}
-                <div className="relative z-10 w-full flex items-end justify-center select-none pointer-events-none pb-8 sm:pb-10">
+                {/* 3. Instructor Cutout with Neon Rim Glow & 3D Depth */}
+                <div className="relative z-10 w-full flex items-end justify-center select-none pointer-events-none pb-7 sm:pb-8 md:pb-9 lg:pb-10">
                   <Image
                     src={founderPhoto}
                     alt={founder?.name ?? "MathPro"}
                     priority
                     className="w-full h-auto object-contain object-bottom drop-shadow-[0_0_35px_rgba(52,211,153,0.42)] drop-shadow-[0_25px_45px_rgba(0,0,0,0.85)] brightness-[1.09] contrast-[1.06] saturate-[1.08]"
-                    sizes="(max-width: 1024px) 420px, 480px"
+                    sizes="(max-width: 640px) 300px, (max-width: 768px) 380px, (max-width: 1024px) 390px, 460px"
                   />
                 </div>
 
                 {/* 4. Grounding soft shadow under the figure */}
-                <div className="w-[75%] h-6 rounded-[100%] bg-black/75 blur-lg -mt-10 z-10 pointer-events-none" />
+                <div className="w-[75%] h-5 sm:h-6 rounded-[100%] bg-black/75 blur-lg -mt-8 sm:-mt-10 z-10 pointer-events-none" />
 
                 {/* 5. Sleek Modern Glassmorphic Nameplate at base */}
-                <div className="absolute left-2 right-2 sm:left-4 sm:right-4 bottom-0 z-20 bg-emerald-950/95 backdrop-blur-xl px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl border border-emerald-400/35 shadow-[0_20px_40px_rgba(0,0,0,0.85)] flex items-center justify-between gap-3">
+                <div className="absolute left-0 right-0 sm:left-2 sm:right-2 md:left-0 md:right-0 lg:left-3 lg:right-3 bottom-0 z-20 bg-emerald-950/95 backdrop-blur-xl px-3 sm:px-4 md:px-4 lg:px-5 py-2.5 sm:py-3 rounded-2xl border border-emerald-400/35 shadow-[0_20px_40px_rgba(0,0,0,0.85)] flex items-center justify-between gap-2 sm:gap-3">
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-white font-extrabold text-base sm:text-xl font-heading leading-tight tracking-tight truncate">
+                    <div className="flex items-center gap-1 sm:gap-1.5">
+                      <span className="text-white font-extrabold text-sm sm:text-base md:text-base lg:text-xl font-heading leading-tight tracking-tight">
                         {founder?.name ?? "Abdul Aziz"}
                       </span>
-                      <span className="inline-flex items-center justify-center size-4 rounded-full bg-emerald-400/20 text-emerald-400 shrink-0">
-                        <CheckCircle2 className="size-3.5 text-emerald-400" />
+                      <span className="inline-flex items-center justify-center size-3.5 sm:size-4 rounded-full bg-emerald-400/20 text-emerald-400 shrink-0">
+                        <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-400" />
                       </span>
                     </div>
-                    <div className="text-emerald-300/80 text-xs sm:text-sm font-medium mt-0.5 truncate">
+                    <div className="text-emerald-300/80 text-[10px] sm:text-xs md:text-xs lg:text-sm font-medium mt-0.5">
                       {founder?.role?.trim() ?? "ফাউন্ডার ও প্রধান মেন্টর"}
                     </div>
                   </div>
                   {founder?.university && (
-                    <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-900/70 border border-emerald-400/30 text-emerald-200 text-xs font-medium shrink-0">
-                      <GraduationCap className="size-3.5 shrink-0 text-emerald-400" />
+                    <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-emerald-900/70 border border-emerald-400/30 text-emerald-200 text-[10px] sm:text-xs font-medium shrink-0">
+                      <GraduationCap className="size-3 sm:size-3.5 shrink-0 text-emerald-400" />
                       <span>{founder.university}</span>
                     </div>
                   )}
