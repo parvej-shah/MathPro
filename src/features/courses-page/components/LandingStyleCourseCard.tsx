@@ -33,13 +33,14 @@ export interface LandingStyleCourseCardProps {
   description?: string | null;
   thumbnail?: string | null;
   href: string;
-  price: number;
+  price?: number;
   originalPrice?: number;
   isFree?: boolean;
   tags?: string[];
   isLive?: boolean;
   hasRecorded?: boolean;
   hasExam?: boolean;
+  showPrice?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -49,11 +50,12 @@ export default function LandingStyleCourseCard({
   description,
   thumbnail,
   href,
-  price,
+  price = 0,
   originalPrice,
   isFree,
   tags = [],
   isLive,
+  showPrice = true,
 }: LandingStyleCourseCardProps) {
   const [imgError, setImgError] = useState(false);
   const gradient = useMemo(() => pickGradient(title), [title]);
@@ -138,18 +140,20 @@ export default function LandingStyleCourseCard({
               ))}
             </div>
           )}
-          <div
-            className={`w-fit self-end shrink-0 inline-flex items-center gap-1.5 rounded-full text-sm font-extrabold px-3.5 py-1.5 border shadow-sm whitespace-nowrap ${
-              isFree
-                ? "bg-success/10 text-success border-success/25"
-                : "bg-destructive/8 text-destructive border-destructive/20"
-            }`}
-          >
-            {isFree ? "ফ্রি" : formatPrice(price)}
-            {!isFree && discount > 0 && (
-              <span className="text-xs font-bold text-success">−{discount}%</span>
-            )}
-          </div>
+          {showPrice && (
+            <div
+              className={`w-fit self-end shrink-0 inline-flex items-center gap-1.5 rounded-full text-sm font-extrabold px-3.5 py-1.5 border shadow-sm whitespace-nowrap ${
+                isFree
+                  ? "bg-success/10 text-success border-success/25"
+                  : "bg-destructive/8 text-destructive border-destructive/20"
+              }`}
+            >
+              {isFree ? "ফ্রি" : formatPrice(price)}
+              {!isFree && discount > 0 && (
+                <span className="text-xs font-bold text-success">−{discount}%</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Title */}

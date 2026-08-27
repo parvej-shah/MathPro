@@ -220,9 +220,17 @@ export function LandingCourseTabs({
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
           {shown.map((item) =>
             item.kind === "bundle" ? (
-              <PremiumBundleCard key={`b-${item.data.id}`} bundle={item.data} />
+              <PremiumBundleCard
+                key={`b-${item.data.id}`}
+                bundle={item.data}
+                showPrice={false}
+              />
             ) : (
-              <PremiumCourseCard key={`c-${item.data.id}`} course={item.data} />
+              <PremiumCourseCard
+                key={`c-${item.data.id}`}
+                course={item.data}
+                showPrice={false}
+              />
             ),
           )}
         </div>

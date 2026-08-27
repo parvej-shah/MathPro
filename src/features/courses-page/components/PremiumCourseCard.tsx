@@ -5,9 +5,10 @@ import { getCourseCardThumbnail, deriveSectionFlags } from "@/features/course-de
 
 interface PremiumCourseCardProps {
   course: Course;
+  showPrice?: boolean;
 }
 
-export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
+export default function PremiumCourseCard({ course, showPrice = true }: PremiumCourseCardProps) {
   const thumbnail = getCourseCardThumbnail(course.chips);
   const flags = deriveSectionFlags(course.chips);
 
@@ -35,6 +36,7 @@ export default function PremiumCourseCard({ course }: PremiumCourseCardProps) {
       isLive={course.is_live}
       hasRecorded={flags.hasRecorded}
       hasExam={flags.hasExam}
+      showPrice={showPrice}
     />
   );
 }

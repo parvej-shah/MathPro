@@ -4,6 +4,7 @@ import type { Bundle } from "../_lib/types";
 
 interface ComboCardProps {
   combo: Bundle;
+  showPrice?: boolean;
 }
 
 function getComboOriginalPrice(combo: Bundle) {
@@ -17,7 +18,7 @@ function getComboThumbnail(combo: Bundle) {
   return combo.chips?.thumbnails?.bundle_thumb_4_3 || null;
 }
 
-export default function ComboCard({ combo }: ComboCardProps) {
+export default function ComboCard({ combo, showPrice = true }: ComboCardProps) {
   const thumbnail = useMemo(() => getComboThumbnail(combo), [combo]);
   const originalPrice = useMemo(() => getComboOriginalPrice(combo), [combo]);
   const tags = combo.tags?.slice(0, 3) || [];
@@ -33,6 +34,7 @@ export default function ComboCard({ combo }: ComboCardProps) {
       originalPrice={originalPrice > combo.price ? originalPrice : undefined}
       tags={tags}
       isLive={combo.is_live}
+      showPrice={showPrice}
     />
   );
 }
