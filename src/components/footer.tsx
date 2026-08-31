@@ -142,7 +142,21 @@ export default function Footer() {
               Refund Policy
             </Link>
           </div>
-          <span className="hidden md:inline-block">All Rights Reserved.</span>
+          <div className="flex items-center gap-1.5">
+            <span className="hidden md:inline-block">All Rights Reserved.</span>
+            <span className="hidden md:inline-block text-slate-600">|</span>
+            <span>
+              Developed by{" "}
+              <a
+                href="https://parvejshah.com"
+                target="_blank"
+                rel="noopener"
+                className="text-slate-400 hover:text-emerald-400 transition-colors font-semibold underline-offset-2 hover:underline normal-case"
+              >
+                Parvej Shah
+              </a>
+            </span>
+          </div>
         </div>
 
         {/* Giant Text */}
