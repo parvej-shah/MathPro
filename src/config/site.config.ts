@@ -52,22 +52,21 @@ export const siteConfig = {
 
   // Contact information
   contact: {
-    email: "support@mathpro.com",
-    phone: "+8801768976036",
-    address:
-      "H-123, Nurer Chaya, Ashkona Haji Camp Dakhin Khan, Dhaka, Bangladesh",
+    email: "mathprobdofficial@gmail.com",
+    phone: "+880 1521-323689",
+    address: "৫১/১/এ-১, নোবেল ভিলা, উত্তর মুগদা, ঢাকা-১২১৪, বাংলাদেশ",
   },
 
   // Organization info
   organization: {
-    name: "MathPro",
+    name: "MathPro Academic and Admission Care",
     logo: "/logo.png",
     foundingDate: "2023",
   },
 
   // App specific
   features: {
-    courses: "Programming and Development Courses",
+    courses: "Math Academic and Admission Courses",
     liveClasses: "Live Interactive Sessions",
     mentorship: "1-on-1 Mentorship",
     language: "Bangla",
@@ -76,8 +75,10 @@ export const siteConfig = {
 
   // Legal
   legal: {
-    terms: "https://mathpro.org/terms-and-conditions",
-    privacy: "https://mathpro.org/privacy-policy",
-    refund: "https://mathpro.org/refund-policy",
+    terms: "/terms",
+    privacy: "/privacy",
+    refund: "/refund",
+    about: "/about",
+    contact: "/contact",
   },
 };

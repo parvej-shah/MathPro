@@ -113,7 +113,7 @@ const InvoiceDocument: React.FC<InvoiceDocumentProps> = ({ transaction, userInfo
 
       <div className="border-t border-slate-200 pt-6 text-center text-xs text-slate-400">
         <p>এই ইনভয়েসটি স্বয়ংক্রিয়ভাবে তৈরি, কোনো স্বাক্ষরের প্রয়োজন নেই।</p>
-        <p className="mt-1">MathPro — mathpro.org</p>
+        <p className="mt-1">MathPro Academic and Admission Care — mathpro.academy</p>
       </div>
     </div>
   );

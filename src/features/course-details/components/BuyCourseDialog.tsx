@@ -48,24 +48,24 @@ export default function BuyCourseDialog({
                 I HAVE READ AND AGREE TO THE WEBSITE{"'"}S{" "}
                 <a
                   target="_blank"
-                  className="text-info font-bold"
-                  href="https://www.mathpro.org/terms-and-conditions"
+                  className="text-info font-bold hover:underline"
+                  href="/terms"
                 >
                   TERMS AND CONDITIONS
                 </a>{" "}
-                ,
+                ,{" "}
                 <a
                   target="_blank"
-                  className="text-info font-bold"
-                  href="https://www.mathpro.org/privacy-policy"
+                  className="text-info font-bold hover:underline"
+                  href="/privacy"
                 >
                   PRIVACY POLICY
                 </a>
                 , AND{" "}
                 <a
                   target="_blank"
-                  className="text-info font-bold"
-                  href="https://www.mathpro.org/refund-policy"
+                  className="text-info font-bold hover:underline"
+                  href="/refund"
                 >
                   REFUND POLICY
                 </a>

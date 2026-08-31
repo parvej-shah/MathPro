@@ -384,6 +384,19 @@ export default function CheckoutModal({
                 </div>
               )}
 
+              {/* Delivery timeline notice */}
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-start gap-2.5">
+                <svg className="w-4 h-4 text-primary shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <div className="text-xs text-white/80 leading-relaxed">
+                  <span className="font-semibold text-white">ডেলিভারি: </span>
+                  {isBookCheckout || includeBooks
+                    ? "ডিজিটাল কন্টেন্টে তাৎক্ষণিক অ্যাক্সেস এবং মুদ্রিত বই ৩-৫ কার্যদিবসের মধ্যে হোম ডেলিভারি।"
+                    : "সফল পেমেন্টের সাথে সাথেই তাৎক্ষণিক ডিজিটাল অ্যাক্সেস।"}
+                </div>
+              </div>
+
               {/* Trust badges */}
               <div className="hidden sm:grid grid-cols-2 gap-2 pt-2">
                 {[
@@ -692,7 +705,7 @@ export default function CheckoutModal({
                     </div>
                   )}
 
-                  {/* Terms */}
+                  {/* Terms & Compliance Policies Consent */}
                   <label className="flex items-start gap-3 cursor-pointer group pt-1">
                     <div className="relative mt-0.5">
                       <input
@@ -710,17 +723,22 @@ export default function CheckoutModal({
                       </div>
                     </div>
                     <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
-                      আমি{" "}
-                      <a href="https://www.mathpro.org/terms-and-conditions" target="_blank" rel="noopener noreferrer"
+                      আমি MathPro-এর{" "}
+                      <a href="/terms" target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
-                        শর্তাবলী
+                        শর্তাবলী (Terms)
+                      </a>
+                      ,{" "}
+                      <a href="/privacy" target="_blank" rel="noopener noreferrer"
+                        className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
+                        গোপনীয়তা নীতি (Privacy)
                       </a>{" "}
                       এবং{" "}
-                      <a href="https://www.mathpro.org/privacy-policy" target="_blank" rel="noopener noreferrer"
+                      <a href="/refund" target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline font-semibold" onClick={(e) => e.stopPropagation()}>
-                        গোপনীয়তা নীতি
-                      </a>{" "}
-                      সম্মত এবং বুঝতে পেরেছি যে {isBookCheckout ? "ক্রয়ের পর রিফান্ড করা যাবে না।" : "এটি একটি ডিজিটাল পণ্য এবং ক্রয়ের পর রিফান্ড করা যাবে না।"}
+                        রিফান্ড ও রিটার্ন নীতি (Refund Policy)
+                      </a>
+                      -তে সম্মতি প্রদান করছি।
                     </span>
                   </label>
                 </div>
