@@ -120,19 +120,18 @@ export default function CheckoutModal({
   const showShippingForm = isBookCheckout || includeBooks;
 
   useEffect(() => {
-    if (profile) {
-      const frameId = window.requestAnimationFrame(() => {
-        setFormData(getProfileFormDefaults(profile));
-      });
-
-      return () => {
-        window.cancelAnimationFrame(frameId);
-      };
+    if (profile && !showManualPayment) {
+      setFormData((current) => ({
+        name: current.name || profile.name || "",
+        phone: current.phone || profile.phone || profile?.profile?.phone || "",
+        schoolCollege: current.schoolCollege || profile?.profile?.schoolCollege || "",
+        classLevel: current.classLevel || profile?.profile?.classLevel || "",
+      }));
     }
-  }, [profile]);
+  }, [profile, showManualPayment]);
 
   useEffect(() => {
-    if (isOpen && !profileLoading) {
+    if (isOpen) {
       const frameId = window.requestAnimationFrame(() => {
         setFormData(getProfileFormDefaults(profile));
         setErrors({});
@@ -146,8 +145,11 @@ export default function CheckoutModal({
       return () => {
         window.cancelAnimationFrame(frameId);
       };
+    } else {
+      setShowManualPayment(false);
     }
-  }, [isOpen, profile, profileLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   useEffect(() => {
     if (!showShippingForm) return;
@@ -339,8 +341,7 @@ export default function CheckoutModal({
                 </button>
               </div>
               <p className="text-xs text-foreground/80 leading-relaxed">
-                এই নাম্বারে <span className="font-semibold">বিকাশ</span> কিংবা{" "}
-                <span className="font-semibold">নগদ</span>-এ Send Money করো।
+                এই নাম্বারে <span className="font-semibold">বিকাশ</span>-এ Send Money করো।
               </p>
             </div>
 
