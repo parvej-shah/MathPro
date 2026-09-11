@@ -26,7 +26,6 @@ import {
   CourseHeader,
   CourseStats,
   CourseTabs,
-  StudyPlanTab,
   InstructorTab,
   CourseDetailsTab,
   CountdownTimer,
@@ -61,7 +60,6 @@ export default function CourseDetailsPage() {
 
   // State
   const [activeTab, setActiveTab] = useState<TabState>({
-    studyPlan: false,
     instructor: true,
     courseComplete: false,
   });
@@ -219,7 +217,6 @@ export default function CourseDetailsPage() {
 
   const changeTab = (tabName: keyof TabState) => {
     const newTab: TabState = {
-      studyPlan: false,
       instructor: false,
       courseComplete: false,
     };
@@ -301,7 +298,7 @@ export default function CourseDetailsPage() {
           courseData?.image?.imageUploadedLink
         }
       />
-      <Toaster />
+      <Toaster containerStyle={{ zIndex: 10000 }} />
 
       {/* Ambient gradient blobs */}
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden z-0">
@@ -523,13 +520,6 @@ export default function CourseDetailsPage() {
                   )}
 
                   <CourseTabs activeTab={activeTab} onTabChange={changeTab} />
-
-                  {activeTab.studyPlan && (
-                      <StudyPlanTab
-                        chapters={courseData.chapters || []}
-                        courseId={courseId}
-                      />
-                  )}
 
                   {activeTab.instructor && (
                     <InstructorTab

@@ -447,7 +447,7 @@ export default function ComboDetailsPage() {
         image={thumb}
       />
 
-      <Toaster />
+      <Toaster containerStyle={{ zIndex: 10000 }} />
 
       <CheckoutModal
         isOpen={openCheckoutModal}

@@ -189,7 +189,7 @@ export default function BookDetailsPage() {
         path={`/books/${book.id}`}
         image={book.image_url || undefined}
       />
-      <Toaster />
+      <Toaster containerStyle={{ zIndex: 10000 }} />
 
       <CheckoutModal
         isOpen={openCheckoutModal}

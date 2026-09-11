@@ -137,7 +137,6 @@ export interface PrebookingData {
 }
 
 export interface TabState {
-    studyPlan: boolean;
     instructor: boolean;
     courseComplete: boolean;
 }

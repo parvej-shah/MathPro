@@ -127,6 +127,7 @@ export default function RootLayout({
           <div className="print:hidden">
             <WhatsAppWidget
               phoneNumber={siteConfig.contact.whatsapp}
+              avatar="/assets/logo.png"
               name="MathPro সাপোর্ট"
               position="সাধারণত এক ঘণ্টার মধ্যে উত্তর দেওয়া হয়"
               welcomeMessage="হ্যালো! 👋 আজ কীভাবে সাহায্য করতে পারি?"

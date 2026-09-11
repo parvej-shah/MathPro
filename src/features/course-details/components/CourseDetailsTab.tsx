@@ -152,6 +152,7 @@ export default function CourseDetailsTab({
         </div>
       )}
 
+      {displayFaqs.length > 0 && (
       <div className="pt-8 border-t border-border/20 relative">
         <svg
           viewBox="0 0 852 1192"
@@ -199,33 +200,26 @@ export default function CourseDetailsTab({
         <p className="text-xl lg:text-3xl mb-8 font-semibold">
           সচরাচর জানতে চাওয়া প্রশ্নের উত্তর
         </p>
-        {displayFaqs.length > 0 ? (
-          displayFaqs.map((faq, index) => (
-            <div
-              className="collapse collapse-plus dark:bg-muted/5 bg-muted/20 border-border/50 backdrop-blur-lg border mb-4"
-              key={`faq-${index}-${faq.question}`}
-            >
-              <input
-                type="radio"
-                name="my-accordion-4"
-                defaultChecked={index === 0}
-              />
-              <div className="collapse-title text-xl font-medium">
-                {faq.question}
-              </div>
-              <div className="collapse-content">
-                <SafeHtmlRenderer content={faq.answer} />
-              </div>
+        {displayFaqs.map((faq, index) => (
+          <div
+            className="collapse collapse-plus dark:bg-muted/5 bg-muted/20 border-border/50 backdrop-blur-lg border mb-4"
+            key={`faq-${index}-${faq.question}`}
+          >
+            <input
+              type="radio"
+              name="my-accordion-4"
+              defaultChecked={index === 0}
+            />
+            <div className="collapse-title text-xl font-medium">
+              {faq.question}
             </div>
-          ))
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">
-              FAQ শীঘ্রই আপডেট করা হবে
-            </p>
+            <div className="collapse-content">
+              <SafeHtmlRenderer content={faq.answer} />
+            </div>
           </div>
-        )}
+        ))}
       </div>
+      )}
     </div>
   );
 }

@@ -47,7 +47,6 @@ const CourseStatsSkeleton: React.FC = () => (
 // ─── Course Tabs Skeleton ─────────────────────────────────────────
 const CourseTabsSkeleton: React.FC = () => (
   <div className="mt-8 flex gap-1 border-b border-gray-200/40 dark:border-white/[0.06]">
-    <div className="pb-3"><Bone className="h-10 w-[110px]" rounded="rounded-t-lg" /></div>
     <div className="pb-3"><Bone className="h-10 w-[100px]" rounded="rounded-t-lg" /></div>
     <div className="pb-3"><Bone className="h-10 w-[120px]" rounded="rounded-t-lg" /></div>
   </div>
