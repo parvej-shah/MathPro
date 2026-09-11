@@ -2,8 +2,6 @@
 
 import SEO from "@/components/SEO";
 import { Toaster } from "react-hot-toast";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
-import { siteConfig } from "@/config/site.config";
 import { BsBook } from "react-icons/bs";
 import { useSearchParams } from "next/navigation";
 
@@ -188,7 +186,6 @@ export default function CoursesPageClient() {
           <FAQSection background="b" />
         </div>
       </main>
-      <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />
     </div>
   );
 }

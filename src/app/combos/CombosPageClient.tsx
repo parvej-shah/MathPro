@@ -19,8 +19,6 @@ import {
 } from "lucide-react";
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
-import { siteConfig } from "@/config/site.config";
 import { ComboCard, FAQSection } from "@/features/courses-page/components";
 import {
   mapPublicTestimonialsToFeedbacks,
@@ -530,7 +528,6 @@ export default function CombosPageClient() {
         <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
         <FAQSection />
       </main>
-      <WhatsAppWidget phoneNumber={siteConfig.contact.phone} />
     </div>
   );
 }

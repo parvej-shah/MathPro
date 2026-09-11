@@ -54,7 +54,14 @@ export const siteConfig = {
   contact: {
     email: "mathprobdofficial@gmail.com",
     phone: "+880 1521-323689",
+    whatsapp: "+880 1715-941632",
     address: "৫১/১/এ-১, নোবেল ভিলা, উত্তর মুগদা, ঢাকা-১২১৪, বাংলাদেশ",
+  },
+
+  // Manual payment (SSLCommerz pending re-integration)
+  manualPayment: {
+    bkashNumber: "01521323689",
+    whatsappNumber: "+880 1715-941632",
   },
 
   // Organization info

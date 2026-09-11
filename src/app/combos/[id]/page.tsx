@@ -18,11 +18,9 @@ import {
 } from "lucide-react";
 import { BACKEND_URL } from "@/api.config";
 import SEO from "@/components/SEO";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 import CheckoutModal from "@/components/CheckoutModal";
 import CouponInput from "@/components/CouponInput";
 import type { CouponApplyResponse } from "@/services/couponService";
-import { siteConfig } from "@/config/site.config";
 import { isLoggedIn } from "@/helpers";
 import { useBundlePayment } from "@/hooks/useBundlePayment";
 import type { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
@@ -678,10 +676,6 @@ export default function ComboDetailsPage() {
         <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
         <FAQSection />
       </main>
-      <WhatsAppWidget
-        phoneNumber={siteConfig.contact.phone.replace("+", "")}
-        welcomeMessage="হ্যালো! Combo নিয়ে জানতে চাই"
-      />
     </div>
   );
 }

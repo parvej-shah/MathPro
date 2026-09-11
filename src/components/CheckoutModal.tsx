@@ -5,6 +5,8 @@ import { BACKEND_URL } from "@/api.config";
 import toast from "react-hot-toast";
 import { useUserProfile, type UserProfile } from "@/hooks/useUserProfile";
 import { AttachedBook, BookSelection } from "@/features/course-details/_lib/types";
+import { Copy, MessageCircle } from "lucide-react";
+import { siteConfig } from "@/config/site.config";
 
 const Spinner = ({ className = "size-5" }: { className?: string }) => (
   <svg
@@ -29,6 +31,8 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onProceed: (bookSelection: BookSelection | null) => void;
+  /** SSLCommerz integration is temporarily paused — show manual bKash/Nagad payment instructions instead of calling onProceed. */
+  manualPaymentOnly?: boolean;
   type: "bundle" | "course" | "book";
   title: string;
   price: number;
@@ -76,6 +80,7 @@ export default function CheckoutModal({
   isOpen,
   onClose,
   onProceed,
+  manualPaymentOnly = true,
   type,
   title,
   price,
@@ -108,6 +113,7 @@ export default function CheckoutModal({
     postcode: "",
   });
   const [shippingErrors, setShippingErrors] = useState<Partial<Record<"name" | "phone" | "address", string>>>({});
+  const [showManualPayment, setShowManualPayment] = useState(false);
 
   const isBookCheckout = type === "book";
   const hasAttachedBooks = !!attachedBooks?.length;
@@ -134,6 +140,7 @@ export default function CheckoutModal({
         setIncludeBooks(false);
         setShipping(getShippingDefaults(profile));
         setShippingErrors({});
+        setShowManualPayment(false);
       });
 
       return () => {
@@ -226,7 +233,6 @@ export default function CheckoutModal({
       });
       if (response.data.success) {
         await refetch();
-        onClose();
         const bookSelection: BookSelection | null = showShippingForm
           ? {
               include: true,
@@ -239,7 +245,12 @@ export default function CheckoutModal({
               },
             }
           : null;
-        onProceed(bookSelection);
+        if (manualPaymentOnly) {
+          setShowManualPayment(true);
+        } else {
+          onClose();
+          onProceed(bookSelection);
+        }
       } else {
         throw new Error(response.data.error || "Failed to update profile");
       }
@@ -266,6 +277,98 @@ export default function CheckoutModal({
       .replace("BDT", "৳");
 
   const canSubmit = agreedToTerms && !isSubmitting && !profileLoading;
+
+  const handleCopyBkashNumber = () => {
+    navigator.clipboard.writeText(siteConfig.manualPayment.bkashNumber);
+    toast.success("নাম্বার কপি হয়েছে");
+  };
+
+  const handleOpenWhatsApp = () => {
+    const formattedPhone = siteConfig.manualPayment.whatsappNumber.replace(/\D/g, "");
+    const itemLabel = type === "bundle" ? "Combo" : type === "book" ? "বই" : "কোর্স";
+    const message = `আমি পেমেন্ট করেছি।\n${itemLabel}: ${title}\nমূল্য: ${formatPrice(price)}\n\n(পেমেন্টের স্ক্রিনশট এখানে পাঠাচ্ছি)`;
+    window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, "_blank");
+  };
+
+  if (showManualPayment) {
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
+        <DialogContent
+          showCloseButton={false}
+          className="w-[calc(100%-1.5rem)] sm:w-full max-w-md overflow-hidden p-0 rounded-xl sm:rounded-2xl border border-border/30 bg-background shadow-2xl"
+          overlayClassName="backdrop-blur-sm"
+        >
+          <DialogTitle render={<div />} className="sr-only">
+            ম্যানুয়াল পেমেন্ট
+          </DialogTitle>
+
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 w-9 h-9 flex items-center justify-center rounded-full bg-muted/60 hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="p-5 sm:p-7 space-y-5">
+            <div>
+              <p className="font-bold text-foreground text-lg">ম্যানুয়াল পেমেন্ট</p>
+              <p className="text-muted-foreground text-xs mt-1">
+                অনলাইন পেমেন্ট (SSLCommerz) শীঘ্রই আসছে। আপাতত ম্যানুয়ালি পেমেন্ট করো।
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">পরিশোধযোগ্য মূল্য</span>
+                <span className="text-xl font-black text-primary">{formatPrice(price)}</span>
+              </div>
+              <div className="flex items-center justify-between gap-2 rounded-lg bg-background border border-border/60 px-3 py-2.5">
+                <span className="font-mono font-bold text-foreground text-base tracking-wide">
+                  {siteConfig.manualPayment.bkashNumber}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyBkashNumber}
+                  className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  কপি করো
+                </button>
+              </div>
+              <p className="text-xs text-foreground/80 leading-relaxed">
+                এই নাম্বারে <span className="font-semibold">বিকাশ</span> কিংবা{" "}
+                <span className="font-semibold">নগদ</span>-এ Send Money করো।
+              </p>
+            </div>
+
+            <ol className="space-y-2 text-sm text-foreground/90 list-decimal list-inside">
+              <li>উপরের নাম্বারে পেমেন্ট করো।</li>
+              <li>পেমেন্টের স্ক্রিনশট নাও।</li>
+              <li>নিচের WhatsApp বাটনে ক্লিক করে কোর্সের নাম ও স্ক্রিনশট পাঠাও।</li>
+            </ol>
+
+            <div className="bg-warning/10 border border-warning/20 rounded-xl p-3">
+              <p className="text-xs text-warning">
+                ⚠️ পেমেন্ট যাচাই করে আমাদের টিম ম্যানুয়ালি তোমার অ্যাক্সেস চালু করে দেবে।
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleOpenWhatsApp}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm bg-[#25d366] text-white hover:bg-[#1da851] transition-all"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp-এ স্ক্রিনশট পাঠাও
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>

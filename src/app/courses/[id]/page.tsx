@@ -8,7 +8,6 @@ import { UserContext } from "@/Contexts/UserContext";
 import { isLoggedIn } from "@/helpers";
 import { CourseDetailsSkeleton } from "@/components/Skeletons";
 import Link from "next/link";
-import WhatsAppWidget from "@/components/WhatsAppWidget";
 import AuthTest from "@/components/AuthTest";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -778,21 +777,6 @@ export default function CourseDetailsPage() {
           </div>
 
           <TestimonialMarquee feedbacks={mapPublicTestimonialsToFeedbacks(testimonials)} />
-
-          <WhatsAppWidget
-            phoneNumber={
-              courseData?.chips?.socials?.whatsapp
-                ? courseData.chips.socials.whatsapp.replace(
-                    "https://wa.me/",
-                    "",
-                  )
-                : "8801768976036"
-            }
-            name="CoderVai Team"
-            position="Online | Replies instantly"
-            welcomeMessage="আমরা এখানে একটিভ আছি! 👋 আপনাকে কিভাবে সাহায্য করতে পারি?"
-            avatar="/wasup.svg"
-          />
 
           {process.env.NODE_ENV === "development" && <AuthTest />}
 
