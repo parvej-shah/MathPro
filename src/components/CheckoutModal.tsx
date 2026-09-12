@@ -288,7 +288,7 @@ export default function CheckoutModal({
   const handleOpenWhatsApp = () => {
     const formattedPhone = siteConfig.manualPayment.whatsappNumber.replace(/\D/g, "");
     const itemLabel = type === "bundle" ? "Combo" : type === "book" ? "বই" : "কোর্স";
-    const message = `আমি পেমেন্ট করেছি।\n${itemLabel}: ${title}\nমূল্য: ${formatPrice(price)}\n\n(পেমেন্টের স্ক্রিনশট এখানে পাঠাচ্ছি)`;
+    const message = `আমি পেমেন্ট করেছি।\n${itemLabel}: ${title}\nমূল্য: ${formatPrice(price)}\nযে নম্বর থেকে টাকা পাঠিয়েছি: \n\n(পেমেন্টের স্ক্রিনশট নিচে পাঠাচ্ছি)`;
     window.open(`https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`, "_blank");
   };
 
@@ -371,7 +371,7 @@ export default function CheckoutModal({
 
             <ol className="space-y-2 text-sm text-foreground/90 list-decimal list-inside">
               <li>বিকাশ, নগদ বা রকেটে সেন্ড মানি করার পর, পেমেন্টের স্ক্রিনশট নাও।</li>
-              <li>নিচের WhatsApp বাটনে ক্লিক করে কোর্সের নাম ও স্ক্রিনশট পাঠাও।</li>
+              <li>নিচের WhatsApp বাটনে ক্লিক করে স্ক্রিনশট এবং যে নম্বর থেকে টাকা পাঠিয়েছ সেই নম্বরটি লিখে পাঠাও।</li>
             </ol>
 
             <div className="bg-warning/10 border border-warning/20 rounded-xl p-3">
