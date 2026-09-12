@@ -280,9 +280,9 @@ export default function CheckoutModal({
 
   const canSubmit = agreedToTerms && !isSubmitting && !profileLoading;
 
-  const handleCopyBkashNumber = () => {
-    navigator.clipboard.writeText(siteConfig.manualPayment.bkashNumber);
-    toast.success("নাম্বার কপি হয়েছে");
+  const handleCopyNumber = (num: string, method: string) => {
+    navigator.clipboard.writeText(num);
+    toast.success(`${method} নাম্বার কপি হয়েছে`);
   };
 
   const handleOpenWhatsApp = () => {
@@ -327,27 +327,50 @@ export default function CheckoutModal({
                 <span className="text-sm text-muted-foreground">পরিশোধযোগ্য মূল্য</span>
                 <span className="text-xl font-black text-primary">{formatPrice(price)}</span>
               </div>
-              <div className="flex items-center justify-between gap-2 rounded-lg bg-background border border-border/60 px-3 py-2.5">
-                <span className="font-mono font-bold text-foreground text-base tracking-wide">
+
+              {/* bKash & Nagad */}
+              <div className="rounded-lg bg-background border border-border/60 p-2.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-[#e2136e] font-bold">বিকাশ</span> ও <span className="text-[#f7941d] font-bold">নগদ</span> (Send Money)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyNumber(siteConfig.manualPayment.bkashNumber, "বিকাশ/নগদ")}
+                    className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    কপি করো
+                  </button>
+                </div>
+                <p className="font-mono font-bold text-foreground text-sm tracking-wide">
                   {siteConfig.manualPayment.bkashNumber}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyBkashNumber}
-                  className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  কপি করো
-                </button>
+                </p>
               </div>
-              <p className="text-xs text-foreground/80 leading-relaxed">
-                এই নাম্বারে <span className="font-semibold">বিকাশ</span>-এ Send Money করো।
-              </p>
+
+              {/* Rocket */}
+              <div className="rounded-lg bg-background border border-border/60 p-2.5 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <span className="text-[#8c3494] font-bold">রকেট</span> (Send Money)
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyNumber(siteConfig.manualPayment.rocketNumber, "রকেট")}
+                    className="flex items-center gap-1 text-xs font-semibold text-primary hover:underline shrink-0"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    কপি করো
+                  </button>
+                </div>
+                <p className="font-mono font-bold text-foreground text-sm tracking-wide">
+                  {siteConfig.manualPayment.rocketNumber}
+                </p>
+              </div>
             </div>
 
             <ol className="space-y-2 text-sm text-foreground/90 list-decimal list-inside">
-              <li>উপরের নাম্বারে পেমেন্ট করো।</li>
-              <li>পেমেন্টের স্ক্রিনশট নাও।</li>
+              <li>বিকাশ, নগদ বা রকেটে সেন্ড মানি করার পর, পেমেন্টের স্ক্রিনশট নাও।</li>
               <li>নিচের WhatsApp বাটনে ক্লিক করে কোর্সের নাম ও স্ক্রিনশট পাঠাও।</li>
             </ol>
 

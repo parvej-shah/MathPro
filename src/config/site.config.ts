@@ -61,6 +61,8 @@ export const siteConfig = {
   // Manual payment (SSLCommerz pending re-integration)
   manualPayment: {
     bkashNumber: "01521323689",
+    nagadNumber: "01521323689",
+    rocketNumber: "015213236899",
     whatsappNumber: "+880 1715-941632",
   },
 
