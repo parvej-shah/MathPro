@@ -43,7 +43,7 @@ export default function WhatsAppWidget({
     setInputText("")
   }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSendMessage()
     }
@@ -72,8 +72,8 @@ export default function WhatsAppWidget({
           {/* Chat area */}
           <div className="bg-[#e4e1de] p-4 md:h-[250px] h-[200px] flex flex-col">
             <div className="bg-white rounded-lg p-3 max-w-[80%] shadow-sm ml-auto mr-0 mb-auto">
-              <p className="text-sm cursor-default text-black">{welcomeMessage}</p>
-              <span className="text-[10px] text-muted-foreground flex justify-end mt-1">
+              <p className="text-sm cursor-default text-zinc-900">{welcomeMessage}</p>
+              <span className="text-[10px] text-zinc-500 flex justify-end mt-1">
                 {new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </span>
             </div>
@@ -86,8 +86,8 @@ export default function WhatsAppWidget({
               placeholder={placeholder}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              className="flex-1 py-2 px-3 text-sm rounded-full border border-border focus:outline-none focus:border-[#25d366]"
+              onKeyDown={handleKeyDown}
+              className="flex-1 py-2 px-3 text-sm rounded-full bg-white text-zinc-900 placeholder:text-zinc-500 border border-zinc-300 focus:outline-none focus:border-[#25d366]"
             />
             <button
               onClick={handleSendMessage}
