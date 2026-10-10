@@ -106,7 +106,7 @@ export default function ContactPage() {
             </div>
             <div className="space-y-1">
               <span className="text-xs font-bold uppercase tracking-widest text-slate-400">প্ল্যাটফর্ম ডোমেইন</span>
-              <p className="font-semibold text-emerald-400">mathpro.academy</p>
+              <p className="font-semibold text-emerald-400">mathprobd.com</p>
             </div>
             <div className="space-y-1">
               <span className="text-xs font-bold uppercase tracking-widest text-slate-400">সাপোর্ট সময়সূচী</span>

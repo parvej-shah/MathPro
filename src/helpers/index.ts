@@ -2,7 +2,7 @@ import { Anek_Bangla } from "next/font/google";
 import { jwtDecode } from 'jwt-decode';
 import CryptoJS from "crypto-js";
 
-const AUTH_COOKIE_DOMAIN = ".mathpro.academy";
+const AUTH_COOKIE_DOMAIN = ".mathprobd.com";
 const AUTH_EVENT_NAME = "tokenUpdated";
 
 interface JwtPayload {
@@ -245,6 +245,7 @@ export function isAllowedRedirectTarget(rawUrl: string): boolean {
     if (url.protocol !== "https:") return false;
     const bare = AUTH_COOKIE_DOMAIN.replace(/^\./, "");
     if (url.hostname === bare || url.hostname.endsWith(`.${bare}`)) return true;
+    if (url.hostname === "mathpro.academy" || url.hostname.endsWith(".mathpro.academy")) return true;
     // TODO: remove once production domains are live
     if (url.hostname.endsWith(".vercel.app")) return true;
     if (url.hostname.endsWith(".onrender.com")) return true;
@@ -267,7 +268,7 @@ export function getTokenType(token: string): number | null {
 }
 
 /**
- * Central post-login redirect. Persists the token (shared .mathpro.academy
+ * Central post-login redirect. Persists the token (shared .mathprobd.com
  * cookie + localStorage), then routes the user:
  *  - Admins/moderators (type 1/2): always to the admin app. If `redirectUrl`
  *    is an allowed external admin URL, go there with the token in the `#hash`
@@ -285,7 +286,7 @@ export function handlePostLoginRedirect(
 
   const type = getTokenType(token);
   const isAdmin = type === 1 || type === 2;
-  const adminBase = process.env.NEXT_PUBLIC_ADMIN_URL || "https://admin.mathpro.academy";
+  const adminBase = process.env.NEXT_PUBLIC_ADMIN_URL || "https://admin.mathprobd.com";
 
   if (isAdmin) {
     const target =
@@ -360,6 +361,7 @@ export const clearAuthToken = () => {
   localStorage.removeItem("token");
   deleteCookie("token");
   deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
+  deleteCookieWithDomain("token", ".mathpro.academy");
   emitAuthTokenUpdate(null);
 };
 
@@ -376,6 +378,7 @@ export const redirectToLogin = () => {
   localStorage.removeItem("token");
   deleteCookie("token");
   deleteCookieWithDomain("token", AUTH_COOKIE_DOMAIN);
+  deleteCookieWithDomain("token", ".mathpro.academy");
   emitAuthTokenUpdate(null);
   window.location.href = loginUrl;
 };

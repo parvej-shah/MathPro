@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://mathpro.academy";
+const SITE_URL = "https://mathprobd.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = ["", "/courses", "/combos", "/books", "/terms", "/privacy"];

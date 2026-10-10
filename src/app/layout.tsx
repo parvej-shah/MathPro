@@ -20,7 +20,7 @@ const orbitron = Orbitron({
 });
 
 const SITE_NAME = "Math Pro Academy";
-const SITE_URL = "https://mathpro.academy";
+const SITE_URL = "https://mathprobd.com";
 const SITE_DESCRIPTION =
   "Math Pro Academy — বাংলায় JSC, SSC ও HSC গণিতের অনলাইন কোর্স। ভিডিও ক্লাস, লাইভ ক্লাস, প্র্যাকটিস ও র‍্যাংকিং দিয়ে A+ এর প্রস্তুতি নাও। " +
   "Math Pro Academy is an online math coaching platform for JSC, SSC, and HSC students in Bangladesh, offering live classes, recorded video lectures, practice quizzes, and performance ranking.";
