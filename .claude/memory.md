@@ -207,3 +207,6 @@ Format: `YYYY-MM-DD — <what changed> | scope: <files/feature> | why: <reason>`
 2026-08-13 — Removed the offline branches section from the landing page at the user's
   request. Also removed the landing nav links targeting `#branches` and branch-only radar
   CSS helpers so the page has no stale anchor or unused animation hook.
+
+2026-10-17 — Revamped post-quiz review experience: added `QuizReviewSummary` with score donut, Bengali motivational text, 4 metric cards (total/correct/wrong/skipped), filter tabs (all/wrong/correct/skipped), and interactive question jump matrix; updated `ModulePlayer` question cards to prominently mark wrong answers (`❌ ভুল উত্তর` badge + red border accent) vs correct (`✅ সঠিক উত্তর` badge + green accent) vs skipped (`⚠️ উত্তর দেওয়া হয়নি`), labeled chosen options explicitly (`তোমার উত্তর (ভুল)` vs `সঠিক উত্তর`), added whitespace-resilient option matching, and styled rich KaTeX explanation container (`💡 ব্যাখ্যা ও সঠিক সমাধান:`). | scope: src/app/course/[courseId]/[chapterid]/[moduleid]/_components/{ModulePlayer.tsx,QuizReviewSummary.tsx} | why: students need clear visibility into their score and immediately spot and study the questions they got wrong.
+

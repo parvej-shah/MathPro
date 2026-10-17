@@ -1,11 +1,12 @@
 "use client";
 
-import { memo, useState } from "react";
+import { memo, useState, useCallback } from "react";
 import ReactYoutubePlayer from "@/components/ReactYoutubePlayer";
 import ModuleUpcoming from "@/components/ModuleUpcoming";
 import { SafeHtmlRenderer } from "@/components/SafeHtmlRenderer";
 import { RichFieldRenderer } from "@/components/RichFieldRenderer";
 import { decryptString, englishToBanglaNumbers } from "@/helpers";
+import { QuizReviewSummary, type QuizReviewFilter } from "./QuizReviewSummary";
 import type { CourseModule, QuizQuestionData } from "./types";
 
 // Option labels for the answer pills (ক, খ, গ, ঘ, ঙ …). Falls back to the
@@ -87,6 +88,30 @@ const ModulePlayer = memo(function ModulePlayer({
     (sum, _quiz, index) => (quizAnswer[index] ? sum + 1 : sum),
     0,
   );
+
+  const correctCount = quizQuestions.filter((_, i) => !!quizVerdict[i]).length;
+  const wrongCount = quizQuestions.filter(
+    (_, i) => quizAnswer[i] !== undefined && quizAnswer[i] !== "" && !quizVerdict[i],
+  ).length;
+  const skippedCount = quizQuestions.filter(
+    (_, i) => quizAnswer[i] === undefined || quizAnswer[i] === "",
+  ).length;
+
+  const [reviewFilter, setReviewFilter] = useState<QuizReviewFilter>("ALL");
+
+  const handleJumpToQuestion = useCallback((index: number) => {
+    setReviewFilter("ALL");
+    setTimeout(() => {
+      const el = document.getElementById(`quiz-question-${index}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("ring-2", "ring-primary");
+        setTimeout(() => {
+          el.classList.remove("ring-2", "ring-primary");
+        }, 1500);
+      }
+    }, 50);
+  }, []);
 
   const liveStatus = activeModule?.live_status;
   const isLiveOverlay = liveStatus === "LIVE" || liveStatus === "SCHEDULED";
@@ -379,155 +404,277 @@ const ModulePlayer = memo(function ModulePlayer({
             </div>
           )}
 
-          {/* Score card (returning user) */}
+          {/* Score card & review summary (post-submission) */}
           {showQuizAnswer && !isLegacyAttempt && (
-            <div className="mb-6 flex items-center gap-4 rounded-xl border border-primary/30 bg-primary/10 px-5 py-4">
-              <div className="relative w-14 h-14 shrink-0">
-                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                  <circle cx="18" cy="18" r="15" stroke="currentColor" strokeWidth="3" fill="none" className="text-gray-700/30" />
-                  <circle
-                    cx="18" cy="18" r="15" stroke="oklch(0.718 0.147 159.2)" strokeWidth="3" fill="none"
-                    strokeDasharray={`${2 * Math.PI * 15}`}
-                    strokeDashoffset={`${2 * Math.PI * 15 * (1 - earnedPercentage / 100)}`}
-                    className="transition-all duration-1000 ease-out"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-                  {earnedPercentage}%
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-lg font-semibold text-foreground leading-tight">
-                  {earnedPercentage >= 80 ? "🎉 দারুণ করেছো!" : earnedPercentage >= 50 ? "👍 ভালো চেষ্টা!" : "আবার চেষ্টা করো"}
-                </p>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  নম্বর: <span className="font-bold text-primary">{earnedQuestionPoints}</span> / {totalQuestionPoints}
-                </p>
-              </div>
-            </div>
+            <QuizReviewSummary
+              totalQuestionPoints={totalQuestionPoints}
+              earnedQuestionPoints={earnedQuestionPoints}
+              earnedPercentage={earnedPercentage}
+              totalQuestionsCount={quizQuestions.length}
+              correctCount={correctCount}
+              wrongCount={wrongCount}
+              skippedCount={skippedCount}
+              filter={reviewFilter}
+              setFilter={setReviewFilter}
+              quizVerdict={quizVerdict}
+              quizAnswer={quizAnswer}
+              onJumpToQuestion={handleJumpToQuestion}
+            />
           )}
 
           {/* Quiz questions — suppressed for legacy attempts, where there is no
               stored selection or verdict to display against them. */}
-          {!isLegacyAttempt && (activeModule?.data?.quiz as Array<Record<string, unknown>>)?.map((quiz, index: number) => {
-            const correctAnswerRaw = decryptString(
-              String(quiz.answer || quiz.correct_answer || ""),
-              process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
-            );
-            return (
-              <div
-                key={`quiz-question-${index}`}
-                className="my-4 rounded-2xl border border-border/60 bg-card/40 p-4 transition-colors sm:my-5 sm:p-6"
-              >
-                <div className="mb-4 flex items-center justify-between gap-3 border-b border-border/40 pb-3">
-                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-xs font-bold text-primary">
-                      {englishToBanglaNumbers(index + 1)}
-                    </span>
-                    প্রশ্ন
-                  </span>
-                  <span className="shrink-0 rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                    {englishToBanglaNumbers(
-                      typeof quiz.points === "number" && (quiz.points as number) > 0
-                        ? (quiz.points as number)
-                        : 1,
-                    )}{" "}
-                    নম্বর
-                  </span>
+          {!isLegacyAttempt && (() => {
+            const mappedQuestions = quizQuestions.map((quiz, index) => {
+              const isSelected = quizAnswer[index] !== undefined && quizAnswer[index] !== "";
+              const isCorrect = !!quizVerdict[index];
+              const isWrong = isSelected && !isCorrect;
+              const isSkipped = !isSelected;
+              return { quiz, index, isSelected, isCorrect, isWrong, isSkipped };
+            });
+
+            const visibleQuestions = mappedQuestions.filter((item) => {
+              if (!showQuizAnswer || reviewFilter === "ALL") return true;
+              if (reviewFilter === "WRONG") return item.isWrong;
+              if (reviewFilter === "CORRECT") return item.isCorrect;
+              if (reviewFilter === "SKIPPED") return item.isSkipped;
+              return true;
+            });
+
+            if (showQuizAnswer && visibleQuestions.length === 0) {
+              return (
+                <div className="my-8 rounded-2xl border border-border/60 bg-card/40 p-8 text-center">
+                  <p className="text-lg font-bold text-foreground">
+                    {reviewFilter === "WRONG"
+                      ? "🎉 চমৎকার! তোমার কোনো ভুল উত্তর নেই।"
+                      : reviewFilter === "SKIPPED"
+                      ? "👍 দারুণ! কোনো প্রশ্ন বাদ পড়েনি।"
+                      : "এই ফিল্টারে কোনো প্রশ্ন পাওয়া যায়নি।"}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setReviewFilter("ALL")}
+                    className="mt-4 rounded-xl bg-primary px-5 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/85"
+                  >
+                    সবগুলো প্রশ্ন দেখো
+                  </button>
                 </div>
+              );
+            }
 
-                <RichFieldRenderer
-                  htmlContent={quiz.question_html as string | undefined}
-                  plainContent={quiz.question as string | undefined}
-                  className={`text-base font-semibold text-foreground ${MATH_OVERFLOW}`}
-                />
-                <div className="mt-4 flex flex-col gap-2.5">
-                  {(quiz.options as string[] | undefined)?.map((elem: string, optIndex: number) => {
-                    const optionContent = (quiz.options_html as string[] | undefined)?.[optIndex] || elem;
-                    const isSelected = elem === quizAnswer[index];
-                    const isCorrectOption = showQuizAnswer && elem === correctAnswerRaw;
-                    const isWrongSelection = showQuizAnswer && isSelected && !quizVerdict[index];
+            return visibleQuestions.map(({ quiz, index, isCorrect, isWrong, isSkipped }) => {
+              const correctAnswerRaw = decryptString(
+                String(quiz.answer || quiz.correct_answer || ""),
+                process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "",
+              );
 
-                    // Card state: green when revealed-correct, red when the
-                    // student's pick was wrong, primary when merely selected.
-                    let rowClass =
-                      "border-border/50 bg-background/40 hover:border-primary/50 hover:bg-primary/5";
-                    let pillClass = "border-border/60 text-muted-foreground";
-                    if (showQuizAnswer) {
-                      if (isCorrectOption) {
-                        rowClass = "border-primary/60 bg-primary/10";
-                        pillClass = "border-primary bg-primary text-primary-foreground";
-                      } else if (isWrongSelection) {
-                        rowClass = "border-destructive/60 bg-destructive/10";
-                        pillClass = "border-destructive bg-destructive text-white";
-                      } else {
-                        rowClass = "border-border/40 bg-background/20";
-                      }
-                    } else if (isSelected) {
-                      rowClass = "border-primary bg-primary/10";
-                      pillClass = "border-primary bg-primary text-primary-foreground";
-                    }
+              const questionPoints =
+                typeof quiz.points === "number" && quiz.points > 0 ? quiz.points : 1;
 
-                    return (
-                      <label
-                        key={`option-${index}-${optIndex}`}
-                        className={`flex min-h-11 items-start gap-2.5 rounded-xl border px-3 py-3 transition-colors sm:gap-3 sm:px-3.5 ${rowClass} ${showQuizAnswer ? "cursor-default" : "cursor-pointer"}`}
-                      >
-                        <input
-                          type="radio"
-                          name={`quiz-${index}`}
-                          value={elem}
-                          checked={isSelected}
-                          disabled={showQuizAnswer}
-                          onChange={() => {
-                            if (!showQuizAnswer) {
-                              setQuizAnswer((prev) => ({ ...prev, [index]: elem }));
-                            }
-                          }}
-                          className="sr-only"
-                        />
-                        <span
-                          className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold transition-colors ${pillClass}`}
-                          aria-hidden="true"
-                        >
-                          {OPTION_LABELS[optIndex] ?? englishToBanglaNumbers(optIndex + 1)}
+              // Card styling & border accent
+              let cardBorderClass = "border-border/60 bg-card/40";
+              let pillNumberClass = "bg-primary/15 text-primary";
+
+              if (showQuizAnswer) {
+                if (isCorrect) {
+                  cardBorderClass = "border-emerald-500/35 bg-card/60 border-l-4 border-l-emerald-500";
+                  pillNumberClass = "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400";
+                } else if (isWrong) {
+                  cardBorderClass = "border-destructive/40 bg-card/60 border-l-4 border-l-destructive shadow-sm";
+                  pillNumberClass = "bg-destructive/15 text-destructive";
+                } else {
+                  cardBorderClass = "border-amber-500/35 bg-card/40 border-l-4 border-l-amber-500/70";
+                  pillNumberClass = "bg-amber-500/15 text-amber-600 dark:text-amber-400";
+                }
+              }
+
+              return (
+                <div
+                  id={`quiz-question-${index}`}
+                  key={`quiz-question-${index}`}
+                  className={`my-4 scroll-mt-24 rounded-2xl border p-4 transition-all duration-300 sm:my-5 sm:p-6 sm:scroll-mt-28 ${cardBorderClass}`}
+                >
+                  {/* Question Header */}
+                  <div className="mb-4 flex flex-wrap items-center justify-between gap-2.5 border-b border-border/40 pb-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <span className={`flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold ${pillNumberClass}`}>
+                          {englishToBanglaNumbers(index + 1)}
                         </span>
-                        <span className={`min-w-0 flex-1 self-center text-foreground ${MATH_OVERFLOW}`}>
-                          <SafeHtmlRenderer content={optionContent} />
-                        </span>
-                        {showQuizAnswer && isCorrectOption && (
-                          <svg className="mt-0.5 h-5 w-5 shrink-0 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.06l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                        {showQuizAnswer && isWrongSelection && (
-                          <svg className="mt-0.5 h-5 w-5 shrink-0 text-destructive" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-                {showQuizAnswer && (() => {
-                  const expHtml = quiz.explanation_html ? decryptString(String(quiz.explanation_html), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : "";
-                  const expPlain = quiz.explanation ? decryptString(String(quiz.explanation), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "") : "";
-                  if (!expHtml?.trim() && !expPlain?.trim()) return null;
-                  return (
-                    <div className="mt-4 p-4 rounded-lg bg-muted/20 border border-border/40">
-                      <p className="text-sm font-semibold text-foreground mb-2">ব্যাখ্যা:</p>
-                      <RichFieldRenderer
-                        htmlContent={expHtml || undefined}
-                        plainContent={expPlain || undefined}
-                        className={`text-muted-foreground ${MATH_OVERFLOW}`}
-                      />
+                        প্রশ্ন
+                      </span>
+
+                      {showQuizAnswer && (
+                        <>
+                          {isCorrect && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              সঠিক উত্তর
+                            </span>
+                          )}
+                          {isWrong && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-destructive/30 bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive">
+                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                              ভুল উত্তর
+                            </span>
+                          )}
+                          {isSkipped && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                              উত্তর দেওয়া হয়নি
+                            </span>
+                          )}
+                        </>
+                      )}
                     </div>
-                  );
-                })()}
-              </div>
-            );
-          })}
+
+                    <div className="flex items-center gap-2">
+                      {showQuizAnswer ? (
+                        <span
+                          className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                            isCorrect
+                              ? "border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                              : "border border-border/40 bg-muted/30 text-muted-foreground"
+                          }`}
+                        >
+                          {isCorrect ? englishToBanglaNumbers(questionPoints) : "০"} / {englishToBanglaNumbers(questionPoints)} নম্বর
+                        </span>
+                      ) : (
+                        <span className="shrink-0 rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                          {englishToBanglaNumbers(questionPoints)} নম্বর
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Question Content */}
+                  <RichFieldRenderer
+                    htmlContent={quiz.question_html as string | undefined}
+                    plainContent={quiz.question as string | undefined}
+                    className={`text-base font-semibold text-foreground ${MATH_OVERFLOW}`}
+                  />
+
+                  {/* Options List */}
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    {(quiz.options as string[] | undefined)?.map((elem: string, optIndex: number) => {
+                      const optionContent =
+                        (quiz.options_html as string[] | undefined)?.[optIndex] || elem;
+                      const isOptionSelected =
+                        elem === quizAnswer[index] ||
+                        (Boolean(quizAnswer[index]) && typeof quizAnswer[index] === "string" && elem.trim() === quizAnswer[index].trim());
+                      const isCorrectOption =
+                        showQuizAnswer &&
+                        (elem === correctAnswerRaw ||
+                          (Boolean(correctAnswerRaw) && elem.trim() === correctAnswerRaw.trim()));
+                      const isWrongSelection = showQuizAnswer && isOptionSelected && !quizVerdict[index];
+
+                      let rowClass =
+                        "border-border/50 bg-background/40 hover:border-primary/50 hover:bg-primary/5";
+                      let pillClass = "border-border/60 text-muted-foreground";
+
+                      if (showQuizAnswer) {
+                        if (isCorrectOption) {
+                          rowClass = "border-emerald-500/70 bg-emerald-500/10 dark:bg-emerald-500/15 ring-1 ring-emerald-500/30";
+                          pillClass = "border-emerald-500 bg-emerald-500 text-white font-bold";
+                        } else if (isWrongSelection) {
+                          rowClass = "border-destructive/70 bg-destructive/10 dark:bg-destructive/15 ring-1 ring-destructive/30";
+                          pillClass = "border-destructive bg-destructive text-white font-bold";
+                        } else {
+                          rowClass = "border-border/40 bg-background/20 opacity-75";
+                          pillClass = "border-border/50 text-muted-foreground";
+                        }
+                      } else if (isOptionSelected) {
+                        rowClass = "border-primary bg-primary/10";
+                        pillClass = "border-primary bg-primary text-primary-foreground font-bold";
+                      }
+
+                      return (
+                        <label
+                          key={`option-${index}-${optIndex}`}
+                          className={`flex min-h-11 items-center gap-2.5 rounded-xl border px-3 py-3 transition-colors sm:gap-3 sm:px-3.5 ${rowClass} ${showQuizAnswer ? "cursor-default" : "cursor-pointer"}`}
+                        >
+                          <input
+                            type="radio"
+                            name={`quiz-${index}`}
+                            value={elem}
+                            checked={isOptionSelected}
+                            disabled={showQuizAnswer}
+                            onChange={() => {
+                              if (!showQuizAnswer) {
+                                setQuizAnswer((prev) => ({ ...prev, [index]: elem }));
+                              }
+                            }}
+                            className="sr-only"
+                          />
+                          <span
+                            className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-bold transition-colors ${pillClass}`}
+                            aria-hidden="true"
+                          >
+                            {OPTION_LABELS[optIndex] ?? englishToBanglaNumbers(optIndex + 1)}
+                          </span>
+
+                          <span className={`min-w-0 flex-1 self-center text-foreground ${MATH_OVERFLOW}`}>
+                            <SafeHtmlRenderer content={optionContent} />
+                          </span>
+
+                          {showQuizAnswer && isCorrectOption && (
+                            <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-md bg-emerald-500/20 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                              <span>সঠিক উত্তর</span>
+                              {isOptionSelected && <span className="opacity-80 font-normal">(তোমার পছন্দ)</span>}
+                            </span>
+                          )}
+
+                          {showQuizAnswer && isWrongSelection && (
+                            <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-md bg-destructive/20 px-2 py-0.5 text-xs font-semibold text-destructive">
+                              <svg className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                              </svg>
+                              <span>তোমার উত্তর (ভুল)</span>
+                            </span>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  {/* Explanation Section */}
+                  {showQuizAnswer && (() => {
+                    const expHtml = quiz.explanation_html
+                      ? decryptString(String(quiz.explanation_html), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "")
+                      : "";
+                    const expPlain = quiz.explanation
+                      ? decryptString(String(quiz.explanation), process.env.NEXT_PUBLIC_SECRET_KEY_QUIZ ?? "")
+                      : "";
+                    if (!expHtml?.trim() && !expPlain?.trim()) return null;
+                    return (
+                      <div className="mt-5 rounded-xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
+                        <div className="mb-2.5 flex items-center gap-2 text-sm font-bold text-primary">
+                          <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                          </svg>
+                          <span>ব্যাখ্যা ও সঠিক সমাধান:</span>
+                        </div>
+                        <RichFieldRenderer
+                          htmlContent={expHtml || undefined}
+                          plainContent={expPlain || undefined}
+                          className={`text-sm sm:text-base text-foreground/90 leading-relaxed ${MATH_OVERFLOW}`}
+                        />
+                      </div>
+                    );
+                  })()}
+                </div>
+              );
+            });
+          })()}
 
           {!showQuizAnswer && (
             <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
